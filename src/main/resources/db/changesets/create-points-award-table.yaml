@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-points-award-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: awards
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: points
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comment
+                  type: text
+              - column:
+                  name: date
+                  type: timestamp
+        - createIndex:
+            indexName: idx_user_id
+            tableName: awards
+            columns:
+              - column:
+                  name: user_id
+        - addForeignKeyConstraint:
+            baseTableName: awards
+            baseColumnNames: user_id
+            constraintName: fk_awards_user_channel
+            referencedTableName: user_channel
+            referencedColumnNames: id

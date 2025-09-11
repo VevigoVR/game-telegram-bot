@@ -1,0 +1,74 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-buildings-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: buildings
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: building_type
+                  type: VARCHAR(31)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: production
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: increment_price
+                  type: DOUBLE PRECISION
+              - column:
+                  name: increment_mining
+                  type: DOUBLE PRECISION
+              - column:
+                  name: quantity_mining
+                  type: DOUBLE PRECISION
+              - column:
+                  name: level
+                  type: INTEGER
+              - column:
+                  name: is_visible
+                  type: BOOLEAN
+                  defaultValue: true
+              - column:
+                  name: time_to_update
+                  type: BIGINT
+              - column:
+                  name: last_time_upgrade
+                  type: TIMESTAMP
+              - column:
+                  name: last_update
+                  type: TIMESTAMP
+            constraints:
+              primaryKeyName: pk_buildings
+
+        - createIndex:
+            indexName: idx_building_user_id
+            tableName: buildings
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            indexName: idx_building_last_update
+            tableName: buildings
+            columns:
+              - column:
+                  name: last_update

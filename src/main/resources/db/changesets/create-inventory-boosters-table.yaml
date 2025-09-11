@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-inventory-boosters-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: inventory_boosters
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: DOUBLE PRECISION
+              - column:
+                  name: duration_milli
+                  type: BIGINT
+              - column:
+                  name: quantity
+                  type: DOUBLE PRECISION
+                  defaultValue: 0
+            constraints:
+              primaryKeyName: pk_inventory_boosters

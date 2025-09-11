@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-scheduler-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: scheduler
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(255)
+              - column:
+                  name: run
+                  type: BOOLEAN
+              - column:
+                  name: last_duration
+                  type: BIGINT
+              - column:
+                  name: previous_duration
+                  type: BIGINT
+              - column:
+                  name: last_start
+                  type: TIMESTAMP
+              - column:
+                  name: previous_start
+                  type: TIMESTAMP
+              - column:
+                  name: last_end
+                  type: TIMESTAMP
+              - column:
+                  name: previous_end
+                  type: TIMESTAMP
+            constraints:
+              primaryKeyName: pk_scheduler

@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-referrals-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: referrals
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: referrer_id
+                  type: BIGINT
+              - column:
+                  name: last_update
+                  type: TIMESTAMP
+              - column:
+                  name: time_create
+                  type: TIMESTAMP
+            constraints:
+              primaryKeyName: pk_referrals

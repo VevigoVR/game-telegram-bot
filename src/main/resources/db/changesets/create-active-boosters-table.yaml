@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-active-boosters-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: active_boosters
+            schemaName: game
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: DOUBLE PRECISION
+              - column:
+                  name: ends_at
+                  type: TIMESTAMP
+              - column:
+                  name: starts_at
+                  type: TIMESTAMP
+            constraints:
+              primaryKeyName: pk_active_boosters

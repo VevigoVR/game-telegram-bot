@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-channel-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: user_channel
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: telegram_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: points
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: timestamp
+        - createIndex:
+            indexName: idx_user_tgchannel_id
+            tableName: user_channel
+            columns:
+              - column:
+                  name: telegram_id

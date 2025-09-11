@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-player-scores-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: player_scores
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: score
+                  type: BIGINT
+              - column:
+                  name: calculated_at
+                  type: TIMESTAMP
+            constraints:
+              primaryKeyName: pk_player_scores
+
+        - createIndex:
+            indexName: idx_score_user_id
+            tableName: player_scores
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            indexName: idx_score_calculated_at
+            tableName: player_scores
+            columns:
+              - column:
+                  name: calculated_at

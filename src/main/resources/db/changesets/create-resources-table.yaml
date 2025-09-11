@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-resources-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: resources
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: resource_type
+                  type: VARCHAR(31)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: emoji
+                  type: VARCHAR(255)
+              - column:
+                  name: quantity
+                  type: DOUBLE PRECISION
+                  defaultValue: 0
+            constraints:
+              primaryKeyName: pk_resources

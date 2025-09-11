@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-aggregate-notes-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: aggregate_notes
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: notice_type
+                  type: VARCHAR(255)
+              - column:
+                  name: resources
+                  type: JSONB
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  defaultValue: ""
+              - column:
+                  name: text
+                  type: TEXT
+                  defaultValue: ""
+              - column:
+                  name: quantity
+                  type: BIGINT
+              - column:
+                  name: is_read
+                  type: BOOLEAN
+                  defaultValue: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+            constraints:
+              primaryKeyName: pk_aggregate_notes

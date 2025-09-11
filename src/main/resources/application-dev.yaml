@@ -1,0 +1,67 @@
+server:
+  port: 8080
+
+lock:
+  watchdog-timeout: 30000
+  single-server-config:
+    address: "redis://localhost:6379"
+    password: ${DEV_REDIS_PASSWORD}
+    connection-pool-size: 64
+
+spring:
+  liquibase:
+    enabled: false
+  # Включение цветового вывода (даже если терминал не определяется автоматически)
+  output:
+    ansi:
+      enabled: ALWAYS
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${DEV_REDIS_PASSWORD}
+      database: 0
+  main:
+    allow-circular-references: true
+  application:
+    name: creazione
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${APP_DB_NAME}?currentSchema=${DEV_SCHEMA}
+    username: ${DEV_SPRING_USER}
+    password: ${DEV_SPRING_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: create
+      default_batch_fetch_size: 20
+      generate_statistics: true
+    properties:
+      hibernate:
+        default_schema: ${DEV_SCHEMA}
+        jdbc:
+          lob:
+            non_contextual_creation: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: shutdown
+    enabled-by-default: true
+  endpoint:
+    shutdown:
+      enabled: true
+bot:
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
+  channel:
+    id:
+
+# Настройка уровней логирования
+logging:
+  level:
+    root: INFO
+    com.creazione: DEBUG
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"  # Стандартный паттерн с цветами:cite[4]

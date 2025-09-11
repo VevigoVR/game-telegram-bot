@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-ai-training-data-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: ai_training_data
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: user_message
+                  type: TEXT
+              - column:
+                  name: context
+                  type: TEXT
+              - column:
+                  name: timestamp
+                  type: timestamp with time zone
+            constraints:
+              primaryKeyName: pk_ai_training_data

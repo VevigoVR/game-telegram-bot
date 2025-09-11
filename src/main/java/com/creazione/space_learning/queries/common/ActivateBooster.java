@@ -1,0 +1,175 @@
+package com.creazione.space_learning.queries.common;
+
+import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.ActiveBooster;
+import com.creazione.space_learning.entities.InventoryBooster;
+import com.creazione.space_learning.enums.ResourceType;
+import com.creazione.space_learning.queries.GameCommand;
+import com.creazione.space_learning.queries.Query;
+import com.creazione.space_learning.utils.Answer;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+@Log4j2
+@Component
+@GameCommand(
+        value = {"/activate"},
+        description = "Активировать бустер"
+)
+public class ActivateBooster extends Query {
+    private String wrong = "";
+
+    public ActivateBooster() {
+        super(List.of());
+    }
+
+    private SendMessage takeSendMessage() {
+        return sendCustomMessage(getChatId(), getText());
+    }
+
+    @Override
+    public Answer respond(Update update) {
+        wrong = "";
+
+        Answer answer = new Answer();
+        initialQuery(update, false);
+
+        if (!isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse();
+            answer.setSendMessage(sendMessage);
+            return answer;
+        }
+
+        if (update.hasCallbackQuery()) {
+            answer.setAnswerCallbackQuery(closeRespond(update));
+        }
+
+        activateBooster();
+
+        if (false) {
+            wrong = "Боксы данного типа закончились...";
+        }
+        SendMessage sendMessage = takeSendMessage();
+        answer.setSendMessage(sendMessage);
+        return answer;
+    }
+
+    @Override
+    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+        return null;
+    }
+
+    @Override
+    public String getText() {
+        if (!wrong.isEmpty()) {
+            return wrong;
+        } else {
+            return "✅ <b>Вы успешно активировали бустер!</b>";
+        }
+    }
+
+    @Override
+    public SendPhoto getSendPhoto() {
+        return null;
+    }
+
+    private void activateBooster() {
+        String[] queryArray = getQuery().split("\\s+");
+        // Извлекаем аргументы команды
+        // Предположим, изначально был запрос: /activate acceleration all 50 24
+        if (queryArray.length != 5) {
+            wrong = "⚠️ Неправильно введена команда, поищите подсказку на складе!";
+            return;
+        }
+        switch (queryArray[0] + " " + queryArray[1]) {
+            case "/activate acceleration": {
+                try {
+                    activateAcceleration(queryArray[2], Integer.parseInt(queryArray[3]), Integer.parseInt(queryArray[4]));
+                } catch (NumberFormatException exception) {
+                    wrong = "⚠️ Неправильно введена команда, поищите подсказку на складе!!!";
+                }
+                break;
+            }
+            default:
+                wrong = "⚠️ Неправильно введена команда, поищите подсказку на складе!!";
+        }
+    }
+
+    private void activateAcceleration(String type, int rate, int time) {
+        switch (type) {
+            case "all": {
+                activateAccelerationAll(rate, time);
+                break;
+            }
+            case "metal": {
+                activateAccelerationMetal(rate, time);
+                break;
+            }
+            case "wood": {
+                activateAccelerationWood(rate, time);
+                break;
+            }
+            case "stone": {
+                activateAccelerationStone(rate, time);
+                break;
+            }
+            case "gold": {
+                activateAccelerationGold(rate, time);
+                break;
+            }
+            default: return;
+        }
+    }
+
+    private void activateAccelerationGold(int rate, int time) {
+    }
+
+    private void activateAccelerationStone(int rate, int time) {
+    }
+
+    private void activateAccelerationWood(int rate, int time) {
+    }
+
+    private void activateAccelerationMetal(int rate, int time) {
+    }
+
+    private void activateAccelerationAll(int rate, int time) {
+        double value = ((double) rate) / 100;
+        Set<InventoryBooster> boosterSet = DataSet.getBoosterService()
+                .findAllIBByUserIdAndNameAndValueAndDurationMilli(
+                        getUserDto().getId(),
+                        getUserDto().getTelegramId(),
+                        ResourceType.ACCELERATION_ALL,
+                        value,
+                        (((long)time) * 3600000L)
+                );
+        if (boosterSet == null || boosterSet.isEmpty()) {
+            wrong = "⚠️ На вашем складе нет данного вида бустера, попробуйте поискать другой.";
+            return;
+        }
+        if (boosterSet.size() > 1) {
+            //log.error("ресурс имеет дубликат, всего одинаковых: " + boosterSet.size());
+            wrong = "⚠️ Ошибка на стороне сервера, пожалуйста, попробуйте позже.";
+            return;
+        }
+        Optional<InventoryBooster> inventoryBooster = boosterSet.stream().findFirst();
+        InventoryBooster inventoryB = inventoryBooster.get();
+        inventoryB.setQuantity(inventoryB.getQuantity() - 1);
+        if (inventoryB.getQuantity() <= 0) {
+            DataSet.getBoosterService().deleteIB(inventoryB, getUserDto().getTelegramId());
+        } else {
+            DataSet.getBoosterService().saveIB(inventoryB, getUserDto().getTelegramId());
+        }
+
+        ActiveBooster activeBooster = new ActiveBooster(getUserDto().getId(), ResourceType.ACCELERATION_ALL, value, time);
+        DataSet.getBoosterService().saveAB(activeBooster, getUserDto().getTelegramId(), getUserDto().getId());
+    }
+}

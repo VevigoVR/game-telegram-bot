@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-daily-gift-table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: daily_gift
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: number_of_times
+                  type: INTEGER
+              - column:
+                  name: calculated_at
+                  type: TIMESTAMP
+              - column:
+                  name: reg_at
+                  type: TIMESTAMP
+            constraints:
+              primaryKeyName: pk_daily_gift
+
+        - createIndex:
+            indexName: idx_gift_user_id
+            tableName: daily_gift
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            indexName: idx_gift_calculated_at
+            tableName: daily_gift
+            columns:
+              - column:
+                  name: calculated_at
