@@ -20,7 +20,7 @@ public class DailyGiftService {
     private final DailyGiftRepository dailyGiftRepository;
     //private final Random random = new Random();
     //private UserDto userDto = new UserDto();
-    private final static int duration = 8;
+    private final static int duration = 20;
 
     public List<Item> takeDailyGift(UserDto userDto, MessageText wrong) {
         Long userId = userDto.getId();
