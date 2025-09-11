@@ -50,7 +50,7 @@ public class Start extends Query {
             }
 
             user.setPlayerScore(new PlayerScore(user.getId()));
-            Gold gold = new Gold(15);
+            Gold gold = new Gold(25);
             gold.setUserId(user.getId());
 
 /*

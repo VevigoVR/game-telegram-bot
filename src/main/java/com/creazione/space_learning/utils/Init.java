@@ -19,7 +19,7 @@ public class Init {
     }
 
     public void init() {
-        createNotices();
+        //createNotices();
         //createReferral();
     }
 
