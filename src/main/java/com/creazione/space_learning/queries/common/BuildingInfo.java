@@ -234,7 +234,9 @@ public class BuildingInfo extends Query {
             }
 
             // ВЫВОДИМ СООБЩЕНИЕ О ТОМ, ЕСТЬ ЛИ АКТИВНЫЕ БУСТЕРЫ, И СКОЛЬКО ПРОЦЕНТОВ И ЧЕГО ОНИ ДОБАВЛЯЮТ
-            text.append("\n\n").append(rateMessage);
+            if (!rateMessage.isEmpty()) {
+                text.append("\n\n").append(rateMessage);
+            }
         } else {
             text.append("\nСтоимость строительства:").append("\n");
             List<Resource> resources = targetBuilding.viewPrice(1);
