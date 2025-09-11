@@ -164,8 +164,8 @@ public class BuildingInfo extends Query {
             long timeUpgrade = userBuilding.getLastTimeUpgrade().toEpochMilli() + userBuilding.getTimeToUpdate();
             // если обновление данных случилось без поднятия уровня
             if (userBuilding.getLastUpdate().toEpochMilli() <= timeUpgrade) {
-                text.append("Здание улучшается до уровня: <i>").append(userBuilding.getLevel() + 1).append("</i>\n");
-                text.append("Время до улучшения: <i>")
+                text.append("\nЗдание улучшается до уровня: <i>").append(userBuilding.getLevel() + 1).append("</i>");
+                text.append("\nВремя до улучшения: <i>")
                         .append(buildingService.getDurationToString(timeUpgrade - userBuilding.getLastUpdate().toEpochMilli()))
                         .append("</i>");
 
