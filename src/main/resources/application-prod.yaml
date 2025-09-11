@@ -49,16 +49,7 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
-# ЭТО PROD
-management:
-  endpoints:
-    web:
-      exposure:
-        include: shutdown
-    enabled-by-default: true
-  endpoint:
-    shutdown:
-      enabled: true
+
 bot:
   name: ${BOT_NAME}
   token: ${BOT_TOKEN}
@@ -78,3 +69,22 @@ logging:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     default-schema: ${SCHEMA}
     liquibase-schema: ${SCHEMA}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: always
+    shutdown:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
