@@ -37,7 +37,7 @@ spring:
     driver-class-name: org.postgresql.Driver
 # ЭТО PROD
   jpa:
-    show-sql: true
+    show-sql: false
     generate-ddl: false
     hibernate:
       ddl-auto: validate

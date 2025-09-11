@@ -16,7 +16,7 @@ import java.util.List;
 public class StoneBuilding extends Building {
     public StoneBuilding() {
         super(BuildingType.STONE_BUILDING, ResourceType.STONE);
-        this.setIncrementPrice(1.5);
+        this.setIncrementPrice(1.3);
         this.setIncrementMining(1.25);
         this.setQuantityMining(0.000033);
         this.setEmojiProduction(Emoji.ROCK);
@@ -25,10 +25,10 @@ public class StoneBuilding extends Building {
     @Override
     public List<Resource> viewPrice(int level) {
         List<Resource> price = new ArrayList<>();
-        int goldQuantity = 10;
-        int woodQuantity = 15;
-        int stoneQuantity = 48;
-        int metalQuantity = 33;
+        int goldQuantity = 7;
+        int woodQuantity = 5;
+        int stoneQuantity = 6;
+        int metalQuantity = 5;
         if (level == 1) {
             price.add(new Gold(goldQuantity));
         } else if (level < 20) {
