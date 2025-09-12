@@ -54,7 +54,7 @@ public class LootBoxService {
                         new Wood(15),
                         new Stone(15),
                         new Metal(15),
-                        new Knowledge(1),
+                        //new Knowledge(1),
                         new InventoryBooster(
                                 ResourceType.ACCELERATION_METAL,
                                 0.2, Duration.ofHours(24).toMillis(), 1)
@@ -68,8 +68,8 @@ public class LootBoxService {
                         new Metal(50),
                         new InventoryBooster(
                                 ResourceType.ACCELERATION_METAL,
-                                0.3, Duration.ofHours(24).toMillis(), 1),
-                        new Knowledge(5)
+                                0.3, Duration.ofHours(24).toMillis(), 1)
+                        //new Knowledge(5)
                 );
 
             case "ref 1":
@@ -81,8 +81,8 @@ public class LootBoxService {
                                 0.5, Duration.ofHours(24).toMillis(), 1),
                         new Wood(50),
                         new Metal(50),
-                        new Stone(50),
-                        new Knowledge(10)
+                        new Stone(50)
+                        //new Knowledge(10)
                 );
             case "ref 2":
                 milliSecondsGift = 36_000_000;
@@ -93,8 +93,8 @@ public class LootBoxService {
                                 1.0, Duration.ofHours(24).toMillis(), 1),
                         new Wood(150),
                         new Metal(150),
-                        new Stone(150),
-                        new Knowledge(25)
+                        new Stone(150)
+                        //new Knowledge(25)
                 );
             case "ref 3":
                 milliSecondsGift = 72_000_000;
@@ -105,8 +105,8 @@ public class LootBoxService {
                                 1.5, Duration.ofHours(24).toMillis(), 1),
                         new Wood(2000),
                         new Metal(2000),
-                        new Stone(2000),
-                        new Knowledge(50)
+                        new Stone(2000)
+                        //new Knowledge(50)
                 );
             // ... другие типы лутбоксов
             default:
