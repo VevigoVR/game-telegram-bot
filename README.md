@@ -1,9 +1,8 @@
 # Creazione - Игровой Telegram бот
-
 <div align="center">
 
 ![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-green?style=for-the-badge&logo=springboot)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.4-green?style=for-the-badge&logo=springboot)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?style=for-the-badge&logo=postgresql)
 ![Redis](https://img.shields.io/badge/Redis-7-red?style=for-the-badge&logo=redis)
 ![Docker](https://img.shields.io/badge/Docker-24.0-blue?style=for-the-badge&logo=docker)
@@ -55,7 +54,7 @@ Creazione - это серверная часть игрового Telegram-бо�
 
 - Docker 20.10+
 - Docker Compose 2.0+
-- Java 21
+- Java 21 (для разработки)
 
 ### Запуск с помощью Docker Compose
 
@@ -70,22 +69,7 @@ cp .env.example .env
 ```
 
 3. Заполните файл `.env` необходимыми значениями:
-```env
-# Настройки базы данных
-POSTGRES_DB=creazione
-POSTGRES_USER=your_username
-POSTGRES_PASSWORD=your_secure_password
 
-# Настройки Redis
-REDIS_PASSWORD=your_redis_password
-
-# Настройки Telegram бота
-BOT_TOKEN=your_telegram_bot_token
-BOT_USERNAME=your_bot_username
-
-# Настройки приложения
-SPRING_PROFILES_ACTIVE=prod
-```
 
 4. Запустите приложение:
 ```bash
@@ -115,6 +99,8 @@ creazione-bot/
 │       ├── controllers/      # REST контроллеры
 │       ├── entities/         # Сущности БД
 │       ├── repositories/     # Репозитории Spring Data
+│       ├── game/             # Игровые сущности
+│       ├── queries/          # Обработчики команд
 │       ├── services/         # Бизнес-логика
 │       ├── config/           # Конфигурационные классы
 │       └── Application.java  # Главный класс приложения
@@ -127,111 +113,21 @@ creazione-bot/
 └── .env                     # Переменные окружения (не в репозитории)
 ```
 
-## 🔧 Настройка
-
-### Конфигурация базы данных
-
-Настройки подключения к PostgreSQL находятся в `application.yml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://db:5432/creazione
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-```
-
-### Конфигурация Redis
-
-Настройки Redis находятся в том же файле:
-
-```yaml
-spring:
-  data:
-    redis:
-      host: redis
-      port: 6379
-      password: ${REDIS_PASSWORD}
-```
-
-### Конфигурация Telegram бота
-
-Настройки бота задаются через переменные окружения в `.env` файле.
-
-## 🧪 Тестирование
-
-Проект включает unit- и интеграционные тесты:
-
-```bash
-# Запуск всех тестов
-./gradlew test
-
-# Запуск только unit-тестов
-./gradlew test --tests "*UnitTest"
-
-# Запуск только интеграционных тестов
-./gradlew test --tests "*IntegrationTest"
-```
-
-## 📊 Миграции базы данных
-
-Миграции управляются с помощью Liquibase. Файлы миграций находятся в `src/main/resources/db/changelog`. Для создания новой миграции:
-
-```bash
-./gradlew diffChangeLog
-```
-
 ## 🚀 Деплой
 
 ### Production-сборка
 
-1. Соберите JAR-файл:
+1. Соберите JAR-файл и docker-compose:
 ```bash
-./gradlew bootJar
+bash lingua-start.sh
 ```
 
-2. Соберите Docker-образ:
-```bash
-docker build -t creazione-bot .
-```
-
-3. Запустите с production-конфигурацией:
-```bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
-
-### Мониторинг
-
-Приложение предоставляет эндпоинты для мониторинга через Spring Boot Actuator:
-- `/actuator/health` - состояние приложения
-- `/actuator/metrics` - метрики производительности
-- `/actuator/info` - информация о приложении
-
-## 🤝 Вклад в проект
-
-Если вы хотите внести вклад в проект:
-
-1. Форкните репозиторий
-2. Создайте ветку для вашей функции (`git checkout -b feature/amazing-feature`)
-3. Закоммитьте изменения (`git commit -m 'Add some amazing feature'`)
-4. Запушьте в ветку (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
-
-## 📄 Лицензия
-
-Этот проект лицензирован под MIT License - см. файл [LICENSE](LICENSE) для подробностей.
 
 ## 📞 Контакты
 
 Виктор Рябченко - [@Vevigo](https://t.me/Vevigo) в Telegram
 
-Ссылка на проект: [https://github.com/your-username/creazione-bot](https://github.com/your-username/creazione-bot)
+Ссылка на проект в Telegram: [@CreazioneVBot](https://t.me/CreazioneVBot)
 
 ## 🙏 Благодарности
 
@@ -240,6 +136,11 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 - Разработчикам Telegram Bot API за простой и мощный API
 
 ---
+<div align="center">
+<img src="images/1.png" width="100%" title="Склад с ресурсами" />
+<img src="images/2.png" width="100%" title="Реферальная страница" />
+<img src="images/3.png" width="100%" title="Строение: Рудник металла"/>
+</div>
 
 <div align="center">
 
