@@ -16,9 +16,9 @@ import java.util.List;
 public class WoodBuilding extends Building {
     public WoodBuilding() {
         super(BuildingType.WOOD_BUILDING, ResourceType.WOOD);
-        this.setIncrementPrice(1.4);
+        this.setIncrementPrice(2);
         this.setIncrementMining(1.25);
-        this.setQuantityMining(0.000023);
+        this.setQuantityMining(0.0001);
         this.setEmojiProduction(Emoji.WOOD);
     }
 
@@ -32,14 +32,13 @@ public class WoodBuilding extends Building {
         if (level == 1) {
             price.add(new Gold(goldQuantity));
         } else if (level < 20) {
-            price.add(new Gold(Math.round(goldQuantity * Math.pow(getIncrementPrice(), level))));
-            price.add(new Wood(Math.round(woodQuantity * Math.pow(getIncrementPrice(), level))));
+            price.add(new Gold(Math.round(goldQuantity * Math.pow(getIncrementPrice(), level)) * 2));
+            price.add(new Wood(Math.round(woodQuantity * Math.pow(getIncrementPrice(), level)) * 2));
             price.add(new Stone(Math.round(stoneQuantity * Math.pow(getIncrementPrice(), level))));
         } else {
-            price.add(new Gold(Math.round(goldQuantity*2 * Math.pow(getIncrementPrice(), level))));
-            price.add(new Wood(Math.round(woodQuantity * Math.pow(getIncrementPrice(), level))));
+            price.add(new Gold(Math.round(goldQuantity * Math.pow(getIncrementPrice(), level)) * 2));
+            price.add(new Wood(Math.round(woodQuantity * Math.pow(getIncrementPrice(), level)) * 2));
             price.add(new Stone(Math.round(stoneQuantity * Math.pow(getIncrementPrice(), level))));
-            price.add(new Metal(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level - 19))));
         }
         return price;
     }
