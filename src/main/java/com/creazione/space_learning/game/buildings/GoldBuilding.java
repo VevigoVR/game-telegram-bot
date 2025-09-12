@@ -16,7 +16,7 @@ import java.util.List;
 public class GoldBuilding extends Building {
     public GoldBuilding() {
         super(BuildingType.GOLD_BUILDING, ResourceType.GOLD);
-        this.setIncrementPrice(1.3);
+        this.setIncrementPrice(1.4);
         this.setIncrementMining(1.25);
         this.setQuantityMining(0.000017);
         this.setEmojiProduction(Emoji.FULL_MOON);

@@ -16,7 +16,7 @@ import java.util.List;
 public class StoneBuilding extends Building {
     public StoneBuilding() {
         super(BuildingType.STONE_BUILDING, ResourceType.STONE);
-        this.setIncrementPrice(1.3);
+        this.setIncrementPrice(1.4);
         this.setIncrementMining(1.25);
         this.setQuantityMining(0.000033);
         this.setEmojiProduction(Emoji.ROCK);

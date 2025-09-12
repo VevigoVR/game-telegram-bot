@@ -16,7 +16,7 @@ import java.util.List;
 public class MetalBuilding extends Building {
     public MetalBuilding() {
         super(BuildingType.METAL_BUILDING, ResourceType.METAL);
-        this.setIncrementPrice(1.3);
+        this.setIncrementPrice(1.4);
         this.setIncrementMining(1.25);
         this.setQuantityMining(0.000033);
         this.setEmojiProduction(Emoji.BLACK_CIRCLE);

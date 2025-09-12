@@ -16,7 +16,7 @@ import java.util.List;
 public class WoodBuilding extends Building {
     public WoodBuilding() {
         super(BuildingType.WOOD_BUILDING, ResourceType.WOOD);
-        this.setIncrementPrice(1.3);
+        this.setIncrementPrice(1.4);
         this.setIncrementMining(1.25);
         this.setQuantityMining(0.000023);
         this.setEmojiProduction(Emoji.WOOD);
