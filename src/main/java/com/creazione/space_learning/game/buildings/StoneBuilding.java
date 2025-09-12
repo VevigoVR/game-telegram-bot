@@ -36,6 +36,7 @@ public class StoneBuilding extends Building {
             price.add(new Wood(Math.round(woodQuantity * Math.pow(getIncrementPrice(), level))));
             price.add(new Stone(Math.round(stoneQuantity * Math.pow(getIncrementPrice(), level))));
         } else {
+            price.add(new Gold(Math.round(goldQuantity*2 * Math.pow(getIncrementPrice(), level))));
             price.add(new Wood(Math.round(woodQuantity * Math.pow(getIncrementPrice(), level))));
             price.add(new Stone(Math.round(stoneQuantity * Math.pow(getIncrementPrice(), level))));
             price.add(new Metal(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level - 19))));
