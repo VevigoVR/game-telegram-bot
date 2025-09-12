@@ -8,7 +8,6 @@
 ![Docker](https://img.shields.io/badge/Docker-24.0-blue?style=for-the-badge&logo=docker)
 
 [![Telegram Bot](https://img.shields.io/badge/Telegram-Bot-blue?style=flat-square&logo=telegram)](https://t.me/YourBotName)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 </div>
 
