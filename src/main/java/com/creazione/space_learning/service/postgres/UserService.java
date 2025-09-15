@@ -1,4 +1,4 @@
-package com.creazione.space_learning.service;
+package com.creazione.space_learning.service.postgres;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UserDto;

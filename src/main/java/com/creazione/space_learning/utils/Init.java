@@ -5,7 +5,7 @@ import com.creazione.space_learning.entities.*;
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.service.AggregateNoticeService;
-import com.creazione.space_learning.service.UserService;
+import com.creazione.space_learning.service.postgres.UserService;
 
 import java.time.Duration;
 import java.util.*;
@@ -39,7 +39,7 @@ public class Init {
                         ResourceType.ACCELERATION_ALL,
                         0.2, Duration.ofHours(24).toMillis(), 10));
         inventoryBoosters.forEach(booster -> booster.setUserId(1L));
-        DataSet.getBoosterService().saveAllIB(inventoryBoosters, 5773183764L);
+        DataSet.getBoosterService().saveAllIB(inventoryBoosters, -1394568946807L);
 
     }
 

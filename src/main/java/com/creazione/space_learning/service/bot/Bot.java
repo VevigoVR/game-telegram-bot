@@ -8,7 +8,7 @@ import com.creazione.space_learning.queries.AIPlaceholder;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.queries.QueryList;
 import com.creazione.space_learning.service.AIDataCollector;
-import com.creazione.space_learning.service.UserService;
+import com.creazione.space_learning.service.postgres.UserService;
 import com.creazione.space_learning.utils.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

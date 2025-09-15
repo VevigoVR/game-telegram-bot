@@ -7,6 +7,7 @@ import com.creazione.space_learning.entities.InventoryBooster;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.repository.ActiveBoosterRepository;
 import com.creazione.space_learning.repository.InventoryBoosterRepository;
+import com.creazione.space_learning.service.postgres.UserService;
 import com.creazione.space_learning.service.redis.ActiveBoosterCacheService;
 import com.creazione.space_learning.service.redis.IdTelegramCacheService;
 import com.creazione.space_learning.service.redis.InventoryBoosterCacheService;

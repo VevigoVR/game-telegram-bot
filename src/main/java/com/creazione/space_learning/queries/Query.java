@@ -7,7 +7,7 @@ import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
 import com.creazione.space_learning.service.ReferralService;
 import com.creazione.space_learning.service.ResourceService;
-import com.creazione.space_learning.service.UserService;
+import com.creazione.space_learning.service.postgres.UserService;
 import com.creazione.space_learning.utils.Answer;
 import lombok.Getter;
 import lombok.Setter;

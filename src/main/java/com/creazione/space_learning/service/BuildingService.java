@@ -8,6 +8,7 @@ import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.entities.Resource;
 import com.creazione.space_learning.repository.BuildingRepository;
 import com.creazione.space_learning.enums.Emoji;
+import com.creazione.space_learning.service.postgres.UserService;
 import com.creazione.space_learning.service.redis.BuildingCacheService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
 package com.creazione.space_learning.config;
 
 import com.creazione.space_learning.service.BoosterService;
+import com.creazione.space_learning.service.postgres.UserService;
 import com.creazione.space_learning.service.scheduler.SchedulerRepoService;
 import com.creazione.space_learning.service.*;
 import com.creazione.space_learning.utils.ThrottledMessageSender4;

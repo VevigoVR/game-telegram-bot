@@ -6,6 +6,7 @@ import com.creazione.space_learning.dto.UserDto;
 import com.creazione.space_learning.entities.ReferralEntity;
 import com.creazione.space_learning.entities.UserEntity;
 import com.creazione.space_learning.repository.ReferralRepository;
+import com.creazione.space_learning.service.postgres.UserService;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
