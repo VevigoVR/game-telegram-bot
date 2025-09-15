@@ -54,9 +54,30 @@ public class LootBoxService {
                         new Wood(15),
                         new Stone(15),
                         new Metal(15),
+                        new Gold(15),
+                        new Wood(15),
+                        new Stone(15),
+                        new Metal(15),
+                        new Gold(15),
+                        new Wood(15),
+                        new Stone(15),
+                        new Metal(15),
+                        new Gold(15),
+                        new Wood(15),
+                        new Stone(15),
+                        new Metal(15),
                         //new Knowledge(1),
                         new InventoryBooster(
                                 ResourceType.ACCELERATION_METAL,
+                                0.2, Duration.ofHours(24).toMillis(), 1),
+                        new InventoryBooster(
+                                ResourceType.ACCELERATION_STONE,
+                                0.2, Duration.ofHours(24).toMillis(), 1),
+                        new InventoryBooster(
+                                ResourceType.ACCELERATION_WOOD,
+                                0.2, Duration.ofHours(24).toMillis(), 1),
+                        new InventoryBooster(
+                                ResourceType.ACCELERATION_ALL,
                                 0.2, Duration.ofHours(24).toMillis(), 1)
                 );
             case "rare":
@@ -67,7 +88,7 @@ public class LootBoxService {
                         new Stone(50),
                         new Metal(50),
                         new InventoryBooster(
-                                ResourceType.ACCELERATION_METAL,
+                                ResourceType.ACCELERATION_ALL,
                                 0.3, Duration.ofHours(24).toMillis(), 1)
                         //new Knowledge(5)
                 );

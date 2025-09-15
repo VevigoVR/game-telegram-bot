@@ -7,6 +7,7 @@ import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.service.AggregateNoticeService;
 import com.creazione.space_learning.service.UserService;
 
+import java.time.Duration;
 import java.util.*;
 
 public class Init {
@@ -21,10 +22,29 @@ public class Init {
     public void init() {
         //createNotices();
         //createReferral();
+        //addGifts();
+    }
+
+    private void addGifts() {
+        Set<InventoryBooster> inventoryBoosters = Set.of(new InventoryBooster(
+                        ResourceType.ACCELERATION_METAL,
+                        0.2, Duration.ofHours(24).toMillis(), 10),
+                new InventoryBooster(
+                        ResourceType.ACCELERATION_STONE,
+                        0.2, Duration.ofHours(24).toMillis(), 10),
+                new InventoryBooster(
+                        ResourceType.ACCELERATION_WOOD,
+                        0.2, Duration.ofHours(24).toMillis(), 10),
+                new InventoryBooster(
+                        ResourceType.ACCELERATION_ALL,
+                        0.2, Duration.ofHours(24).toMillis(), 10));
+        inventoryBoosters.forEach(booster -> booster.setUserId(1L));
+        DataSet.getBoosterService().saveAllIB(inventoryBoosters, 5773183764L);
+
     }
 
     private void createNotices() {
-        aggregateNoticeService.deleteAll();
+        //aggregateNoticeService.deleteAll();
         List<AggregateNoticeEntity> aggregateNoticeEntityList = new ArrayList<>();
         AggregateNoticeEntity aggregateNotice1 = new AggregateNoticeEntity(1L, NoticeType.GIFT_TO_REFERRAL,  5L);
         aggregateNotice1.setCreatedAt(getLaterDate());

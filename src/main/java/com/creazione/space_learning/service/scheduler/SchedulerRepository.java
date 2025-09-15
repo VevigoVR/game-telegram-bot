@@ -1,4 +1,4 @@
-package com.creazione.space_learning.scheduler;
+package com.creazione.space_learning.service.scheduler;
 
 import com.creazione.space_learning.entities.SchedulerEntity;
 import com.creazione.space_learning.enums.SchedulerType;

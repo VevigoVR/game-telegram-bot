@@ -1,7 +1,7 @@
 package com.creazione.space_learning.config;
 
 import com.creazione.space_learning.service.BoosterService;
-import com.creazione.space_learning.scheduler.SchedulerRepoService;
+import com.creazione.space_learning.service.scheduler.SchedulerRepoService;
 import com.creazione.space_learning.service.*;
 import com.creazione.space_learning.utils.ThrottledMessageSender4;
 import lombok.Getter;

@@ -7,7 +7,7 @@ import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.entities.Resource;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
-import com.creazione.space_learning.scheduler.SchedulerService;
+import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.utils.Answer;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.utils.Formatting;

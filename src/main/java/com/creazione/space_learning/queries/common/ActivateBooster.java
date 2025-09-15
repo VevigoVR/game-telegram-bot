@@ -106,53 +106,41 @@ public class ActivateBooster extends Query {
     private void activateAcceleration(String type, int rate, int time) {
         switch (type) {
             case "all": {
-                activateAccelerationAll(rate, time);
+                activateAcceleration(ResourceType.ACCELERATION_ALL, rate, time);
                 break;
             }
             case "metal": {
-                activateAccelerationMetal(rate, time);
+                activateAcceleration(ResourceType.ACCELERATION_METAL, rate, time);
                 break;
             }
             case "wood": {
-                activateAccelerationWood(rate, time);
+                activateAcceleration(ResourceType.ACCELERATION_WOOD, rate, time);
                 break;
             }
             case "stone": {
-                activateAccelerationStone(rate, time);
+                activateAcceleration(ResourceType.ACCELERATION_STONE, rate, time);
                 break;
             }
             case "gold": {
-                activateAccelerationGold(rate, time);
+                activateAcceleration(ResourceType.ACCELERATION_GOLD, rate, time);
                 break;
             }
             default: return;
         }
     }
 
-    private void activateAccelerationGold(int rate, int time) {
-    }
-
-    private void activateAccelerationStone(int rate, int time) {
-    }
-
-    private void activateAccelerationWood(int rate, int time) {
-    }
-
-    private void activateAccelerationMetal(int rate, int time) {
-    }
-
-    private void activateAccelerationAll(int rate, int time) {
+    private void activateAcceleration(ResourceType resourceType, int rate, int time) {
         double value = ((double) rate) / 100;
         Set<InventoryBooster> boosterSet = DataSet.getBoosterService()
                 .findAllIBByUserIdAndNameAndValueAndDurationMilli(
                         getUserDto().getId(),
                         getUserDto().getTelegramId(),
-                        ResourceType.ACCELERATION_ALL,
+                        resourceType,
                         value,
                         (((long)time) * 3600000L)
                 );
         if (boosterSet == null || boosterSet.isEmpty()) {
-            wrong = "⚠️ На вашем складе нет данного вида бустера, попробуйте поискать другой.";
+            wrong = "⚠️ На вашем складе нет данного вида ускорителя, попробуйте поискать другой.";
             return;
         }
         if (boosterSet.size() > 1) {
@@ -169,7 +157,7 @@ public class ActivateBooster extends Query {
             DataSet.getBoosterService().saveIB(inventoryB, getUserDto().getTelegramId());
         }
 
-        ActiveBooster activeBooster = new ActiveBooster(getUserDto().getId(), ResourceType.ACCELERATION_ALL, value, time);
+        ActiveBooster activeBooster = new ActiveBooster(getUserDto().getId(), resourceType, value, time);
         DataSet.getBoosterService().saveAB(activeBooster, getUserDto().getTelegramId(), getUserDto().getId());
     }
 }

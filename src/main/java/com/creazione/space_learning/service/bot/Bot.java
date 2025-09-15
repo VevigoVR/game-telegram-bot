@@ -1,4 +1,4 @@
-package com.creazione.space_learning.bot;
+package com.creazione.space_learning.service.bot;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.entities.UserEntity;
@@ -81,7 +81,7 @@ public class Bot extends TelegramLongPollingBot {
     private void processCommonQuery(Update update) {
         String messageText = update.getMessage().getText().trim().toLowerCase();
         this.userId = update.getMessage().getChatId();
-        System.out.println("messageText from " + userId + " : " + messageText);
+        //System.out.println("messageText from " + userId + " : " + messageText);
         boolean isQuery = false;
 
         // Проверяем не спамит ли пользователь
@@ -167,7 +167,7 @@ public class Bot extends TelegramLongPollingBot {
         //System.out.println("messageID: " + update.getCallbackQuery().getMessage().getMessageId());
         String messageText = update.getCallbackQuery().getData().toLowerCase().trim();
         Long userId = update.getCallbackQuery().getMessage().getChatId();
-        System.out.println("messageText from " + userId + " : " + messageText);
+        //System.out.println("messageText from " + userId + " : " + messageText);
         for (Query query : queryList.getQueryList()) {
             //System.out.println("- " + query.getQueries());
             for (String subQuery : query.getQueries()) {

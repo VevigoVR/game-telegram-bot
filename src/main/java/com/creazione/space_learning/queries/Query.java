@@ -3,7 +3,7 @@ package com.creazione.space_learning.queries;
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UserDto;
 import com.creazione.space_learning.entities.UserEntity;
-import com.creazione.space_learning.scheduler.SchedulerService;
+import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
 import com.creazione.space_learning.service.ReferralService;
 import com.creazione.space_learning.service.ResourceService;

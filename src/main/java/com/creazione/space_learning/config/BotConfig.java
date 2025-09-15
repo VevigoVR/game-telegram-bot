@@ -1,6 +1,6 @@
 package com.creazione.space_learning.config;
 
-import com.creazione.space_learning.bot.Bot;
+import com.creazione.space_learning.service.bot.Bot;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
