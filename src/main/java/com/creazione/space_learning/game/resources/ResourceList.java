@@ -1,13 +1,13 @@
 package com.creazione.space_learning.game.resources;
 
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.ResourceType;
 
 import java.util.List;
 
 public class ResourceList {
 
-    public static final List<Resource> RESOURCES_LIST = List.of(
+    public static final List<ResourceP> RESOURCES_LIST = List.of(
             new Crypto(),
             new Coin(),
             new Knowledge(),
@@ -25,14 +25,14 @@ public class ResourceList {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (Resource resource : RESOURCES_LIST) {
+        for (ResourceP resource : RESOURCES_LIST) {
             stringBuilder.append(resource);
             stringBuilder.append("\n");
         }
         return stringBuilder.toString();
     }
 
-    public static Resource createResource(String name, Long quantity) {
+    public static ResourceP createResource(String name, Long quantity) {
         for (ResourceType type : ResourceType.values()) {
             if (type.name().equals(name)) {
                 switch (type) {

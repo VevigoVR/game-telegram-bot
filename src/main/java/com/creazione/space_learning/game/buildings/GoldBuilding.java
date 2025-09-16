@@ -1,8 +1,8 @@
 package com.creazione.space_learning.game.buildings;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.entities.Building;
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.resources.*;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class GoldBuilding extends Building {
+public class GoldBuilding extends BuildingP {
     public GoldBuilding() {
         super(BuildingType.GOLD_BUILDING, ResourceType.GOLD);
         this.setIncrementPrice(2);
@@ -23,8 +23,8 @@ public class GoldBuilding extends Building {
     }
 
     @Override
-    public List<Resource> viewPrice(int level) {
-        List<Resource> price = new ArrayList<>();
+    public List<ResourceP> viewPrice(int level) {
+        List<ResourceP> price = new ArrayList<>();
         int goldQuantity = 5;
         int woodQuantity = 7;
         int stoneQuantity = 5;

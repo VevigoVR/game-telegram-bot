@@ -1,7 +1,8 @@
 package com.creazione.space_learning.service.bot;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.entities.UserEntity;
+import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.postgres.UserP;
 import com.creazione.space_learning.queries.responces.MaintenanceMessage;
 import com.creazione.space_learning.queries.responces.Response;
 import com.creazione.space_learning.queries.AIPlaceholder;
@@ -270,7 +271,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public String getCurrentGameContext(Long userId) {
-        UserEntity user = userService.findFullUserByTelegramId(userId);
+        UserDto user = userService.findFullUserByTelegramId(userId);
         if (user == null) return "new_user";
 
         return String.format(

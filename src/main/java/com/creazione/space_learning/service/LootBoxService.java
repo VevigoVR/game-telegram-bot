@@ -2,12 +2,13 @@ package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.redis.UserR;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.Item;
-import com.creazione.space_learning.entities.InventoryBooster;
+import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.repository.InventoryBoosterRepository;
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.resources.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class LootBoxService {
     private final Random random = new Random();
     private UserDto userDto = new UserDto();
     private ResourceType boxType;
-    private Set<Resource> resources;
+    private Set<ResourceP> resources;
     private long milliSecondsGift;
 
     public List<Item> openBox(ResourceType boxType, UserDto userDto) {
@@ -67,16 +68,16 @@ public class LootBoxService {
                         new Stone(15),
                         new Metal(15),
                         //new Knowledge(1),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_METAL,
                                 0.2, Duration.ofHours(24).toMillis(), 1),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_STONE,
                                 0.2, Duration.ofHours(24).toMillis(), 1),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_WOOD,
                                 0.2, Duration.ofHours(24).toMillis(), 1),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 0.2, Duration.ofHours(24).toMillis(), 1)
                 );
@@ -87,7 +88,7 @@ public class LootBoxService {
                         new Wood(50),
                         new Stone(50),
                         new Metal(50),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 0.3, Duration.ofHours(24).toMillis(), 1)
                         //new Knowledge(5)
@@ -97,7 +98,7 @@ public class LootBoxService {
                 milliSecondsGift = 18_000_000;
                 return Arrays.asList(
                         new Gold(50),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 0.5, Duration.ofHours(24).toMillis(), 1),
                         new Wood(50),
@@ -109,7 +110,7 @@ public class LootBoxService {
                 milliSecondsGift = 36_000_000;
                 return Arrays.asList(
                         new Gold(150),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 1.0, Duration.ofHours(24).toMillis(), 1),
                         new Wood(150),
@@ -121,7 +122,7 @@ public class LootBoxService {
                 milliSecondsGift = 72_000_000;
                 return Arrays.asList(
                         new Gold(2000),
-                        new InventoryBooster(
+                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 1.5, Duration.ofHours(24).toMillis(), 1),
                         new Wood(2000),
@@ -136,7 +137,7 @@ public class LootBoxService {
     }
 
     private double incrementQuantityGiftByLevel(ResourceType type, double quantity) {
-        for (Building building : userDto.getBuildings()) {
+        for (BuildingP building : userDto.getBuildings()) {
             if (building.getProduction().equals(type)) {
                 return Math.round (((building.getQuantityMining() * Math.pow(building.getIncrementMining(), building.getLevel()))) * milliSecondsGift);
             }
@@ -154,7 +155,7 @@ public class LootBoxService {
             items.add(rewards.get(random.nextInt(rewards.size())));
         }
         for (Item item : items) {
-            if (!(item instanceof Resource)) {
+            if (!(item instanceof ResourceP)) {
                 continue;
             }
             item.setQuantity(incrementQuantityGiftByLevel(item.getName(), item.getQuantity()));
@@ -163,13 +164,13 @@ public class LootBoxService {
     }
 
     private List<Item> save(List<Item> items) {
-        List<Resource> giftResources = new ArrayList<>();
-        List<InventoryBooster> giftBoosters = new ArrayList<>();
+        List<ResourceP> giftResources = new ArrayList<>();
+        List<InventoryBoosterP> giftBoosters = new ArrayList<>();
         for (Item item : items) {
-            if (item instanceof Resource) {
-                giftResources.add((Resource) item);
+            if (item instanceof ResourceP) {
+                giftResources.add((ResourceP) item);
             } else {
-                giftBoosters.add((InventoryBooster) item);
+                giftBoosters.add((InventoryBoosterP) item);
             }
         }
 
@@ -178,18 +179,18 @@ public class LootBoxService {
             DataSet.getResourceService().saveAll(resources, userDto.getTelegramId()); // верно getTelegramId()
         }
         if (!giftBoosters.isEmpty()) {
-            Set<InventoryBooster> boosters = DataSet.getBoosterService().findAllIBByUserId(userDto);
+            Set<InventoryBoosterP> boosters = DataSet.getBoosterService().findAllIBByUserId(userDto);
             addOrIncrementInventoryBoosters(boosters, giftBoosters, userDto.getId()); // верно getId()
             DataSet.getBoosterService().saveAllIB(boosters, userDto.getTelegramId()); // верно getTelegramId()
         }
         return items;
     }
 
-    public void addOrIncrementResource(Set<Resource> userResources, List<Resource> grantedResources, Long userId) {
+    public void addOrIncrementResource(Set<ResourceP> userResources, List<ResourceP> grantedResources, Long userId) {
 
-        for (Resource grant : grantedResources) {
+        for (ResourceP grant : grantedResources) {
             boolean found = false;
-            for (Resource userResource : userResources) {
+            for (ResourceP userResource : userResources) {
                 if (userResource.getName().equals(grant.getName())) {
                     userResource.addQuantity(grant.getQuantity());
                     found = true;
@@ -205,8 +206,8 @@ public class LootBoxService {
         }
     }
 
-    public boolean decrementResources(Set<Resource> resources) {
-        for (Resource resource : resources) {
+    public boolean decrementResources(Set<ResourceP> resources) {
+        for (ResourceP resource : resources) {
             //System.out.println("resources for decrement :" + resource.getName());
             if (resource.getName().equals(boxType)) {
                 if (resource.getQuantity() <= 0) {
@@ -222,10 +223,10 @@ public class LootBoxService {
         return false;
     }
 
-    public static void addOrIncrementInventoryBoosters(Set<InventoryBooster> userResources, List<InventoryBooster> grantedResources, Long userId) {
-        for (InventoryBooster grant : grantedResources) {
+    public static void addOrIncrementInventoryBoosters(Set<InventoryBoosterP> userResources, List<InventoryBoosterP> grantedResources, Long userId) {
+        for (InventoryBoosterP grant : grantedResources) {
             boolean found = false;
-            for (InventoryBooster userResource : userResources) {
+            for (InventoryBoosterP userResource : userResources) {
                 if (userResource.getName().equals(grant.getName())
                         && userResource.getValue().equals(grant.getValue())
                         && userResource.getDurationMilli().equals(grant.getDurationMilli())) {

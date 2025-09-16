@@ -1,8 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.entities.ActiveBooster;
-import com.creazione.space_learning.entities.InventoryBooster;
+import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
+import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -131,7 +131,7 @@ public class ActivateBooster extends Query {
 
     private void activateAcceleration(ResourceType resourceType, int rate, int time) {
         double value = ((double) rate) / 100;
-        Set<InventoryBooster> boosterSet = DataSet.getBoosterService()
+        Set<InventoryBoosterP> boosterSet = DataSet.getBoosterService()
                 .findAllIBByUserIdAndNameAndValueAndDurationMilli(
                         getUserDto().getId(),
                         getUserDto().getTelegramId(),
@@ -148,8 +148,8 @@ public class ActivateBooster extends Query {
             wrong = "⚠️ Ошибка на стороне сервера, пожалуйста, попробуйте позже.";
             return;
         }
-        Optional<InventoryBooster> inventoryBooster = boosterSet.stream().findFirst();
-        InventoryBooster inventoryB = inventoryBooster.get();
+        Optional<InventoryBoosterP> inventoryBooster = boosterSet.stream().findFirst();
+        InventoryBoosterP inventoryB = inventoryBooster.get();
         inventoryB.setQuantity(inventoryB.getQuantity() - 1);
         if (inventoryB.getQuantity() <= 0) {
             DataSet.getBoosterService().deleteIB(inventoryB, getUserDto().getTelegramId());
@@ -157,7 +157,7 @@ public class ActivateBooster extends Query {
             DataSet.getBoosterService().saveIB(inventoryB, getUserDto().getTelegramId());
         }
 
-        ActiveBooster activeBooster = new ActiveBooster(getUserDto().getId(), resourceType, value, time);
+        ActiveBoosterP activeBooster = new ActiveBoosterP(getUserDto().getId(), resourceType, value, time);
         DataSet.getBoosterService().saveAB(activeBooster, getUserDto().getTelegramId(), getUserDto().getId());
     }
 }

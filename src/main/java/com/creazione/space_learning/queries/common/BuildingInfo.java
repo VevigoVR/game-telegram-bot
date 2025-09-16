@@ -1,10 +1,10 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.entities.ActiveBooster;
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.*;
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -36,8 +36,8 @@ import java.util.List;
         description = "Информация о здании"
 )
 public class BuildingInfo extends Query {
-    private Building targetBuilding;
-    private Building userBuilding;
+    private BuildingP targetBuilding;
+    private BuildingP userBuilding;
     private boolean hasBuilding = false;
 
     public BuildingInfo() {
@@ -105,7 +105,7 @@ public class BuildingInfo extends Query {
     }
 
     private void setParameters() {
-        for (Building userBuildingFromDB : getUserDto().getBuildings()) {
+        for (BuildingP userBuildingFromDB : getUserDto().getBuildings()) {
             if (targetBuilding.getName().equals(userBuildingFromDB.getName())) {
                 userBuilding = userBuildingFromDB;
                 hasBuilding = true;
@@ -156,9 +156,9 @@ public class BuildingInfo extends Query {
             text.append("Количество в час: <i>").append(Formatting.formatWithoutFraction(quantityInHour)).append("</i>");
 
             if (rateBooster > 0) {
-                text.append(" <b>+").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>\n");
+                text.append(" <b>+").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>");
             } else if (rateBooster < 0) {
-                text.append(" <b>-").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>\n");
+                text.append(" <b>-").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>");
             }
 
             long timeUpgrade = userBuilding.getLastTimeUpgrade().toEpochMilli() + userBuilding.getTimeToUpdate();
@@ -206,13 +206,13 @@ public class BuildingInfo extends Query {
                         .append(userBuilding.getLevel() + 1)
                         .append(" уровня:</b>")
                         .append("\n");
-                List<Resource> resources = userBuilding.viewPrice(userBuilding.getLevel() + 1);
-                for (Resource resource : resources) {
+                List<ResourceP> resources = userBuilding.viewPrice(userBuilding.getLevel() + 1);
+                for (ResourceP resource : resources) {
                     text.append(resource.getName()).append(": ")
                             .append(resource.makeQuantityString())
                             .append(" ").append(resource.getEmoji()).append("\n");
                 }
-                Building futureBuilding = buildingService.cloneBuilding(userBuilding);
+                BuildingP futureBuilding = buildingService.cloneBuilding(userBuilding);
                 futureBuilding.setLevel(userBuilding.getLevel() + 1);
                 text.append("Производство в час: <i>")
                         .append((int) resourceService.getQuantityInHour(futureBuilding)).append("</i>\n");
@@ -239,8 +239,8 @@ public class BuildingInfo extends Query {
             }
         } else {
             text.append("\nСтоимость строительства:").append("\n");
-            List<Resource> resources = targetBuilding.viewPrice(1);
-            for (Resource resource : resources) {
+            List<ResourceP> resources = targetBuilding.viewPrice(1);
+            for (ResourceP resource : resources) {
                 text.append(resource.getName()).append(": ")
                         .append(resource.makeQuantityString())
                         .append(" ").append(resource.getEmoji()).append("\n");
@@ -288,7 +288,7 @@ public class BuildingInfo extends Query {
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private int boosterRate(Building building) {
+    private int boosterRate(BuildingP building) {
         long telegramId = getUserDto().getTelegramId();
         long userId = getUserDto().getId();
         List<ResourceType> types = new ArrayList<>(List.of(ResourceType.ACCELERATION_ALL));
@@ -310,11 +310,11 @@ public class BuildingInfo extends Query {
             }
         }
 
-        List<ActiveBooster> boosters = DataSet.getBoosterService().findAllABByUserIdAndNameIn(userId, telegramId, types);
+        List<ActiveBoosterP> boosters = DataSet.getBoosterService().findAllABByUserIdAndNameIn(userId, telegramId, types);
         if (boosters.isEmpty()) return 0;
 
         double rate = 0.0;
-        for (ActiveBooster booster : boosters) {
+        for (ActiveBoosterP booster : boosters) {
             rate += booster.getValue();
         }
         rate *= 100;

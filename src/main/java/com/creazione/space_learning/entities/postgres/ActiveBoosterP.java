@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.enums.ResourceType;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -19,7 +18,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "activeBoosterType")
 @Table(name = "active_boosters")
-public class ActiveBooster {
+public class ActiveBoosterP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +31,7 @@ public class ActiveBooster {
     private Instant endsAt;   // Когда закончит действие
     private Instant startsAt; // Когда активирован
 
-    public ActiveBooster (Long userId, ResourceType name, double rate, int timeInHours) {
+    public ActiveBoosterP(Long userId, ResourceType name, double rate, int timeInHours) {
         this.userId = userId;
         this.name = name;
         this.value = rate;

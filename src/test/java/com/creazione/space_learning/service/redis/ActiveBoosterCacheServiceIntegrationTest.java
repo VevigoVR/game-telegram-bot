@@ -1,6 +1,6 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.entities.ActiveBooster;
+import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +23,9 @@ class ActiveBoosterCacheServiceIntegrationTest {
     private RedisTemplate<String, Object> redisTemplate;
 
     private static final Long USER_ID = 1L;
-    private ActiveBooster booster1;
-    private ActiveBooster booster2;
-    private List<ActiveBooster> boosters;
+    private ActiveBoosterP booster1;
+    private ActiveBoosterP booster2;
+    private List<ActiveBoosterP> boosters;
 
     @BeforeEach
     void setUp() {
@@ -34,13 +34,13 @@ class ActiveBoosterCacheServiceIntegrationTest {
 
         // Создаем тестовые активные бустеры
         Instant now = Instant.now();
-        booster1 = new ActiveBooster();
+        booster1 = new ActiveBoosterP();
         booster1.setName(ResourceType.ACCELERATION_METAL);
         booster1.setValue(0.5);
         booster1.setStartsAt(now);
         booster1.setEndsAt(now.plusSeconds(3600));
 
-        booster2 = new ActiveBooster();
+        booster2 = new ActiveBoosterP();
         booster2.setName(ResourceType.ACCELERATION_WOOD);
         booster2.setValue(0.3);
         booster2.setStartsAt(now);
@@ -55,18 +55,18 @@ class ActiveBoosterCacheServiceIntegrationTest {
         activeBoosterCacheService.cacheActiveBoosters(USER_ID, boosters);
 
         // Получаем бустеры из кэша
-        List<ActiveBooster> cachedBoosters = activeBoosterCacheService.getActiveBoosters(USER_ID);
+        List<ActiveBoosterP> cachedBoosters = activeBoosterCacheService.getActiveBoosters(USER_ID);
 
         // Проверяем, что бустеры сохранены и получены корректно
         assertNotNull(cachedBoosters);
         assertEquals(2, cachedBoosters.size());
 
         // Проверяем, что поля бустеров сохранились правильно
-        ActiveBooster cachedBooster1 = cachedBoosters.get(0);
+        ActiveBoosterP cachedBooster1 = cachedBoosters.get(0);
         assertEquals(ResourceType.ACCELERATION_METAL, cachedBooster1.getName());
         assertEquals(0.5, cachedBooster1.getValue());
 
-        ActiveBooster cachedBooster2 = cachedBoosters.get(1);
+        ActiveBoosterP cachedBooster2 = cachedBoosters.get(1);
         assertEquals(ResourceType.ACCELERATION_WOOD, cachedBooster2.getName());
         assertEquals(0.3, cachedBooster2.getValue());
     }
@@ -77,7 +77,7 @@ class ActiveBoosterCacheServiceIntegrationTest {
         activeBoosterCacheService.cacheActiveBoosters(USER_ID, boosters);
 
         // Получаем бустеры по типам
-        List<ActiveBooster> metalBoosters = activeBoosterCacheService.getActiveBoostersByNameIn(
+        List<ActiveBoosterP> metalBoosters = activeBoosterCacheService.getActiveBoostersByNameIn(
                 USER_ID, List.of(ResourceType.ACCELERATION_METAL)
         );
 

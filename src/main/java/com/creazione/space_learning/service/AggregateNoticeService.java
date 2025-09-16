@@ -1,7 +1,7 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.dto.UnreadNoticeInfo;
-import com.creazione.space_learning.entities.AggregateNoticeEntity;
+import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
 import com.creazione.space_learning.game.resources.ReferralBox1;
 import com.creazione.space_learning.repository.AggregateNoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +14,12 @@ import java.util.List;
 public class AggregateNoticeService {
     private final AggregateNoticeRepository aggregateNoticeRepository;
 
-    public void saveAll(List<AggregateNoticeEntity> aggregateNoticeEntities) {
+    public void saveAll(List<AggregateNoticeP> aggregateNoticeEntities) {
         aggregateNoticeRepository.saveAll(aggregateNoticeEntities);
     }
 
-    public void addTextAndTitleForReferrers(List<AggregateNoticeEntity> aggregateNoticeEntities) {
-        for (AggregateNoticeEntity notice : aggregateNoticeEntities) {
+    public void addTextAndTitleForReferrers(List<AggregateNoticeP> aggregateNoticeEntities) {
+        for (AggregateNoticeP notice : aggregateNoticeEntities) {
             ReferralBox1 referralBox1 = new ReferralBox1(notice.getQuantity());
             notice.setTitle("Награда за активных рефералов");
             notice.setText("Поздравляем! За участие и активность Ваших приглашённых соратников Вы получаете:\n" +
@@ -27,8 +27,8 @@ public class AggregateNoticeService {
         }
     }
 
-    public void addTextAndTitleForProgress(List<AggregateNoticeEntity> aggregateNoticeEntities) {
-        for (AggregateNoticeEntity notice : aggregateNoticeEntities) {
+    public void addTextAndTitleForProgress(List<AggregateNoticeP> aggregateNoticeEntities) {
+        for (AggregateNoticeP notice : aggregateNoticeEntities) {
             ReferralBox1 referralBox1 = new ReferralBox1(notice.getQuantity());
             notice.setTitle("Награда за активность в команде");
             notice.setText("Поздравляем! За участие и активность в команде с человеком пригласившим Вас, Вы получаете:\n" +
@@ -36,11 +36,11 @@ public class AggregateNoticeService {
         }
     }
 
-    public List<AggregateNoticeEntity> findGroupedNotices(List<Long> ids, boolean isRead) {
+    public List<AggregateNoticeP> findGroupedNotices(List<Long> ids, boolean isRead) {
         return aggregateNoticeRepository.findGroupedNotices(ids, isRead);
     }
 
-    public List<AggregateNoticeEntity> findGroupedNoticesByIdAndIsReadFalse(Long id) {
+    public List<AggregateNoticeP> findGroupedNoticesByIdAndIsReadFalse(Long id) {
         return aggregateNoticeRepository.findGroupedNoticesByIdAndIsReadFalse(id);
     }
 
@@ -48,11 +48,11 @@ public class AggregateNoticeService {
         aggregateNoticeRepository.deleteAll();
     }
 
-    public AggregateNoticeEntity findFirstByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long id) {
+    public AggregateNoticeP findFirstByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long id) {
         return aggregateNoticeRepository.findFirstByUserIdAndIsReadFalseOrderByCreatedAtDesc(id);
     }
 
-    public void save(AggregateNoticeEntity aggregateNotice) {
+    public void save(AggregateNoticeP aggregateNotice) {
         aggregateNoticeRepository.save(aggregateNotice);
     }
 /*
@@ -75,7 +75,7 @@ public class AggregateNoticeService {
 
     public UnreadNoticeInfo findLatestUnreadNoticeWithHasMoreFlag(Long userId) {
         // Получаем последнее уведомление
-        AggregateNoticeEntity notice = aggregateNoticeRepository.findFirstByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
+        AggregateNoticeP notice = aggregateNoticeRepository.findFirstByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
 
         if (notice == null) {
             return new UnreadNoticeInfo(null, false);

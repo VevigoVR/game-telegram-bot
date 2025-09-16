@@ -1,4 +1,4 @@
-package com.creazione.space_learning.dto;
+package com.creazione.space_learning.entities.redis;
 
 import com.creazione.space_learning.enums.SchedulerType;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SchedulerDto {
+public class SchedulerR {
     private Long id;
     private SchedulerType type;
     private boolean run;
@@ -28,7 +28,7 @@ public class SchedulerDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SchedulerDto that = (SchedulerDto) o;
+        SchedulerR that = (SchedulerR) o;
         return run == that.run &&
                 Objects.equals(id, that.id) &&
                 type == that.type &&

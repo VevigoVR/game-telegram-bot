@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.enums.ResourceType;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "inventoryBoosterType")
-public class InventoryBooster extends Item {
+public class InventoryBoosterP extends Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +32,7 @@ public class InventoryBooster extends Item {
     private Long durationMilli; // Длительность (120)
     private double quantity; // Количество штук (1000)
 
-    public InventoryBooster(ResourceType name, Double value, Long durationMilli, double quantity) {
+    public InventoryBoosterP(ResourceType name, Double value, Long durationMilli, double quantity) {
         super();
         this.name = name;
         this.value = value;

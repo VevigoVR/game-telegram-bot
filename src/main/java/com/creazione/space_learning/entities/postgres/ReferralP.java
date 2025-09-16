@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +12,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReferralEntity {
+public class ReferralP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

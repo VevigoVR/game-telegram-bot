@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -72,7 +72,7 @@ public class Storage extends Query {
         StringBuilder text = new StringBuilder();
         text.append("<b>Склад ").append(getUserName()).append("</b>\n\n<b>Ресурсы</b>:\n");
         if (!getUserDto().viewSortedCommon().isEmpty()) {
-            for (Resource resource : getUserDto().viewSortedCommon()) {
+            for (ResourceP resource : getUserDto().viewSortedCommon()) {
                 text.append(resource.getEmoji()).append(" ").append(resource.getName()).append(": ")
                         .append(resource.makeQuantityString())
                         .append("\n");

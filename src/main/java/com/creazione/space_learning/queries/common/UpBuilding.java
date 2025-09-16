@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -86,7 +86,7 @@ public class UpBuilding extends Query {
             case "/upgold" : {
                 buildingInfo.setTargetBuilding(new GoldBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
-                    Building building = getUserDto().getBuildings().get(i);
+                    BuildingP building = getUserDto().getBuildings().get(i);
                     if (building.getName().equals(buildingInfo.getTargetBuilding().getName())) {
                         buildingInfo.setUserBuilding(building);
                         buildingInfo.setHasBuilding(true);
@@ -99,7 +99,7 @@ public class UpBuilding extends Query {
             case "/upmetal" : {
                 buildingInfo.setTargetBuilding(new MetalBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
-                    Building building = getUserDto().getBuildings().get(i);
+                    BuildingP building = getUserDto().getBuildings().get(i);
                     if (building.getName().equals(buildingInfo.getTargetBuilding().getName())) {
                         buildingInfo.setUserBuilding(building);
                         buildingInfo.setHasBuilding(true);
@@ -112,7 +112,7 @@ public class UpBuilding extends Query {
             case "/upstone" : {
                 buildingInfo.setTargetBuilding(new StoneBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
-                    Building building = getUserDto().getBuildings().get(i);
+                    BuildingP building = getUserDto().getBuildings().get(i);
                     if (building.getName().equals(buildingInfo.getTargetBuilding().getName())) {
                         buildingInfo.setUserBuilding(building);
                         buildingInfo.setHasBuilding(true);
@@ -125,7 +125,7 @@ public class UpBuilding extends Query {
             case "/upwood" : {
                 buildingInfo.setTargetBuilding(new WoodBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
-                    Building building = getUserDto().getBuildings().get(i);
+                    BuildingP building = getUserDto().getBuildings().get(i);
                     if (building.getName().equals(buildingInfo.getTargetBuilding().getName())) {
                         buildingInfo.setUserBuilding(building);
                         buildingInfo.setHasBuilding(true);

@@ -3,8 +3,7 @@ package com.creazione.space_learning.service;
 import com.creazione.space_learning.config.ReferralCodec;
 import com.creazione.space_learning.dto.ReferralStats;
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.ReferralEntity;
-import com.creazione.space_learning.entities.UserEntity;
+import com.creazione.space_learning.entities.postgres.ReferralP;
 import com.creazione.space_learning.repository.ReferralRepository;
 import com.creazione.space_learning.service.postgres.UserService;
 import lombok.Getter;
@@ -64,16 +63,16 @@ public class ReferralService {
         return input.substring(index);
     }
 
-    public boolean processReferral(UserEntity user, Long referrerId) {
+    public boolean processReferral(UserDto user, Long referrerId) {
         Long userId = user.getId();
-        UserEntity referrer = userService.findById(referrerId);
+        UserDto referrer = userService.findById(referrerId);
         if (referrer != null) {
             referrer.incrementTotalReferrals();
             userService.saveFullWithoutCache(referrer);
         } else {
             return false;
         }
-        ReferralEntity referralEntity = new ReferralEntity();
+        ReferralP referralEntity = new ReferralP();
         referralEntity.setUserId(userId);
         referralEntity.setReferrerId(referrerId);
         referralEntity.setLastUpdate(new Date());

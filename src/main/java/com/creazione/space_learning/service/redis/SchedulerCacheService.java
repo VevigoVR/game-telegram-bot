@@ -1,12 +1,11 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.dto.SchedulerDto;
-import com.creazione.space_learning.entities.SchedulerEntity;
+import com.creazione.space_learning.entities.redis.SchedulerR;
+import com.creazione.space_learning.entities.postgres.SchedulerP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.creazione.space_learning.service.redis.CacheKey.*;
@@ -17,8 +16,8 @@ public class SchedulerCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     // Методы преобразования Entity <-> DTO
-    private SchedulerDto toDto(SchedulerEntity scheduler) {
-        return new SchedulerDto(
+    private SchedulerR toRedisObject(SchedulerP scheduler) {
+        return new SchedulerR(
                 scheduler.getId(),
                 scheduler.getType(),
                 scheduler.isRun(),
@@ -31,8 +30,8 @@ public class SchedulerCacheService {
         );
     }
 
-    private SchedulerEntity toEntity(SchedulerDto dto) {
-        SchedulerEntity scheduler = new SchedulerEntity();
+    private SchedulerP toGameObject(SchedulerR dto) {
+        SchedulerP scheduler = new SchedulerP();
         scheduler.setId(dto.getId());
         scheduler.setType(dto.getType());
         scheduler.setRun(dto.isRun());
@@ -45,29 +44,29 @@ public class SchedulerCacheService {
         return scheduler;
     }
 
-    public void cacheAggregateScheduler(SchedulerEntity scheduler) {
+    public void cacheAggregateScheduler(SchedulerP scheduler) {
         deleteAggregateScheduler();
-        SchedulerDto dto = toDto(scheduler);
+        SchedulerR dto = toRedisObject(scheduler);
         redisTemplate.opsForValue().set(AGGREGATE_KEY.getName(), dto);
         redisTemplate.expire(AGGREGATE_KEY.getName(), 1, TimeUnit.HOURS);
     }
 
-    public void cacheSendScheduler(SchedulerEntity scheduler) {
+    public void cacheSendScheduler(SchedulerP scheduler) {
         deleteSendScheduler();
-        SchedulerDto dto = toDto(scheduler);
+        SchedulerR dto = toRedisObject(scheduler);
         redisTemplate.opsForValue().set(SEND_NOTES_KEY.getName(), dto);
         redisTemplate.expire(SEND_NOTES_KEY.getName(), 1, TimeUnit.HOURS);
 
     }
 
-    public SchedulerEntity getAggregateScheduler() {
-        SchedulerDto dto = (SchedulerDto) redisTemplate.opsForValue().get(AGGREGATE_KEY.getName());
-        return dto != null ? toEntity(dto) : null;
+    public SchedulerP getAggregateScheduler() {
+        SchedulerR dto = (SchedulerR) redisTemplate.opsForValue().get(AGGREGATE_KEY.getName());
+        return dto != null ? toGameObject(dto) : null;
     }
 
-    public SchedulerEntity getSendScheduler() {
-        SchedulerDto dto = (SchedulerDto) redisTemplate.opsForValue().get(SEND_NOTES_KEY.getName());
-        return dto != null ? toEntity(dto) : null;
+    public SchedulerP getSendScheduler() {
+        SchedulerR dto = (SchedulerR) redisTemplate.opsForValue().get(SEND_NOTES_KEY.getName());
+        return dto != null ? toGameObject(dto) : null;
     }
 
     // Остальные методы остаются без изменений

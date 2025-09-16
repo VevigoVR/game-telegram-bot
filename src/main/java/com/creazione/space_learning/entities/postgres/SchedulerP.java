@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.enums.SchedulerType;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ import java.time.Instant;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class SchedulerEntity {
+public class SchedulerP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

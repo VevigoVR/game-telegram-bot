@@ -3,7 +3,8 @@ package com.creazione.space_learning.service;
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.MessageText;
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.DailyGiftEntity;
+import com.creazione.space_learning.entities.redis.UserR;
+import com.creazione.space_learning.entities.postgres.DailyGiftP;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.repository.DailyGiftRepository;
 import com.creazione.space_learning.utils.WordUtils;
@@ -24,9 +25,9 @@ public class DailyGiftService {
 
     public List<Item> takeDailyGift(UserDto userDto, MessageText wrong) {
         Long userId = userDto.getId();
-        DailyGiftEntity dailyGiftEntity = dailyGiftRepository.findByUserId(userId);
+        DailyGiftP dailyGiftEntity = dailyGiftRepository.findByUserId(userId);
         if (dailyGiftEntity == null) {
-            dailyGiftEntity = new DailyGiftEntity();
+            dailyGiftEntity = new DailyGiftP();
             dailyGiftEntity.setUserId(userId);
             dailyGiftEntity.setNumberOfTimes(1);
             dailyGiftEntity.setCalculatedAt(Instant.now());

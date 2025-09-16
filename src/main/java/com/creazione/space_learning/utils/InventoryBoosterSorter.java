@@ -1,21 +1,21 @@
 package com.creazione.space_learning.utils;
 
-import com.creazione.space_learning.entities.InventoryBooster;
+import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InventoryBoosterSorter {
-    private static final Comparator<InventoryBooster> BY_NAME =
+    private static final Comparator<InventoryBoosterP> BY_NAME =
             Comparator.comparing(b -> b.getName().name(), String.CASE_INSENSITIVE_ORDER);
 
-    public static Set<InventoryBooster> sortResourcesAsSet(Set<InventoryBooster> resources) {
+    public static Set<InventoryBoosterP> sortResourcesAsSet(Set<InventoryBoosterP> resources) {
         if (resources == null || resources.isEmpty()) {
             return resources; // Возвращаем пустой список
         }
         return resources.stream()
                 .sorted(Comparator.comparing(
-                        InventoryBooster::getName
+                        InventoryBoosterP::getName
                 ))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -25,12 +25,12 @@ public class InventoryBoosterSorter {
     }
 
     // Основной метод сортировки
-    public static List<InventoryBooster> sortResources(List<InventoryBooster> resources, SortOrder order) {
+    public static List<InventoryBoosterP> sortResources(List<InventoryBoosterP> resources, SortOrder order) {
         if (resources == null || resources.isEmpty()) {
             return resources; // Возвращаем пустой список
         }
 
-        List<InventoryBooster> mutableList = new ArrayList<>(resources);
+        List<InventoryBoosterP> mutableList = new ArrayList<>(resources);
 
         switch (order) {
             case NAME_ASC:

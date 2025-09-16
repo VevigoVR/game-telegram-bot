@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
@@ -35,7 +35,7 @@ import java.util.List;
         @JsonSubTypes.Type(value = WoodBuilding.class, name = "WOOD_BUILDING")
 })
 @DiscriminatorColumn(name = "building_type", discriminatorType = DiscriminatorType.STRING)
-public class Building {
+public class BuildingP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,7 +60,7 @@ public class Building {
     private Instant lastTimeUpgrade;
     private Instant lastUpdate;
 
-    public Building(BuildingType name, ResourceType production) {
+    public BuildingP(BuildingType name, ResourceType production) {
         this.name = name;
         this.production = production;
         this.level = 0;
@@ -68,12 +68,12 @@ public class Building {
         this.lastTimeUpgrade = Instant.now();
     }
 
-    public Building() {
+    public BuildingP() {
         this.production = ResourceType.UNKNOWN;
         this.name = BuildingType.UNKNOWN;
     }
 
-    public Building(long id, BuildingType name, ResourceType production) {
+    public BuildingP(long id, BuildingType name, ResourceType production) {
         this.id = id;
         this.name = name;
         this.production = production;
@@ -88,7 +88,7 @@ public class Building {
         this.level += 1;
     }
 
-    public List<Resource> viewPrice(int level) {
+    public List<ResourceP> viewPrice(int level) {
         return new ArrayList<>();
     }
 
@@ -101,9 +101,9 @@ public class Building {
     }
 
     public long getPointsForLevel(int level) {
-        List<Resource> resources = viewPrice(level);
+        List<ResourceP> resources = viewPrice(level);
         long sum = 0;
-        for (Resource resource : resources) {
+        for (ResourceP resource : resources) {
             sum += (long) resource.getQuantity();
         }
         return sum;

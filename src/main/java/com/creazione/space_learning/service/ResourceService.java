@@ -1,10 +1,11 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.UserEntity;
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.redis.UserR;
+import com.creazione.space_learning.entities.postgres.UserP;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.resources.ReferralBox1;
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.game.resources.ResourceList;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.repository.ResourcesRepository;
@@ -26,14 +27,14 @@ public class ResourceService {
     private final ResourceCacheService resourceCacheService;
 
     public boolean calculateQuantityChanges(UserDto userDto, Instant date) {
-        List<Resource> resources = userDto.getResources();
-        List<Building> buildings = userDto.getBuildings();
+        List<ResourceP> resources = userDto.getResources();
+        List<BuildingP> buildings = userDto.getBuildings();
         long dateLong = date.toEpochMilli();
         boolean isUpdateDB = false;
         //System.out.println("Текущее время: " + new Date(dateLong));
-        for (Building building : buildings) {
+        for (BuildingP building : buildings) {
             boolean flag = false;
-            for (Resource resource : resources) {
+            for (ResourceP resource : resources) {
                 if (resource.getName().equals(building.getProduction())) {
                     //System.out.println("Ресурс существует: " + resource.getName() + " - " + resource.getQuantity() + "шт.");
                     isUpdateDB = calculateUpdate(building, resource, dateLong);
@@ -42,7 +43,7 @@ public class ResourceService {
                 }
             }
             if (!flag) {
-                for (Resource resource : ResourceList.RESOURCES_LIST) {
+                for (ResourceP resource : ResourceList.RESOURCES_LIST) {
                     if (building.getProduction().equals(resource.getName())) {
                         //System.out.println("Ресурс не существует, создаётся необходимый ресурс для пользователя.");
                         //System.out.println("- ресурс: " + resource.getName() + " - " + resource.getQuantity() + "шт.");
@@ -58,40 +59,7 @@ public class ResourceService {
         return isUpdateDB;
     }
 
-    public boolean calculateQuantityChanges(UserEntity userEntity, Instant date) {
-        Set<Resource> resources = userEntity.getResources();
-        Set<Building> buildings = userEntity.getBuildings();
-        long dateLong = date.toEpochMilli();
-        boolean isUpdateDB = false;
-        //System.out.println("Текущее время: " + new Date(dateLong));
-        for (Building building : buildings) {
-            boolean flag = false;
-            for (Resource resource : resources) {
-                if (resource.getName().equals(building.getProduction())) {
-                    //System.out.println("Ресурс существует: " + resource.getName() + " - " + resource.getQuantity() + "шт.");
-                    isUpdateDB = calculateUpdate(building, resource, dateLong);
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                for (Resource resource : ResourceList.RESOURCES_LIST) {
-                    if (building.getProduction().equals(resource.getName())) {
-                        //System.out.println("Ресурс не существует, создаётся необходимый ресурс для пользователя.");
-                        //System.out.println("- ресурс: " + resource.getName() + " - " + resource.getQuantity() + "шт.");
-                        resource.setUserId(userEntity.getId());
-                        resources.add(resource);
-                        //System.out.println("Ресурс не существует, создаётся необходимый ресурс для пользователя.");
-                        isUpdateDB = calculateUpdate(building, resource, dateLong);
-                        break;
-                    }
-                }
-            }
-        }
-        return isUpdateDB;
-    }
-
-    private boolean calculateUpdate(Building building, Resource resource, long date) {
+    private boolean calculateUpdate(BuildingP building, ResourceP resource, long date) {
         long timeUpgrade = building.getLastTimeUpgrade().toEpochMilli() + building.getTimeToUpdate();
         //System.out.println("время в которое производится обновление уровня в случае постройки/улучшения строения:");
         //System.out.println(new Date(timeUpgrade));
@@ -121,7 +89,7 @@ public class ResourceService {
         }
     }
 
-    private double simpleCalculateUpdate(Building building, Resource resource, long date) {
+    private double simpleCalculateUpdate(BuildingP building, ResourceP resource, long date) {
         if (building.getLevel() == 0) {
             return 0;
         }
@@ -140,12 +108,12 @@ public class ResourceService {
         return addResources;
     }
 
-    private void setQuantity(Resource resource, double addResources) {
+    private void setQuantity(ResourceP resource, double addResources) {
         resource.setQuantity(resource.getQuantity() + addResources);
         //System.out.println("теперь ресурсов: " + resource.getQuantity());
     }
 
-    public double getQuantityInHour(Building building) {
+    public double getQuantityInHour(BuildingP building) {
         if (building.getLevel() == 0) {
             return 0;
         }
@@ -153,9 +121,9 @@ public class ResourceService {
                 (building.getQuantityMining() * Math.pow(building.getIncrementMining(), building.getLevel()));
     }
 
-    public void addReferralBox1OrIncrement(Set<Resource> resources, ResourceType resourceType) {
+    public void addReferralBox1OrIncrement(Set<ResourceP> resources, ResourceType resourceType) {
         boolean isResourceHere = false;
-        for (Resource resource : resources) {
+        for (ResourceP resource : resources) {
             if (resource.getName().equals(resourceType)) {
                 resource.incrementQuantity();
                 isResourceHere = true;
@@ -166,30 +134,30 @@ public class ResourceService {
         }
     }
 
-    public Set<Resource> findAllByUserId(long id) {
+    public Set<ResourceP> findAllByUserId(long id) {
         return resourcesRepository.findAllByUserId(id);
     }
-    public void save(List<Resource> resources) {
+    public void save(List<ResourceP> resources) {
         resourcesRepository.saveAll(resources);
     }
-    public void saveAll(Set<Resource> resources, long telegramId) {
+    public void saveAll(Set<ResourceP> resources, long telegramId) {
         userCacheService.deleteFullUser(telegramId);
         resourcesRepository.saveAll(resources);
     }
-    public void delete(Resource resource, long telegramId) {
+    public void delete(ResourceP resource, long telegramId) {
         userCacheService.deleteFullUser(telegramId);
         resourcesRepository.delete(resource);
     }
 
-    public List<Resource> getResources(Long id, Long telegramId) {
+    public List<ResourceP> getResources(Long id, Long telegramId) {
         if (resourceCacheService.isResourcesEmpty(telegramId)) {
             return new ArrayList<>();
         }
-        List<Resource> resources = resourceCacheService.getResources(telegramId);
+        List<ResourceP> resources = resourceCacheService.getResources(telegramId);
         if (!resources.isEmpty()) {
             return resources;
         }
-        List<Resource> result = resourcesRepository.findAllByUserId(id).stream().toList();
+        List<ResourceP> result = resourcesRepository.findAllByUserId(id).stream().toList();
         resourceCacheService.cacheResources(telegramId, result);
         return result;
     }

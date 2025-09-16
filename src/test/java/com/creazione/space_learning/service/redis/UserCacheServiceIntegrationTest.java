@@ -1,9 +1,9 @@
 package com.creazione.space_learning.service.redis;
 
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.Building;
-import com.creazione.space_learning.entities.InventoryBooster;
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.enums.ResourceType;
@@ -50,23 +50,23 @@ class UserCacheServiceIntegrationTest {
         testUser.setName("Test User");
 
         // Создаем тестовые ресурсы
-        Resource metal = new Resource(ResourceType.METAL, Emoji.ROCK, 100.0);
-        Resource wood = new Resource(ResourceType.WOOD, Emoji.WOOD, 50.0);
+        ResourceP metal = new ResourceP(ResourceType.METAL, Emoji.ROCK, 100.0);
+        ResourceP wood = new ResourceP(ResourceType.WOOD, Emoji.WOOD, 50.0);
         testUser.setResources(Arrays.asList(metal, wood));
 
         // Создаем тестовые здания
-        Building metalBuilding = new Building(BuildingType.METAL_BUILDING, ResourceType.METAL);
+        BuildingP metalBuilding = new BuildingP(BuildingType.METAL_BUILDING, ResourceType.METAL);
         metalBuilding.setLevel(2);
-        Building woodBuilding = new Building(BuildingType.WOOD_BUILDING, ResourceType.WOOD);
+        BuildingP woodBuilding = new BuildingP(BuildingType.WOOD_BUILDING, ResourceType.WOOD);
         woodBuilding.setLevel(1);
         testUser.setBuildings(Arrays.asList(metalBuilding, woodBuilding));
 
         // Создаем тестовые бустеры
-        InventoryBooster booster1 = new InventoryBooster();
+        InventoryBoosterP booster1 = new InventoryBoosterP();
         booster1.setName(ResourceType.ACCELERATION_METAL);
         booster1.setQuantity(3.0);
 
-        InventoryBooster booster2 = new InventoryBooster();
+        InventoryBoosterP booster2 = new InventoryBoosterP();
         booster2.setName(ResourceType.ACCELERATION_WOOD);
         booster2.setQuantity(2.0);
         testUser.setBoosters(Arrays.asList(booster1, booster2));
@@ -107,15 +107,15 @@ class UserCacheServiceIntegrationTest {
         assertEquals(testUser.getName(), cachedUser.getName());
 
         // Проверяем, что ресурсы сохранены и доступны отдельно
-        List<Resource> cachedResources = resourceCacheService.getResources(testUser.getTelegramId());
+        List<ResourceP> cachedResources = resourceCacheService.getResources(testUser.getTelegramId());
         assertEquals(2, cachedResources.size());
 
         // Проверяем, что здания сохранены и доступны отдельно
-        List<Building> cachedBuildings = buildingCacheService.getBuildings(testUser.getTelegramId());
+        List<BuildingP> cachedBuildings = buildingCacheService.getBuildings(testUser.getTelegramId());
         assertEquals(2, cachedBuildings.size());
 
         // Проверяем, что бустеры сохранены и доступны отдельно
-        List<InventoryBooster> cachedBoosters = inventoryBoosterCacheService.getInventoryBoosters(testUser.getTelegramId());
+        List<InventoryBoosterP> cachedBoosters = inventoryBoosterCacheService.getInventoryBoosters(testUser.getTelegramId());
         assertEquals(2, cachedBoosters.size());
     }
 

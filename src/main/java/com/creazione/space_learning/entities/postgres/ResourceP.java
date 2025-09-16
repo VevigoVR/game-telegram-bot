@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.Item;
@@ -37,7 +37,7 @@ import lombok.Setter;
         @JsonSubTypes.Type(value = Unknown.class, name = "UNKNOWN")
 })
 @DiscriminatorColumn(name = "resource_type", discriminatorType = DiscriminatorType.STRING)
-public class Resource extends Item {
+public class ResourceP extends Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -52,21 +52,21 @@ public class Resource extends Item {
     private final Emoji emoji;
     private double quantity;
 
-    public Resource(ResourceType name, Emoji emoji) {
+    public ResourceP(ResourceType name, Emoji emoji) {
         super();
         this.name = name;
         this.emoji = emoji;
         this.quantity = 0;
     }
 
-    public Resource() {
+    public ResourceP() {
         super();
         this.name = ResourceType.UNKNOWN;
         this.emoji = Emoji.UNKNOWN;
         this.quantity = 0;
     }
 
-    public Resource(ResourceType name, Emoji emoji, double quantity) {
+    public ResourceP(ResourceType name, Emoji emoji, double quantity) {
         super();
         this.quantity = quantity;
         this.name = name;

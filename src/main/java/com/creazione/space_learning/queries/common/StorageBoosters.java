@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.InventoryBooster;
+import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -72,7 +72,7 @@ public class StorageBoosters extends Query {
         StringBuilder text = new StringBuilder();
         text.append("<b>Склад ").append(getUserName()).append("</b>\n\n<b>Ускорители</b>:\n");
         if (!getUserDto().viewSortedBoosters().isEmpty()) {
-            for (InventoryBooster booster : getUserDto().viewSortedBoosters()) {
+            for (InventoryBoosterP booster : getUserDto().viewSortedBoosters()) {
                 text.append(booster.getName().getEmoji()).append(" <b>").append(booster.getName())
                         .append("</b> на ").append((int) (booster.getValue()*100)).append("% от базового значения")
                         .append(" в течение ").append(booster.getDurationMilli()/3600000).append(" часов")

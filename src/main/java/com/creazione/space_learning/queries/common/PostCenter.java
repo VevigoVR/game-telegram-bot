@@ -2,9 +2,9 @@ package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UnreadNoticeInfo;
-import com.creazione.space_learning.entities.AggregateNoticeEntity;
+import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
 import com.creazione.space_learning.enums.NoticeType;
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
@@ -82,7 +82,7 @@ public class PostCenter extends Query {
         UnreadNoticeInfo unreadNoticeInfo = DataSet
                 .getAggregateNoticeService()
                 .findLatestUnreadNoticeWithHasMoreFlag(getUserDto().getId());
-        AggregateNoticeEntity aggregateNoticeEntity = unreadNoticeInfo.getLatestNotice();
+        AggregateNoticeP aggregateNoticeEntity = unreadNoticeInfo.getLatestNotice();
         text.append("<b>Центр сообщений</b>\n\n");
         if (aggregateNoticeEntity == null) {
             text.append("Сообщений пока нет\n\n")
@@ -100,7 +100,7 @@ public class PostCenter extends Query {
                     .append(formatDate(ldt));
             aggregateNoticeEntity.setRead(true);
             getUserDto().setPost(unreadNoticeInfo.isHasMoreUnread());
-            DataSet.getUserService().saveFull(getUserDto().convertToUserEntity());
+            DataSet.getUserService().saveFull(getUserDto());
             DataSet.getAggregateNoticeService().save(aggregateNoticeEntity);
         }
         text.append("\n").append(getSpoiler());
@@ -111,7 +111,7 @@ public class PostCenter extends Query {
         return dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
-    private void createTitleAndText(AggregateNoticeEntity aggregateNoticeEntity) {
+    private void createTitleAndText(AggregateNoticeP aggregateNoticeEntity) {
         StringBuilder text = new StringBuilder();
         if (aggregateNoticeEntity.getNoticeType().equals(NoticeType.GIFT_TO_REFERRER)) {
             aggregateNoticeEntity.setTitle("Награда за активных рефералов".toUpperCase());
@@ -120,9 +120,9 @@ public class PostCenter extends Query {
             aggregateNoticeEntity.setTitle("Награда за активность в команде".toUpperCase());
             text.append("За участие и активность в команде Вы получаете:\n\n");
         }
-        List<Resource> resources = SchedulerService.convertToResources(aggregateNoticeEntity.getResources());
+        List<ResourceP> resources = SchedulerService.convertToResources(aggregateNoticeEntity.getResources());
         SchedulerService.addOrIncrementResource(getUserDto().getResources(), resources, getUserDto().getId());
-        for (Resource resource : resources) {
+        for (ResourceP resource : resources) {
             text.append(resource.getEmoji())
                     .append(" ")
                     .append(resource.getName())

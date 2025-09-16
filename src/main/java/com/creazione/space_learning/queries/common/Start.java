@@ -1,7 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.PlayerScore;
-import com.creazione.space_learning.entities.UserEntity;
+import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.postgres.PlayerScoreP;
+import com.creazione.space_learning.entities.postgres.UserP;
 import com.creazione.space_learning.game.resources.Gold;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -34,9 +35,9 @@ public class Start extends Query {
         Answer answer = new Answer();
         setChatId(update.getMessage().getChatId());
         setUserName(craftUserName(update.getMessage().getFrom()));
-        UserEntity userEntity = userService.findFullUserByTelegramId(getChatId());
-        if (userEntity == null) {
-            UserEntity user = new UserEntity();
+        UserDto userDto = userService.findFullUserByTelegramId(getChatId());
+        if (userDto == null) {
+            UserDto user = new UserDto();
             user.setTelegramId(getChatId());
             setQuery(update.getMessage().getText().trim());
             user.setName(getUserName());
@@ -49,7 +50,7 @@ public class Start extends Query {
                 processReferrerAndReferrals(code, user);
             }
 
-            user.setPlayerScore(new PlayerScore(user.getId()));
+            user.setPlayerScore(new PlayerScoreP(user.getId()));
             Gold gold = new Gold(25);
             gold.setUserId(user.getId());
 
@@ -66,7 +67,7 @@ public class Start extends Query {
             inventoryBooster.setUserId(user.getId());
  */
 
-            user.setResources(Set.of(gold));
+            user.setResources(List.of(gold));
 //            user.setBoosters(Set.of(inventoryBooster));
 //            user.setBuildings(Set.of(metalBuilding));
             userService.saveFull(user);
@@ -80,7 +81,7 @@ public class Start extends Query {
             answer.setSendPhoto(message);
             return answer;
         } else {
-            setUserDto(userEntity.convertToUserDto());
+            setUserDto(userDto);
             Profile profile = new Profile();
             return profile.respondWithoutUser(update, getUserDto());
         }

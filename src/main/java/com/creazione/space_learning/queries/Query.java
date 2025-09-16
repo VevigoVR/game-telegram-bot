@@ -2,7 +2,6 @@ package com.creazione.space_learning.queries;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.UserEntity;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
 import com.creazione.space_learning.service.ReferralService;
@@ -72,14 +71,14 @@ public abstract class Query {
 
     public void findInitialQuery(boolean isUpdate) {
         try {
-            UserEntity user = getUserEntityFromDB();
+            UserDto user = getUserEntityFromDB();
             if (user != null) {
-                setUserDto(user.convertToUserDto());
+                setUserDto(user);
                 setStatus(true);
                 if (isUpdate) {
                     boolean isUpdateDBNow = updateResourcesAndBuildings();
                     if (isUpdateDBNow) {
-                        userService.saveFull(getUserDto().convertToUserEntity());
+                        userService.saveFull(getUserDto());
                     }
                 }
             }
@@ -157,7 +156,7 @@ public abstract class Query {
                 .build();
     }
 
-    public UserEntity getUserEntityFromDB() {
+    public UserDto getUserEntityFromDB() {
         return userService.findFullUserByTelegramId(getChatId());
     }
 
@@ -259,7 +258,7 @@ public abstract class Query {
     public abstract String getText();
     public abstract SendPhoto getSendPhoto();
 
-    public String processReferrerAndReferrals(String code, UserEntity user) {
+    public String processReferrerAndReferrals(String code, UserDto user) {
         boolean isAddReferral = false;
         String message = "";
         //return Map.of(isAddReferral, "Самого себя пригласить не получится! \uD83E\uDD13");

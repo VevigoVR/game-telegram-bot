@@ -1,7 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.redis.UserR;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -64,7 +65,7 @@ public class Profile extends Query {
     public Answer respondWithoutUser(Update update, UserDto userDto) {
         boolean isUpdateDB = resourceService.calculateQuantityChanges(userDto, Instant.now());
         if (isUpdateDB) {
-            userService.saveFull(userDto.convertToUserEntity());
+            userService.saveFull(userDto);
         }
         setChatId(update.getMessage().getChatId());
         setUserName(userDto.getName());
@@ -96,7 +97,7 @@ public class Profile extends Query {
         text.append("<b>Строения</b>:\n");
 
         if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            for (Building building : getUserDto().viewSortedBuildings()) {
+            for (BuildingP building : getUserDto().viewSortedBuildings()) {
                 text.append(Emoji.WHITE_SMALL_SQUARE).append(" ").append(building.getName()).append(": ")
                         .append(building.getLevel())
                         .append(" уровень\n");
