@@ -46,10 +46,10 @@ public class BoosterService {
         List<ActiveBoosterP> activeBoosters = new ArrayList<>();
 
         switch (building.getName()) {
-            case GOLD_BUILDING -> activeBoosters = findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getGoldBoosters());
-            case STONE_BUILDING -> activeBoosters = findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getStoneBoosters());
-            case METAL_BUILDING -> activeBoosters = findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getMetalBoosters());
-            case WOOD_BUILDING -> activeBoosters = findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getWoodBoosters());
+            case GOLD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getGoldBoosters()));
+            case STONE_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getStoneBoosters()));
+            case METAL_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getMetalBoosters()));
+            case WOOD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getWoodBoosters()));
         }
         activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getGeneralBoosters()));
 
@@ -88,13 +88,18 @@ public class BoosterService {
         }
 
         if (!isCached) {
-            List<ActiveBoosterP> result = activeBoosterRepository.findAllByUserIdAndNameIn(userId, types);
-            if (!result.isEmpty()) {
-                activeBoosterCacheService.cacheActiveBoosters(telegramId, result);
+            List<ActiveBoosterP> allActiveBoosters = activeBoosterRepository.findAllByUserId(userId);
+            if (!allActiveBoosters.isEmpty()) {
+                activeBoosterCacheService.cacheActiveBoosters(telegramId, allActiveBoosters);
+                return allActiveBoosters
+                        .stream()
+                        .filter(booster -> types.contains(booster.getName()))
+                        .collect(Collectors.toList());
             } else {
                 activeBoosterCacheService.markActiveBoostersAsEmpty(telegramId);
+                System.out.println("никаких актив бустеров нет");
+                return new ArrayList<>();
             }
-            return result;
         } else {
             return new ArrayList<>();
         }
@@ -111,7 +116,11 @@ public class BoosterService {
             return boosters;
         }
         Set<InventoryBoosterP> result = inventoryBoosterRepository.findAllByUserId(userDto.getTelegramId());
-        inventoryBoosterCacheService.cacheInventoryBoosters(userDto.getTelegramId(), result.stream().toList());
+        if (!result.isEmpty()) {
+            inventoryBoosterCacheService.cacheInventoryBoosters(userDto.getTelegramId(), result.stream().toList());
+        } else {
+            inventoryBoosterCacheService.markInventoryBoostersAsEmpty(userDto.getTelegramId());
+        }
         return result;
     }
 
@@ -124,11 +133,14 @@ public class BoosterService {
             return boosters;
         }
         Set<InventoryBoosterP> result = inventoryBoosterRepository.findAllByUserId(id);
-        inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, result.stream().toList());
+        if (!result.isEmpty()) {
+            inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, result.stream().toList());
+        } else {
+            inventoryBoosterCacheService.markInventoryBoostersAsEmpty(telegramId);
+        }
         return result.stream().toList();
     }
 
-    // НУЖНО СДЕЛАТЬ ПРОВЕРКУ, ЕСТЬ ЛИ У ПОЛЬЗОВАТЕЛЯ ВООБЩЕ БУСТЕРЫ И ЕСЛИ НЕТ, ТО ТОЛЬКО ТОГДА ДОПУСКАТЬ К POSTGRESQL
     public Set<InventoryBoosterP> findAllIBByUserIdAndNameAndValueAndDurationMilli(Long userId, Long telegramId, ResourceType type, Double value, Long durationMilli) {
         boolean isCached = inventoryBoosterCacheService.hasInventoryBooster(telegramId);
 
@@ -150,9 +162,21 @@ public class BoosterService {
             return boosters;
         }
         if (!isCached) {
-            Set<InventoryBoosterP> result = inventoryBoosterRepository.findAllByUserIdAndNameAndValueAndDurationMilli(userId, type, value, durationMilli);
-            inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, result.stream().toList());
-            return result;
+            Set<InventoryBoosterP> allInventoryBoosters = inventoryBoosterRepository.findAllByUserId(userId);
+            if (!allInventoryBoosters.isEmpty()) {
+                inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, allInventoryBoosters.stream().toList());
+                return allInventoryBoosters
+                        .stream()
+                        .filter(booster ->
+                                booster.getValue().equals(value)
+                                        && booster.getDurationMilli().equals(durationMilli)
+                                        && booster.getUserId().equals(userId)
+                                        && booster.getName().equals(type))
+                        .collect(Collectors.toSet());
+            } else {
+                inventoryBoosterCacheService.markInventoryBoostersAsEmpty(telegramId);
+                return new HashSet<>();
+            }
         } else {
             return new HashSet<>();
         }
@@ -160,22 +184,26 @@ public class BoosterService {
 
     public void saveAllIB(Set<InventoryBoosterP> boosters, long telegramId) {
         inventoryBoosterRepository.saveAll(boosters);
-        inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, boosters.stream().toList());
+        inventoryBoosterCacheService.deleteInventoryBoosters(telegramId);
+        //inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, boosters.stream().toList());
     }
 
     public void saveIB(InventoryBoosterP booster, long telegramId) {
         inventoryBoosterRepository.save(booster);
-        inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, List.of(booster));
+        inventoryBoosterCacheService.deleteInventoryBoosters(telegramId);
+        //inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, List.of(booster));
     }
 
     public void saveAllAB(Set<ActiveBoosterP> boosters, long telegramId, long userId) {
         activeBoosterRepository.saveAll(boosters);
-        activeBoosterCacheService.cacheActiveBoosters(telegramId,activeBoosterRepository.findAllByUserId(userId));
+        activeBoosterCacheService.deleteActiveBoosters(telegramId);
+        //activeBoosterCacheService.cacheActiveBoosters(telegramId,activeBoosterRepository.findAllByUserId(userId));
     }
 
     public void saveAB(ActiveBoosterP booster, long telegramId, long userId) {
         activeBoosterRepository.save(booster);
-        activeBoosterCacheService.cacheActiveBoosters(telegramId,activeBoosterRepository.findAllByUserId(userId));
+        activeBoosterCacheService.deleteActiveBoosters(telegramId);
+        //activeBoosterCacheService.cacheActiveBoosters(telegramId,activeBoosterRepository.findAllByUserId(userId));
     }
 
     public void deleteIB(InventoryBoosterP booster, long telegramId) {

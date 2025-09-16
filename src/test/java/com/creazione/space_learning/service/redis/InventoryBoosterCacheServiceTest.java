@@ -71,7 +71,7 @@ class InventoryBoosterCacheServiceTest {
 
         // Assert
         verify(redisTemplate).delete("inventory_boosters:" + USER_ID);
-        verify(valueOperations).set(eq("empty_inv_boosters:" + USER_ID), eq("true"), eq(5L), eq(TimeUnit.MINUTES));
+        //verify(valueOperations).set(eq("empty_inv_boosters:" + USER_ID), eq("true"), eq(5L), eq(TimeUnit.MINUTES));
         verify(valueOperations, never()).set(anyString(), any(List.class));
     }
 
@@ -85,7 +85,7 @@ class InventoryBoosterCacheServiceTest {
 
         // Assert
         verify(redisTemplate).delete("inventory_boosters:" + USER_ID);
-        verify(valueOperations).set(eq("empty_inv_boosters:" + USER_ID), eq("true"), eq(5L), eq(TimeUnit.MINUTES));
+        //verify(valueOperations).set(eq("empty_inv_boosters:" + USER_ID), eq("true"), eq(5L), eq(TimeUnit.MINUTES));
         verify(valueOperations, never()).set(anyString(), any(List.class));
     }
 

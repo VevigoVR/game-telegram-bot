@@ -4,7 +4,6 @@ import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UserDto;
 import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
-import com.creazione.space_learning.entities.postgres.UserP;
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.service.AggregateNoticeService;
@@ -23,9 +22,9 @@ public class Init {
     }
 
     public void init() {
-        //createNotices();
+        createNotices();
         //createReferral();
-        //addGifts();
+        addGifts();
     }
 
     private void addGifts() {
@@ -42,8 +41,7 @@ public class Init {
                         ResourceType.ACCELERATION_ALL,
                         0.2, Duration.ofHours(24).toMillis(), 10));
         inventoryBoosters.forEach(booster -> booster.setUserId(1L));
-        DataSet.getBoosterService().saveAllIB(inventoryBoosters, -1394568946807L);
-
+        DataSet.getBoosterService().saveAllIB(inventoryBoosters, 5773183764L);
     }
 
     private void createNotices() {

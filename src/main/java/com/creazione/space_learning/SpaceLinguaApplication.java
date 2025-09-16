@@ -23,7 +23,7 @@ public class SpaceLinguaApplication {
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		try {
 			SpringApplication.run(SpaceLinguaApplication.class, args);
-			Thread.sleep(5000);
+			Thread.sleep(15000);
 			Init init = new Init();
 			init.init();
 			log.trace("Это TRACE сообщение!!!!!!!");

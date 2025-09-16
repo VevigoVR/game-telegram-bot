@@ -43,7 +43,7 @@ public class UserR {
     private Long referrer;
     private Integer totalReferrals = 0;
     @JsonProperty("notices")
-    private Set<NoticeP> notices = new HashSet<>();
+    private List<NoticeP> notices = new ArrayList<>();
     private boolean isSuperAggregate;
     private boolean isPost;
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")

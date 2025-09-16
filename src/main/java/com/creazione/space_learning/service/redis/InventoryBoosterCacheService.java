@@ -56,11 +56,13 @@ public class InventoryBoosterCacheService {
     }
 
     public void cacheInventoryBoosters(Long telegramId, List<InventoryBoosterP> boosters) {
-        deleteInventoryBoosters(telegramId);
-        String key = INVENTORY_BOOSTERS_KEY.getKey(telegramId);
-        List<InventoryBoosterR> boosterDtos = toRedisObjectList(boosters);
-        redisTemplate.opsForValue().set(key, boosterDtos);
-        redisTemplate.expire(key, 1, TimeUnit.HOURS);
+            deleteInventoryBoosters(telegramId);
+        if (boosters != null && !boosters.isEmpty()) {
+            String key = INVENTORY_BOOSTERS_KEY.getKey(telegramId);
+            List<InventoryBoosterR> boosterDtos = toRedisObjectList(boosters);
+            redisTemplate.opsForValue().set(key, boosterDtos);
+            redisTemplate.expire(key, 1, TimeUnit.HOURS);
+        }
     }
 
     public Optional<InventoryBoosterP> getInventoryBooster(Long telegramId, String boosterName) {
@@ -124,6 +126,7 @@ public class InventoryBoosterCacheService {
         // Получаем текущий список бустеров
         List<InventoryBoosterP> boosters = getInventoryBoosters(telegramId);
 
+        if (boosters == null || boosters.isEmpty()) { return; }
         // Удаляем старый бустер с таким же именем и характеристиками
         boosters = boosters.stream()
                 .filter(b -> !(b.getName().equals(booster.getName()) &&

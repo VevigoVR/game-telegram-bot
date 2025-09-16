@@ -156,9 +156,9 @@ public class BuildingInfo extends Query {
             text.append("Количество в час: <i>").append(Formatting.formatWithoutFraction(quantityInHour)).append("</i>");
 
             if (rateBooster > 0) {
-                text.append(" <b>+").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>\n");
+                text.append(" <b>+").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>");
             } else if (rateBooster < 0) {
-                text.append(" <b>-").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>\n");
+                text.append(" <b>-").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>");
             }
 
             long timeUpgrade = userBuilding.getLastTimeUpgrade().toEpochMilli() + userBuilding.getTimeToUpdate();

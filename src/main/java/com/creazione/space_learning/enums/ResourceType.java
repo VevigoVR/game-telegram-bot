@@ -48,14 +48,16 @@ public enum ResourceType {
     public static List<ResourceType> getGoldBoosters() {
         return List.of(ACCELERATION_GOLD);
     }
-
     public static List<ResourceType> getStoneBoosters() {
         return List.of(ACCELERATION_STONE);
     }
-
     public static List<ResourceType> getWoodBoosters() {
         return List.of(ACCELERATION_WOOD);
     }
+    public static List<ResourceType> getMetalBoosters() {
+        return List.of(ACCELERATION_METAL);
+    }
+    public static List<ResourceType> getGeneralBoosters() { return List.of(ACCELERATION_ALL); }
 
     @Override
     public String toString() {
@@ -68,11 +70,6 @@ public enum ResourceType {
     public static List<ResourceType> getAllTypes() {
         return ALL_TYPES;
     }
-
-    public static List<ResourceType> getMetalBoosters() {
-        return List.of(ACCELERATION_METAL);
-    }
-    public static List<ResourceType> getGeneralBoosters() { return List.of(ACCELERATION_ALL); }
 
     public static List<ResourceType> getLootBoxTypes() {
         return List.of(REFERRAL_BOX_1, REFERRAL_BOX_2, REFERRAL_BOX_3, LOOT_BOX_COMMON, LOOT_BOX_RARE);
