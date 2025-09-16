@@ -97,7 +97,7 @@ public class BoosterService {
                         .collect(Collectors.toList());
             } else {
                 activeBoosterCacheService.markActiveBoostersAsEmpty(telegramId);
-                System.out.println("никаких актив бустеров нет");
+                //System.out.println("никаких актив бустеров нет");
                 return new ArrayList<>();
             }
         } else {

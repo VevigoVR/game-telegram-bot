@@ -22,9 +22,9 @@ public class Init {
     }
 
     public void init() {
-        createNotices();
+        //createNotices();
         //createReferral();
-        addGifts();
+        //addGifts();
     }
 
     private void addGifts() {

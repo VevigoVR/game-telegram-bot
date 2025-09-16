@@ -23,14 +23,14 @@ public class SpaceLinguaApplication {
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		try {
 			SpringApplication.run(SpaceLinguaApplication.class, args);
-			Thread.sleep(15000);
-			Init init = new Init();
-			init.init();
-			log.trace("Это TRACE сообщение!!!!!!!");
-			log.debug("Это DEBUG сообщение!!!!!");
-			log.info("Это INFO сообщение");
-			log.warn("Это WARN сообщение");
-			log.error("Это ERROR сообщение");
+			Thread.sleep(1000);
+			//Init init = new Init();
+			//init.init();
+			//log.trace("Это TRACE сообщение!!!!!!!");
+			//log.debug("Это DEBUG сообщение!!!!!");
+			//log.info("Это INFO сообщение");
+			//log.warn("Это WARN сообщение");
+			//log.error("Это ERROR сообщение");
 		} catch (CommandConflictException e) {
 			// Красиво форматируем вывод ошибки
 			System.err.println("\n" + "=".repeat(80));
