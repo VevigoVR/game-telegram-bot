@@ -26,8 +26,9 @@ public enum ResourceType {
     ACCELERATION_ALL(
             "Увеличение добычи всех ресурсов",
             Emoji.DIZZY, "/activate acceleration all"),
-    ACCELERATION_GOLD("Увеличение добычи золота",
-            Emoji.DIZZY, "/activate acceleration gold"),
+    // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+    //ACCELERATION_GOLD("Увеличение добычи золота",
+    //        Emoji.DIZZY, "/activate acceleration gold"),
     ACCELERATION_METAL(
             "Увеличение добычи металла",
             Emoji.DIZZY, "/activate acceleration metal"),
@@ -45,9 +46,12 @@ public enum ResourceType {
     @Getter
     private final String mark;
 
+    // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+    /*
     public static List<ResourceType> getGoldBoosters() {
         return List.of(ACCELERATION_GOLD);
     }
+     */
     public static List<ResourceType> getStoneBoosters() {
         return List.of(ACCELERATION_STONE);
     }

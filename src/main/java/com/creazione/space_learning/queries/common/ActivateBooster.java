@@ -121,10 +121,14 @@ public class ActivateBooster extends Query {
                 activateAcceleration(ResourceType.ACCELERATION_STONE, rate, time);
                 break;
             }
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+                /*
             case "gold": {
                 activateAcceleration(ResourceType.ACCELERATION_GOLD, rate, time);
                 break;
             }
+
+                 */
             default: return;
         }
     }

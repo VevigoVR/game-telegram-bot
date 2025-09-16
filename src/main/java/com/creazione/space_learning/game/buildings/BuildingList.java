@@ -6,7 +6,8 @@ import java.util.List;
 
 public class BuildingList {
     public static final List<BuildingP> BUILDING_LIST = List.of(
-            new GoldBuilding(),
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            //new GoldBuilding(),
             new StoneBuilding(),
             new WoodBuilding(),
             new MetalBuilding(),

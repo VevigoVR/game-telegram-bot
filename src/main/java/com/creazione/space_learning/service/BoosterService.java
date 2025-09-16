@@ -46,7 +46,8 @@ public class BoosterService {
         List<ActiveBoosterP> activeBoosters = new ArrayList<>();
 
         switch (building.getName()) {
-            case GOLD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getGoldBoosters()));
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            // case GOLD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getGoldBoosters()));
             case STONE_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getStoneBoosters()));
             case METAL_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getMetalBoosters()));
             case WOOD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getWoodBoosters()));

@@ -30,7 +30,8 @@ import java.util.List;
 @Getter
 @Component
 @GameCommand(
-        value = {"/buildinggold",
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ value = {"/buildinggold",
+        value = {
                 "/buildingmetal",
                 "/buildingstone",
                 "/buildingwood"},
@@ -42,7 +43,8 @@ public class BuildingInfo extends Query {
     private boolean hasBuilding = false;
 
     public BuildingInfo() {
-        super(List.of("/buildinggold",
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ super(List.of("/buildinggold",
+        super(List.of(
                 "/buildingmetal",
                 "/buildingstone",
                 "/buildingwood"));
@@ -82,11 +84,15 @@ public class BuildingInfo extends Query {
 
     private void setBuildingObjects(String query) {
         switch (query) {
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            /*
             case "/buildinggold" : {
                 targetBuilding = new GoldBuilding();
                 setParameters();
                 break;
             }
+
+             */
             case "/buildingmetal" : {
                 targetBuilding = new MetalBuilding();
                 setParameters();
@@ -281,7 +287,8 @@ public class BuildingInfo extends Query {
             nameButton = "Построить";
         }
         switch (targetBuilding.getName()) {
-            case GOLD_BUILDING -> buttons.add(getButton(nameButton, "/upGold"));
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            //case GOLD_BUILDING -> buttons.add(getButton(nameButton, "/upGold"));
             case WOOD_BUILDING -> buttons.add(getButton(nameButton, "/upWood"));
             case STONE_BUILDING -> buttons.add(getButton(nameButton, "/UpStone"));
             case METAL_BUILDING -> buttons.add(getButton(nameButton, "/upMetal"));
@@ -306,9 +313,13 @@ public class BuildingInfo extends Query {
                 types.addAll(ResourceType.getWoodBoosters());
                 break;
             }
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+                /*
             case GOLD: {
                 types.addAll(ResourceType.getGoldBoosters());
             }
+
+                 */
         }
 
         List<ActiveBoosterP> boosters = DataSet.getBoosterService().findAllABByUserIdAndNameIn(userId, telegramId, types);

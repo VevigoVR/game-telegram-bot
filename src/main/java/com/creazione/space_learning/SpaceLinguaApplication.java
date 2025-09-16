@@ -1,7 +1,6 @@
 package com.creazione.space_learning;
 
 import com.creazione.space_learning.exception.CommandConflictException;
-import com.creazione.space_learning.utils.Init;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

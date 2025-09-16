@@ -96,10 +96,11 @@ public class BuildingsQuery extends Query {
 
     @Override
     public InlineKeyboardMarkup getInlineKeyboardMarkup() {
-        List<Integer> buttonsInLine = List.of(1, 2, 2);
+        List<Integer> buttonsInLine = List.of(1, 1, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));
-        buttons.add(getButton(BuildingType.GOLD_BUILDING.toString(), "/buildingGold"));
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+        //buttons.add(getButton(BuildingType.GOLD_BUILDING.toString(), "/buildingGold"));
         buttons.add(getButton(BuildingType.STONE_BUILDING.toString(), "/buildingStone"));
         buttons.add(getButton(BuildingType.METAL_BUILDING.toString(), "/buildingMetal"));
         buttons.add(getButton(BuildingType.WOOD_BUILDING.toString(), "/buildingWood"));

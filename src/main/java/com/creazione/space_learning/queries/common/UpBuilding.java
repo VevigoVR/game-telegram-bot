@@ -17,15 +17,17 @@ import java.util.List;
 
 @Component
 @GameCommand(
-        value = {"/upgold", "/upwood", "/upstone", "/upmetal"},
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ value = {"/upgold",
+        value = {"/upwood", "/upstone", "/upmetal"},
         description = "Улучшение постройки"
 )
 public class UpBuilding extends Query {
     private BuildingInfo buildingInfo;
     private int iBuilding;
 
+    // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ public UpBuilding() { super(List.of("/upgold",
     public UpBuilding() {
-        super(List.of("/upgold", "/upwood", "/upstone", "/upmetal"));
+        super(List.of("/upwood", "/upstone", "/upmetal"));
     }
 
     @Override
@@ -83,6 +85,8 @@ public class UpBuilding extends Query {
 
     private void setBuildingObjects(String query) {
         switch (query) {
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            /*
             case "/upgold" : {
                 buildingInfo.setTargetBuilding(new GoldBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
@@ -96,6 +100,7 @@ public class UpBuilding extends Query {
                 }
                 break;
             }
+             */
             case "/upmetal" : {
                 buildingInfo.setTargetBuilding(new MetalBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
