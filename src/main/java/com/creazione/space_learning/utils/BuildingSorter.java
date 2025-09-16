@@ -1,35 +1,35 @@
 package com.creazione.space_learning.utils;
 
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class BuildingSorter {
-    private static final Comparator<Building> BY_NAME =
+    private static final Comparator<BuildingP> BY_NAME =
             Comparator.comparing(b -> b.getName().name(), String.CASE_INSENSITIVE_ORDER);
 
-    private static final Comparator<Building> BY_LEVEL_DESC =
-            Comparator.comparingInt(Building::getLevel).reversed();
+    private static final Comparator<BuildingP> BY_LEVEL_DESC =
+            Comparator.comparingInt(BuildingP::getLevel).reversed();
 
-    public static Set<Building> sortBuildingsAsSet(Set<Building> buildings) {
+    public static Set<BuildingP> sortBuildingsAsSet(Set<BuildingP> buildings) {
         if (buildings == null || buildings.isEmpty()) {
             return buildings;
         }
         return buildings.stream()
                 .sorted(Comparator.comparing(
-                        Building::getName
+                        BuildingP::getName
                 ))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     // Основной метод сортировки
-    public static List<Building> sortBuildings(List<Building> buildings, SortOrder order) {
+    public static List<BuildingP> sortBuildings(List<BuildingP> buildings, SortOrder order) {
         if (buildings == null || buildings.isEmpty()) {
             return buildings; // Возвращаем пустой неизменяемый список
         }
 
-        List<Building> mutableList = new ArrayList<>(buildings);
+        List<BuildingP> mutableList = new ArrayList<>(buildings);
 
         switch (order) {
             case NAME_ASC:

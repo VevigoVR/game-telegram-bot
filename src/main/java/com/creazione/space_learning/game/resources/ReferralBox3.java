@@ -1,6 +1,6 @@
 package com.creazione.space_learning.game.resources;
 
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.enums.ResourceType;
 import jakarta.persistence.DiscriminatorValue;
@@ -8,7 +8,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("REFERRAL_BOX_3")
-public class ReferralBox3 extends Resource {
+public class ReferralBox3 extends ResourceP {
     public ReferralBox3() {
         super(ResourceType.REFERRAL_BOX_3, Emoji.REFERRAL_BOX_3);
     }

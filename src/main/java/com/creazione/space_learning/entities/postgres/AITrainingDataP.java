@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 @Setter
 @ToString
 @Table(name = "ai_training_data")
-public class AITrainingDataEntity {
+public class AITrainingDataP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

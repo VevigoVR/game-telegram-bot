@@ -1,6 +1,6 @@
 package com.creazione.space_learning.game.resources;
 
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.enums.ResourceType;
 import jakarta.persistence.DiscriminatorValue;
@@ -8,7 +8,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("STONE")
-public class Stone extends Resource {
+public class Stone extends ResourceP {
     public Stone() {
         super(ResourceType.STONE, Emoji.ROCK);
     }

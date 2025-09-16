@@ -2,10 +2,9 @@ package com.creazione.space_learning.service.scheduler;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.*;
+import com.creazione.space_learning.entities.redis.UserR;
+import com.creazione.space_learning.entities.postgres.*;
 import com.creazione.space_learning.enums.NoticeType;
-import com.creazione.space_learning.entities.Building;
-import com.creazione.space_learning.entities.Resource;
 import com.creazione.space_learning.enums.SchedulerType;
 import com.creazione.space_learning.game.resources.ResourceList;
 import com.creazione.space_learning.enums.ResourceType;
@@ -43,7 +42,7 @@ public class SchedulerService {
     }
 
     // Формула расчета очков
-    private long calculateScore(List<Building> buildings) {
+    private long calculateScore(List<BuildingP> buildings) {
         return buildingService.getPointsForAllBuildings(buildings);
     }
 
@@ -55,7 +54,7 @@ public class SchedulerService {
         int page = 0;
         int batchSize = 100;
         //Date cutoff = Date.from(Instant.now().minus(100, ChronoUnit.HOURS));
-        Page<UserEntity> usersPage;
+        Page<UserDto> usersPage;
 
         do {
             // Пагинация для обработки больших объемов данных
@@ -68,11 +67,11 @@ public class SchedulerService {
             List<Long> ids = chooseUserIds(usersPage.getContent());
 
             // Поиск всех непрочтённых аггрегированных уведомлений
-            List<AggregateNoticeEntity> aggregateNotices = aggregateNoticeService.findGroupedNotices(ids, false);
+            List<AggregateNoticeP> aggregateNotices = aggregateNoticeService.findGroupedNotices(ids, false);
 
-            List<UserEntity> userEntities = new ArrayList<>();
-            for (UserEntity userEntity : usersPage.getContent()) {
-                List<Building> buildings = userEntity.getBuildings().stream().toList();
+            List<UserDto> userEntities = new ArrayList<>();
+            for (UserDto userEntity : usersPage.getContent()) {
+                List<BuildingP> buildings = userEntity.getBuildings().stream().toList();
                 resourceService.calculateQuantityChanges(userEntity, Instant.now());
 
                 if (!aggregateNotices.isEmpty()) {
@@ -84,7 +83,7 @@ public class SchedulerService {
                     }
                 }
 
-                PlayerScore playerScore = userEntity.getPlayerScore();
+                PlayerScoreP playerScore = userEntity.getPlayerScore();
                 long oldScore = playerScore.getScore();
                 long newScore = calculateScore(buildings);
                 grantReferralGifts(userEntity, oldScore, newScore);
@@ -103,20 +102,20 @@ public class SchedulerService {
     }
 
     private void startSchedulerTracing(SchedulerType type) {
-        SchedulerEntity scheduler = schedulerRepoService.findByType(type);
+        SchedulerP scheduler = schedulerRepoService.findByType(type);
         scheduler = createSchedulerEntity(scheduler, type);
         schedulerRepoService.save(scheduler);
     }
 
     private void endSchedulerTracing(SchedulerType type) {
-        SchedulerEntity scheduler = schedulerRepoService.findByType(type);
+        SchedulerP scheduler = schedulerRepoService.findByType(type);
         closeSchedulerEntity(scheduler);
         schedulerRepoService.save(scheduler);
     }
 
-    private SchedulerEntity createSchedulerEntity(SchedulerEntity scheduler, SchedulerType type) {
+    private SchedulerP createSchedulerEntity(SchedulerP scheduler, SchedulerType type) {
         if (scheduler == null) {
-            SchedulerEntity schedulerFirst = new SchedulerEntity();
+            SchedulerP schedulerFirst = new SchedulerP();
             schedulerFirst.setType(type);
             schedulerFirst.setRun(true);
             schedulerFirst.setLastDuration(0L);
@@ -137,7 +136,7 @@ public class SchedulerService {
         return scheduler;
     }
 
-    private void closeSchedulerEntity(SchedulerEntity scheduler) {
+    private void closeSchedulerEntity(SchedulerP scheduler) {
         if (scheduler == null) { return; }
         Instant dateNow = Instant.now();
         long lastDuration = dateNow.toEpochMilli() - scheduler.getLastStart().toEpochMilli();
@@ -146,36 +145,36 @@ public class SchedulerService {
         scheduler.setLastEnd(dateNow);
     }
 
-    private void grantReferralGifts(UserEntity userEntity, long oldScore, long newScore) {
-        Long referrerId = userEntity.getReferrer();
+    private void grantReferralGifts(UserDto userDto, long oldScore, long newScore) {
+        Long referrerId = userDto.getReferrer();
 
         if (referrerId == null || referrerId == 0) {
             return;
         }
 
-        UserEntity userReferrer = userService.findById(referrerId);
+        UserDto userReferrer = userService.findById(referrerId);
         if (oldScore < 5 && newScore >= 5) {
             // если есть реферрер, то и ему начисляем очки
             if (userReferrer != null) {
-                noticeService.save(new NoticeEntity(userReferrer.getId(), NoticeType.GIFT_TO_REFERRER, ResourceType.REFERRAL_BOX_1));
+                noticeService.save(new NoticeP(userReferrer.getId(), NoticeType.GIFT_TO_REFERRER, ResourceType.REFERRAL_BOX_1));
             }
-            noticeService.save(new NoticeEntity(userEntity.getId(), NoticeType.GIFT_TO_REFERRAL, ResourceType.REFERRAL_BOX_1));
+            noticeService.save(new NoticeP(userDto.getId(), NoticeType.GIFT_TO_REFERRAL, ResourceType.REFERRAL_BOX_1));
         }
 
         if (oldScore < 50 && newScore >= 50) {
             // если есть реферрер, то и ему начисляем очки
             if (userReferrer != null) {
-                noticeService.save(new NoticeEntity(userReferrer.getId(), NoticeType.GIFT_TO_REFERRER, ResourceType.REFERRAL_BOX_2));
+                noticeService.save(new NoticeP(userReferrer.getId(), NoticeType.GIFT_TO_REFERRER, ResourceType.REFERRAL_BOX_2));
             }
-            noticeService.save(new NoticeEntity(userEntity.getId(), NoticeType.GIFT_TO_REFERRAL, ResourceType.REFERRAL_BOX_2));
+            noticeService.save(new NoticeP(userDto.getId(), NoticeType.GIFT_TO_REFERRAL, ResourceType.REFERRAL_BOX_2));
         }
 
         if (oldScore < 500 && newScore >= 500) {
             // если есть реферрер, то и ему начисляем очки
             if (userReferrer != null) {
-                noticeService.save(new NoticeEntity(userReferrer.getId(), NoticeType.GIFT_TO_REFERRER, ResourceType.REFERRAL_BOX_3));
+                noticeService.save(new NoticeP(userReferrer.getId(), NoticeType.GIFT_TO_REFERRER, ResourceType.REFERRAL_BOX_3));
             }
-            noticeService.save(new NoticeEntity(userEntity.getId(), NoticeType.GIFT_TO_REFERRAL, ResourceType.REFERRAL_BOX_3));
+            noticeService.save(new NoticeP(userDto.getId(), NoticeType.GIFT_TO_REFERRAL, ResourceType.REFERRAL_BOX_3));
         }
     }
 
@@ -194,13 +193,13 @@ public class SchedulerService {
             List<Long> idsWithGifts = new ArrayList<>();
 
             // Награда приглашённым
-            List<AggregateNoticeEntity> aggregateNoticeEntityForReferrals = noticeService.aggregateNotices(userIds, NoticeType.GIFT_TO_REFERRAL);
+            List<AggregateNoticeP> aggregateNoticeEntityForReferrals = noticeService.aggregateNotices(userIds, NoticeType.GIFT_TO_REFERRAL);
             //aggregateNoticeService.addTextAndTitleForProgress(aggregateNoticeEntityForReferrals);
             aggregateNoticeService.saveAll(aggregateNoticeEntityForReferrals);
             noticeService.updateNoticesStatus(userIds, NoticeType.GIFT_TO_REFERRAL, false, true);
 
             // Награда пригласившим
-            List<AggregateNoticeEntity> aggregateNoticeEntityForReferrers = noticeService.aggregateNotices(userIds, NoticeType.GIFT_TO_REFERRER);
+            List<AggregateNoticeP> aggregateNoticeEntityForReferrers = noticeService.aggregateNotices(userIds, NoticeType.GIFT_TO_REFERRER);
             //aggregateNoticeService.addTextAndTitleForReferrers(aggregateNoticeEntityForReferrers);
             aggregateNoticeService.saveAll(aggregateNoticeEntityForReferrers);
             noticeService.updateNoticesStatus(userIds, NoticeType.GIFT_TO_REFERRER, false, true);
@@ -210,70 +209,70 @@ public class SchedulerService {
         } while (userIdsPage.hasNext());
     }
 
-    private void grantReferralGifts(long referrerId, UserEntity userEntity) {
-        UserEntity userReferrer = userService.findUserWithResourcesById(referrerId);
+    private void grantReferralGifts(long referrerId, UserDto userDto) {
+        UserDto userReferrer = userService.findUserWithResourcesById(referrerId);
         if (userReferrer != null) {
-            resourceService.addReferralBox1OrIncrement(userReferrer.getResources(), ResourceType.REFERRAL_BOX_1);
+            resourceService.addReferralBox1OrIncrement(new HashSet<>(userReferrer.getResources()), ResourceType.REFERRAL_BOX_1);
 
             userService.saveFullWithoutCache(userReferrer);
         }
-        resourceService.addReferralBox1OrIncrement(userEntity.getResources(), ResourceType.REFERRAL_BOX_1);
+        resourceService.addReferralBox1OrIncrement(new HashSet<>(userDto.getResources()), ResourceType.REFERRAL_BOX_1);
     }
 
-    public static void grantOldNotices(UserEntity userEntity, List<AggregateNoticeEntity> aggregateNotices) {
+    public static void grantOldNotices(UserDto userDto, List<AggregateNoticeP> aggregateNotices) {
         boolean isOldHere = false;
-        List<AggregateNoticeEntity> userNotices = new ArrayList<>();
-        for (AggregateNoticeEntity aggregateNotice: aggregateNotices) {
+        List<AggregateNoticeP> userNotices = new ArrayList<>();
+        for (AggregateNoticeP aggregateNotice: aggregateNotices) {
             // Работа с каждым аггрегированным сообщением для данного пользователя
-            if (aggregateNotice.getUserId().equals(userEntity.getId())) {
+            if (aggregateNotice.getUserId().equals(userDto.getId())) {
                 if (!isOldHere) { isOldHere = compareWithLaterDate(aggregateNotice); }
                 userNotices.add(aggregateNotice);
             }
         }
         if (!isOldHere) {
-            userEntity.setSuperAggregate(false);
+            userDto.setSuperAggregate(false);
             return;
         }
 
         // ОБРАБОТКА СТАРЫХ СООБЩЕНИЙ
-        for (AggregateNoticeEntity userNotice: userNotices) {
+        for (AggregateNoticeP userNotice: userNotices) {
             /*
              * Это ресурсы для одного игрока в каждом отдельном уведомлении
              * Конвертируем в объекты Resource и добавляем ползователю методом addOrIncrementResource()
             */
             Map<String, Long> mapGrantedResources = userNotice.getResources();
-            List<Resource> listGrantedResources = convertToResources(mapGrantedResources);
+            List<ResourceP> listGrantedResources = convertToResources(mapGrantedResources);
 
             // поиск по ресурсам одного пользователя
-            Set<Resource> userResources = userEntity.getResources();
-            addOrIncrementResource(userResources, listGrantedResources, userEntity.getId());
+            List<ResourceP> userResources = userDto.getResources();
+            addOrIncrementResource(userResources, listGrantedResources, userDto.getId());
             // Отметка о том, что это сообщение больше не учитывать
             userNotice.setRead(true);
         }
         aggregateNoticeService.saveAll(userNotices);
-        userEntity.setSuperAggregate(false);
+        userDto.setSuperAggregate(false);
     }
 
-    private List<Long> chooseUserIds(List<UserEntity> userEntities) {
+    private List<Long> chooseUserIds(List<UserDto> userDtos) {
         List<Long> ids = new ArrayList<>();
-        for (UserEntity userEntity : userEntities) {
-            ids.add(userEntity.getId());
+        for (UserDto userDto : userDtos) {
+            ids.add(userDto.getId());
         }
         return ids;
     }
 
-    public static List<Resource> convertToResources(Map<String, Long> grants) {
-        List<Resource> resourceList = new ArrayList<>();
+    public static List<ResourceP> convertToResources(Map<String, Long> grants) {
+        List<ResourceP> resourceList = new ArrayList<>();
         for (String grant : grants.keySet()) {
             resourceList.add(ResourceList.createResource(grant, grants.get(grant)));
         }
         return resourceList;
     }
 
-    public static void addOrIncrementResource(Set<Resource> userResources, List<Resource> grantedResources, Long userId) {
-        for (Resource grant : grantedResources) {
+    public static void addOrIncrementResource(Set<ResourceP> userResources, List<ResourceP> grantedResources, Long userId) {
+        for (ResourceP grant : grantedResources) {
             boolean found = false;
-            for (Resource userResource : userResources) {
+            for (ResourceP userResource : userResources) {
                 if (userResource.getName().equals(grant.getName())) {
                     userResource.addQuantity(grant.getQuantity());
                     found = true;
@@ -288,29 +287,29 @@ public class SchedulerService {
         }
     }
 
-    private static boolean compareWithLaterDate(AggregateNoticeEntity aggregateNotice) {
+    private static boolean compareWithLaterDate(AggregateNoticeP aggregateNotice) {
         // Если уведомление старое, то возвращаем true
         return aggregateNotice.getCreatedAt().getTime() < getLaterDate().getTime();
     }
 
-    public void saveToSendMessageIfOldNoticesHere(UserEntity userEntity, List<AggregateNoticeEntity> aggregateNotices) {
+    public void saveToSendMessageIfOldNoticesHere(UserDto userDto, List<AggregateNoticeP> aggregateNotices) {
         boolean isOldHere = false;
-        for (AggregateNoticeEntity aggregateNotice: aggregateNotices) {
+        for (AggregateNoticeP aggregateNotice: aggregateNotices) {
             // Работа с каждым аггрегированным сообщением для данного пользователя
-            if (aggregateNotice.getUserId().equals(userEntity.getId())) {
+            if (aggregateNotice.getUserId().equals(userDto.getId())) {
                 if (!isOldHere) { isOldHere = compareWithLaterDate(aggregateNotice); }
             }
         }
         if (!isOldHere) { return; }
-        SuperAggregateEntity superAggregate = new SuperAggregateEntity(
-                userEntity.getId(),
-                userEntity.getTelegramId(),
-                userEntity.getName(),
+        SuperAggregateP superAggregate = new SuperAggregateP(
+                userDto.getId(),
+                userDto.getTelegramId(),
+                userDto.getName(),
                 NoticeType.SUPER_RESOURCES_GRANT);
         superAggregateService.save(superAggregate);
 
         // Добавляем пометку пользователю, чтобы потом прибавить к его ресурсам необходимые данные
-        userEntity.setSuperAggregate(true);
+        userDto.setSuperAggregate(true);
     }
 
     public void sendSuperNotices() {
@@ -318,7 +317,7 @@ public class SchedulerService {
         startSchedulerTracing(schedulerType);
         int page = 0;
         int batchSize = 100;
-        Page<SuperAggregateEntity> aggregatePages;
+        Page<SuperAggregateP> aggregatePages;
 
         do {
             // Пагинация для обработки больших объемов данных
@@ -326,7 +325,7 @@ public class SchedulerService {
                     PageRequest.of(page, batchSize, Sort.by("id"))
             );
 
-            for (SuperAggregateEntity aggregate : aggregatePages.getContent()) {
+            for (SuperAggregateP aggregate : aggregatePages.getContent()) {
                 Response response = new SuperAggregateMessage(aggregate);
                 response.initResponse();
             }
@@ -340,49 +339,15 @@ public class SchedulerService {
 
     public static void grantForUser(UserDto userDto) {
         // Поиск всех непрочтённых аггрегированных уведомлений
-        List<AggregateNoticeEntity> aggregateNotices = aggregateNoticeService.findGroupedNotices(List.of(userDto.getId()), false);
+        List<AggregateNoticeP> aggregateNotices = aggregateNoticeService.findGroupedNotices(List.of(userDto.getId()), false);
         if (aggregateNotices.isEmpty()) { return; }
         grantOldNotices(userDto, aggregateNotices);
     }
 
-    public static void grantOldNotices(UserDto userDto, List<AggregateNoticeEntity> aggregateNotices) {
-        boolean isOldHere = false;
-        List<AggregateNoticeEntity> userNotices = new ArrayList<>();
-        for (AggregateNoticeEntity aggregateNotice: aggregateNotices) {
-            // Работа с каждым аггрегированным сообщением для данного пользователя
-            if (aggregateNotice.getUserId().equals(userDto.getId())) {
-                if (!isOldHere) { isOldHere = compareWithLaterDate(aggregateNotice); }
-                userNotices.add(aggregateNotice);
-            }
-        }
-        if (!isOldHere) {
-            userDto.setSuperAggregate(false);
-            return;
-        }
-
-        // ОБРАБОТКА СТАРЫХ СООБЩЕНИЙ
-        for (AggregateNoticeEntity userNotice: userNotices) {
-            /*
-             * Это ресурсы для одного игрока в каждом отдельном уведомлении
-             * Конвертируем в объекты Resource и добавляем ползователю методом addOrIncrementResource()
-             */
-            Map<String, Long> mapGrantedResources = userNotice.getResources();
-            List<Resource> listGrantedResources = convertToResources(mapGrantedResources);
-
-            // поиск по ресурсам одного пользователя
-            List<Resource> userResources = userDto.getResources();
-            addOrIncrementResource(userResources, listGrantedResources, userDto.getId());
-            // Отметка о том, что это сообщение больше не учитывать
-            userNotice.setRead(true);
-        }
-        aggregateNoticeService.saveAll(userNotices);
-        userDto.setSuperAggregate(false);
-    }
-
-    public static void addOrIncrementResource(List<Resource> userResources, List<Resource> grantedResources, Long userId) {
-        for (Resource grant : grantedResources) {
+    public static void addOrIncrementResource(List<ResourceP> userResources, List<ResourceP> grantedResources, Long userId) {
+        for (ResourceP grant : grantedResources) {
             boolean found = false;
-            for (Resource userResource : userResources) {
+            for (ResourceP userResource : userResources) {
                 if (userResource.getName().equals(grant.getName())) {
                     userResource.addQuantity(grant.getQuantity());
                     found = true;

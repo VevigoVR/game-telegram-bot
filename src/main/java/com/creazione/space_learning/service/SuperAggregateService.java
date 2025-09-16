@@ -1,6 +1,6 @@
 package com.creazione.space_learning.service;
 
-import com.creazione.space_learning.entities.SuperAggregateEntity;
+import com.creazione.space_learning.entities.postgres.SuperAggregateP;
 import com.creazione.space_learning.repository.SuperAggregateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,15 +14,15 @@ import java.util.List;
 public class SuperAggregateService {
     private final SuperAggregateRepository superAggregateRepository;
 
-    public void saveAll(List<SuperAggregateEntity> superAggregates) {
+    public void saveAll(List<SuperAggregateP> superAggregates) {
         superAggregateRepository.saveAll(superAggregates);
     }
 
-    public void save(SuperAggregateEntity superAggregate) {
+    public void save(SuperAggregateP superAggregate) {
         superAggregateRepository.save(superAggregate);
     }
 
-    public Page<SuperAggregateEntity> findAllByPage(Pageable pageable) {
+    public Page<SuperAggregateP> findAllByPage(Pageable pageable) {
         return superAggregateRepository.findAllByPage(pageable);
     }
 
@@ -30,11 +30,11 @@ public class SuperAggregateService {
         superAggregateRepository.deleteAllById(ids);
     }
 
-    public void deleteAll(List<SuperAggregateEntity> aggregate) {
+    public void deleteAll(List<SuperAggregateP> aggregate) {
         superAggregateRepository.deleteAll(aggregate);
     }
 
-    public List<SuperAggregateEntity> findAllByUserId(Long id) {
+    public List<SuperAggregateP> findAllByUserId(Long id) {
         return superAggregateRepository.findAllByUserId(id);
     }
 }

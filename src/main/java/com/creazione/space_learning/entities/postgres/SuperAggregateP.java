@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.enums.NoticeType;
 import jakarta.persistence.*;
@@ -19,7 +19,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SuperAggregateEntity {
+public class SuperAggregateP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +32,7 @@ public class SuperAggregateEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
 
-    public SuperAggregateEntity(Long userId, Long telegramId, String userName, NoticeType type) {
+    public SuperAggregateP(Long userId, Long telegramId, String userName, NoticeType type) {
         this.userId = userId;
         this.telegramId = telegramId;
         this.userName = userName;

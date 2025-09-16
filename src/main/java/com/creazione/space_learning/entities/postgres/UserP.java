@@ -1,6 +1,5 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
-import com.creazione.space_learning.dto.UserDto;
 import com.creazione.space_learning.utils.BuildingSorter;
 import com.creazione.space_learning.utils.ResourceSorter;
 import jakarta.persistence.*;
@@ -19,7 +18,7 @@ import java.util.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity {
+public class UserP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,18 +26,18 @@ public class UserEntity {
     private Long telegramId;
     private String name;
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<Building> buildings;
+    private Set<BuildingP> buildings;
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<Resource> resources;
+    private Set<ResourceP> resources;
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<InventoryBooster> boosters;
+    private Set<InventoryBoosterP> boosters;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "player_score_id") // Новый столбец в таблице users
-    private PlayerScore playerScore;
+    private PlayerScoreP playerScore;
     private Long referrer;
     private Integer totalReferrals = 0;
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<NoticeEntity> notices;
+    private Set<NoticeP> notices;
     private boolean isSuperAggregate;
     private boolean isPost;
     private Instant updatedAt;
@@ -53,35 +52,5 @@ public class UserEntity {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = Instant.now();
-    }
-
-// профайлер , бесплатный -Visual VM
-    public UserDto convertToUserDto() {
-        return new UserDto(this.getId(),
-                this.getTelegramId(),
-                this.getName(),
-                new ArrayList<>(this.getBuildings()),
-                new ArrayList<>(this.getResources()),
-                new ArrayList<>(this.getBoosters()),
-                this.getPlayerScore(),
-                this.getReferrer(),
-                this.getTotalReferrals(),
-                new HashSet<>(this.getNotices()),
-                this.isSuperAggregate(),
-                this.isPost(),
-                this.getUpdatedAt(),
-                this.getCreatedAt());
-    }
-
-    public void incrementTotalReferrals() {
-        totalReferrals++;
-    }
-
-    public Set<Building> viewSortedBuildings() {
-        return BuildingSorter.sortBuildingsAsSet(this.buildings);
-    }
-
-    public Set<Resource> viewSortedResources() {
-        return ResourceSorter.sortResourcesAsSet(this.resources);
     }
 }

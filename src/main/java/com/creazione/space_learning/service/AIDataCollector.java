@@ -1,6 +1,6 @@
 package com.creazione.space_learning.service;
 
-import com.creazione.space_learning.entities.AITrainingDataEntity;
+import com.creazione.space_learning.entities.postgres.AITrainingDataP;
 import com.creazione.space_learning.repository.AITrainingDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class AIDataCollector {
         // Асинхронное сохранение чтобы не блокировать основной поток
         executor.submit(() -> {
             try {
-                AITrainingDataEntity data = new AITrainingDataEntity();
+                AITrainingDataP data = new AITrainingDataP();
                 data.setUserId(userId);
                 data.setUserMessage(message);
                 data.setContext(context);

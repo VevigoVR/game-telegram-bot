@@ -1,4 +1,4 @@
-package com.creazione.space_learning.dto;
+package com.creazione.space_learning.entities.redis;
 
 import com.creazione.space_learning.enums.ResourceType;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventoryBoosterDto {
+public class InventoryBoosterR {
     private Long id;
     private Long userId;
     private ResourceType name;
@@ -24,7 +24,7 @@ public class InventoryBoosterDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InventoryBoosterDto that = (InventoryBoosterDto) o;
+        InventoryBoosterR that = (InventoryBoosterR) o;
         return Double.compare(that.quantity, quantity) == 0 &&
                 name == that.name &&
                 Objects.equals(value, that.value) &&

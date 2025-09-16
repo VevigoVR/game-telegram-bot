@@ -1,9 +1,9 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.BuildingList;
 import com.creazione.space_learning.enums.BuildingType;
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -49,7 +49,7 @@ public class BuildingsQuery extends Query {
         if (getUserDto().getBuildings().isEmpty()) {
             text.append("<i>строений нет...</i>\n");
         }
-        for (Building building : getUserDto().viewSortedBuildings()) {
+        for (BuildingP building : getUserDto().viewSortedBuildings()) {
             if (!building.isVisible()) {
                 continue;
             }
@@ -62,18 +62,18 @@ public class BuildingsQuery extends Query {
         }
 
         if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            List<Building> buildingList = getUserDto().viewSortedBuildings().stream().filter(Building::isVisible).toList();
+            List<BuildingP> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingP::isVisible).toList();
             if (buildingList.size() < 4) {
                 text.append("\n<b>Можно построить</b>:\n");
             }
         }
 
-        for (Building building : BuildingList.BUILDING_LIST) {
+        for (BuildingP building : BuildingList.BUILDING_LIST) {
             if (!building.isVisible()) {
                 continue;
             }
             boolean isExist = false;
-            for (Building myBuilding : getUserDto().getBuildings()) {
+            for (BuildingP myBuilding : getUserDto().getBuildings()) {
                 if (building.getName().equals(myBuilding.getName())) {
                     isExist = true;
                 }
@@ -82,8 +82,8 @@ public class BuildingsQuery extends Query {
 
             text.append(Emoji.WHITE_SMALL_SQUARE).append(" ").append(building.getName().toString().toUpperCase()).append("\n");
             text.append("Стоимость строительства:").append("\n");
-            List<Resource> resources = building.viewPrice(1);
-            for (Resource resource : resources) {
+            List<ResourceP> resources = building.viewPrice(1);
+            for (ResourceP resource : resources) {
                 text.append(resource.getName()).append(": ").append(resource.makeQuantityString())
                         .append(" ").append(resource.getEmoji()).append("\n");
             }

@@ -1,7 +1,7 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.dto.InventoryBoosterDto;
-import com.creazione.space_learning.entities.InventoryBooster;
+import com.creazione.space_learning.entities.redis.InventoryBoosterR;
+import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,14 +35,14 @@ class InventoryBoosterCacheServiceTest {
     private InventoryBoosterCacheService inventoryBoosterCacheService;
 
     private static final Long USER_ID = 1L;
-    private InventoryBooster booster1;
-    private InventoryBooster booster2;
-    private List<InventoryBooster> boosters;
+    private InventoryBoosterP booster1;
+    private InventoryBoosterP booster2;
+    private List<InventoryBoosterP> boosters;
 
     @BeforeEach
     void setUp() {
-        booster1 = new InventoryBooster(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10.0);
-        booster2 = new InventoryBooster(ResourceType.ACCELERATION_METAL, 0.3, 1800000L, 5.0);
+        booster1 = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10.0);
+        booster2 = new InventoryBoosterP(ResourceType.ACCELERATION_METAL, 0.3, 1800000L, 5.0);
         boosters = Arrays.asList(booster1, booster2);
     }
 
@@ -56,7 +56,7 @@ class InventoryBoosterCacheServiceTest {
 
         // Assert
         verify(redisTemplate).delete("inventory_boosters:" + USER_ID);
-        verify(valueOperations).set(eq("inventory_boosters:" + USER_ID), eq(toDtoList(boosters)));
+        verify(valueOperations).set(eq("inventory_boosters:" + USER_ID), eq(toRedisObjectList(boosters)));
         verify(redisTemplate).expire(eq("inventory_boosters:" + USER_ID), eq(1L), eq(TimeUnit.HOURS));
         verify(valueOperations, never()).set(anyString(), anyString(), anyLong(), any(TimeUnit.class));
     }
@@ -93,11 +93,11 @@ class InventoryBoosterCacheServiceTest {
     void getInventoryBooster_shouldReturnBoosterWhenExists() {
         // Arrange
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toDtoList(boosters));
+        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toRedisObjectList(boosters));
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(false);
 
         // Act
-        Optional<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBooster(USER_ID, "ACCELERATION_ALL");
+        Optional<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBooster(USER_ID, "ACCELERATION_ALL");
 
         // Assert
         assertTrue(result.isPresent());
@@ -112,7 +112,7 @@ class InventoryBoosterCacheServiceTest {
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(false);
 
         // Act
-        Optional<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBooster(USER_ID, "NON_EXISTENT");
+        Optional<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBooster(USER_ID, "NON_EXISTENT");
 
         // Assert
         assertFalse(result.isPresent());
@@ -124,7 +124,7 @@ class InventoryBoosterCacheServiceTest {
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(true);
 
         // Act
-        Optional<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBooster(USER_ID, "ACCELERATION_ALL");
+        Optional<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBooster(USER_ID, "ACCELERATION_ALL");
 
         // Assert
         assertFalse(result.isPresent());
@@ -135,11 +135,11 @@ class InventoryBoosterCacheServiceTest {
     void getInventoryBoosters_shouldReturnBoostersWhenExists() {
         // Arrange
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toDtoList(boosters));
+        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toRedisObjectList(boosters));
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(false);
 
         // Act
-        List<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
+        List<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
 
         // Assert
         assertEquals(2, result.size());
@@ -152,7 +152,7 @@ class InventoryBoosterCacheServiceTest {
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(true);
 
         // Act
-        List<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
+        List<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -167,7 +167,7 @@ class InventoryBoosterCacheServiceTest {
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(false);
 
         // Act
-        List<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
+        List<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -184,7 +184,7 @@ class InventoryBoosterCacheServiceTest {
         //doNothing().when(redisTemplate).delete(anyString());
 
         // Act
-        List<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
+        List<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBoosters(USER_ID);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -195,11 +195,11 @@ class InventoryBoosterCacheServiceTest {
     void getInventoryBoostersByName_shouldFilterBoostersByType() {
         // Arrange
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toDtoList(boosters));
+        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toRedisObjectList(boosters));
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(false);
 
         // Act
-        List<InventoryBooster> result = inventoryBoosterCacheService.getInventoryBoostersByName(USER_ID, ResourceType.ACCELERATION_ALL);
+        List<InventoryBoosterP> result = inventoryBoosterCacheService.getInventoryBoostersByName(USER_ID, ResourceType.ACCELERATION_ALL);
 
         // Assert
         assertEquals(1, result.size());
@@ -210,10 +210,10 @@ class InventoryBoosterCacheServiceTest {
     void updateSingleInventoryBooster_shouldUpdateExistingBooster() {
         // Arrange
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toDtoList(boosters));
+        when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toRedisObjectList(boosters));
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(false);
 
-        InventoryBooster updatedBooster = new InventoryBooster(ResourceType.ACCELERATION_ALL, 0.7, 3600000L, 15.0);
+        InventoryBoosterP updatedBooster = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.7, 3600000L, 15.0);
 
         // Act
         inventoryBoosterCacheService.updateInventoryBooster(USER_ID, updatedBooster);
@@ -280,8 +280,8 @@ class InventoryBoosterCacheServiceTest {
     }
 
     // Методы преобразования
-    private InventoryBoosterDto toDto(InventoryBooster booster) {
-        return new InventoryBoosterDto(
+    private InventoryBoosterR toRedisObject(InventoryBoosterP booster) {
+        return new InventoryBoosterR(
                 booster.getId(),
                 booster.getUserId(),
                 booster.getName(),
@@ -291,9 +291,9 @@ class InventoryBoosterCacheServiceTest {
         );
     }
 
-    private List<InventoryBoosterDto> toDtoList(List<InventoryBooster> boosters) {
+    private List<InventoryBoosterR> toRedisObjectList(List<InventoryBoosterP> boosters) {
         return boosters.stream()
-                .map(this::toDto)
+                .map(this::toRedisObject)
                 .collect(Collectors.toList());
     }
 }

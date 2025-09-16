@@ -1,6 +1,6 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.entities.Building;
+import com.creazione.space_learning.entities.postgres.BuildingP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import static com.creazione.space_learning.service.redis.CacheKey.*;
 public class BuildingCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void cacheBuildings(Long userId, List<Building> buildings) {
+    public void cacheBuildings(Long userId, List<BuildingP> buildings) {
         deleteBuildings(userId);
         String key = BUILDING_KEY_PREFIX.getName() + userId;
 
@@ -32,12 +32,12 @@ public class BuildingCacheService {
     }
 
 
-    public void cacheBuildingsHash(Long userId, List<Building> buildings) {
+    public void cacheBuildingsHash(Long userId, List<BuildingP> buildings) {
         deleteBuildings(userId);
         String hashKey = BUILDING_KEY_PREFIX.getName() + userId;
 
         if (buildings != null && !buildings.isEmpty()) {
-            Map<String, Building> buildingMap = new HashMap<>();
+            Map<String, BuildingP> buildingMap = new HashMap<>();
             buildings.forEach(building ->
                     buildingMap.put(building.getName().name(), building)
             );
@@ -58,7 +58,7 @@ public class BuildingCacheService {
         return size > 0;
     }
 
-    public List<Building> getBuildings(Long userId) {
+    public List<BuildingP> getBuildings(Long userId) {
         String key = BUILDING_KEY_PREFIX.getName() + userId;
 
         // Проверяем, есть ли отметка о пустоте
@@ -72,7 +72,7 @@ public class BuildingCacheService {
         if (buildings instanceof List) {
             try {
                 @SuppressWarnings("unchecked")
-                List<Building> result = (List<Building>) buildings;
+                List<BuildingP> result = (List<BuildingP>) buildings;
                 return result;
             } catch (ClassCastException e) {
                 // Если произошла ошибка приведения типа, очищаем кэш
@@ -84,19 +84,19 @@ public class BuildingCacheService {
         return List.of();
     }
 
-    public List<Building> getBuildingsHash(Long userId) {
+    public List<BuildingP> getBuildingsHash(Long userId) {
         List<Object> buildings = redisTemplate.opsForHash()
                 .values(BUILDING_KEY_PREFIX.getName() + userId);
         return buildings.stream()
-                .map(obj -> (Building) obj)
+                .map(obj -> (BuildingP) obj)
                 .collect(Collectors.toList());
     }
 
-    public void updateSingleBuilding(Long userId, Building building) {
+    public void updateSingleBuilding(Long userId, BuildingP building) {
         String key = BUILDING_KEY_PREFIX.getName() + userId;
 
         // Получаем текущий список зданий
-        List<Building> buildings = getBuildings(userId);
+        List<BuildingP> buildings = getBuildings(userId);
 
         // Удаляем старое здание с таким же именем (если есть)
         buildings = buildings.stream()
@@ -114,7 +114,7 @@ public class BuildingCacheService {
         clearBuildingsEmptyMark(userId);
     }
 
-    public void updateSingleBuildingHash(Long userId, Building building) {
+    public void updateSingleBuildingHash(Long userId, BuildingP building) {
         clearBuildingsEmptyMark(userId);
         // Обновляем конкретное здание
         redisTemplate.opsForHash().put(

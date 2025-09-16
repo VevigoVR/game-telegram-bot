@@ -1,8 +1,7 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.dto.ActiveBoosterDto;
-import com.creazione.space_learning.dto.InventoryBoosterDto;
-import com.creazione.space_learning.entities.ActiveBooster;
+import com.creazione.space_learning.entities.redis.ActiveBoosterR;
+import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,8 +20,8 @@ public class ActiveBoosterCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     // Методы преобразования
-    private ActiveBoosterDto toDto(ActiveBooster booster) {
-        return new ActiveBoosterDto(
+    private ActiveBoosterR toRedisObject(ActiveBoosterP booster) {
+        return new ActiveBoosterR(
                 booster.getId(),
                 booster.getUserId(),
                 booster.getName(),
@@ -32,8 +31,8 @@ public class ActiveBoosterCacheService {
         );
     }
 
-    private ActiveBooster toEntity(ActiveBoosterDto dto) {
-        ActiveBooster booster = new ActiveBooster();
+    private ActiveBoosterP toGameObject(ActiveBoosterR dto) {
+        ActiveBoosterP booster = new ActiveBoosterP();
         booster.setId(dto.getId());
         booster.setUserId(dto.getUserId());
         booster.setName(dto.getName());
@@ -43,27 +42,27 @@ public class ActiveBoosterCacheService {
         return booster;
     }
 
-    private List<ActiveBoosterDto> toDtoList(List<ActiveBooster> boosters) {
+    private List<ActiveBoosterR> toRedisObjectList(List<ActiveBoosterP> boosters) {
         return boosters.stream()
-                .map(this::toDto)
+                .map(this::toRedisObject)
                 .collect(Collectors.toList());
     }
 
-    private List<ActiveBooster> toEntityList(List<ActiveBoosterDto> boosterDtos) {
+    private List<ActiveBoosterP> toGameObjectList(List<ActiveBoosterR> boosterDtos) {
         return boosterDtos.stream()
-                .map(this::toEntity)
+                .map(this::toGameObject)
                 .collect(Collectors.toList());
     }
 
-    public void cacheActiveBoosters(Long telegramId, List<ActiveBooster> boosters) {
+    public void cacheActiveBoosters(Long telegramId, List<ActiveBoosterP> boosters) {
         deleteActiveBoosters(telegramId);
         String key = ACTIVE_BOOSTERS_KEY.getKey(telegramId);
-        List<ActiveBoosterDto> boosterDtos = toDtoList(boosters);
+        List<ActiveBoosterR> boosterDtos = toRedisObjectList(boosters);
         redisTemplate.opsForValue().set(key, boosterDtos);
         redisTemplate.expire(key, 1, TimeUnit.HOURS);
     }
 
-    public List<ActiveBooster> getActiveBoosters(Long telegramId) {
+    public List<ActiveBoosterP> getActiveBoosters(Long telegramId) {
         String key = ACTIVE_BOOSTERS_KEY.getName() + telegramId;
 
         if (isActiveBoostersEmpty(telegramId)) {
@@ -75,8 +74,8 @@ public class ActiveBoosterCacheService {
         if (boosters instanceof List) {
             try {
                 @SuppressWarnings("unchecked")
-                List<ActiveBoosterDto> boosterDtos = (List<ActiveBoosterDto>) boosters;
-                return toEntityList(boosterDtos);
+                List<ActiveBoosterR> boosterDtos = (List<ActiveBoosterR>) boosters;
+                return toGameObjectList(boosterDtos);
             } catch (ClassCastException e) {
                 deleteActiveBoosters(telegramId);
                 return new ArrayList<>();
@@ -86,25 +85,25 @@ public class ActiveBoosterCacheService {
         return new ArrayList<>();
     }
 
-    public List<ActiveBooster> getActiveBoostersByNameIn(Long telegramId, List<ResourceType> types) {
+    public List<ActiveBoosterP> getActiveBoostersByNameIn(Long telegramId, List<ResourceType> types) {
         List<String> boostersTypeString = types.stream().map(ResourceType::getName).toList();
-        List<ActiveBooster> allBoosters = getActiveBoosters(telegramId);
+        List<ActiveBoosterP> allBoosters = getActiveBoosters(telegramId);
         return allBoosters.stream()
                 .filter(booster -> boostersTypeString.contains(booster.getName().getName()))
                 .collect(Collectors.toList());
     }
 
-    public void addActiveBooster(Long telegramId, ActiveBooster booster) {
+    public void addActiveBooster(Long telegramId, ActiveBoosterP booster) {
         String key = ACTIVE_BOOSTERS_KEY.getName() + telegramId;
 
         // Получаем текущий список бустеров
-        List<ActiveBooster> boosters = getActiveBoosters(telegramId);
+        List<ActiveBoosterP> boosters = getActiveBoosters(telegramId);
 
         // Добавляем новый бустер
         boosters.add(booster);
 
         // Сохраняем обновленный список
-        List<ActiveBoosterDto> boosterDtos = toDtoList(boosters);
+        List<ActiveBoosterR> boosterDtos = toRedisObjectList(boosters);
         redisTemplate.opsForValue().set(key, boosterDtos);
         redisTemplate.expire(key, 1, TimeUnit.HOURS);
 
@@ -112,11 +111,11 @@ public class ActiveBoosterCacheService {
         clearActiveBoostersEmptyMark(telegramId);
     }
 
-    public void removeActiveBooster(Long telegramId, ActiveBooster booster) {
+    public void removeActiveBooster(Long telegramId, ActiveBoosterP booster) {
         String key = ACTIVE_BOOSTERS_KEY.getName() + telegramId;
 
         // Получаем текущий список бустеров
-        List<ActiveBooster> boosters = getActiveBoosters(telegramId);
+        List<ActiveBoosterP> boosters = getActiveBoosters(telegramId);
 
         // Удаляем бустер с такими же характеристиками
         boosters = boosters.stream()
@@ -130,7 +129,7 @@ public class ActiveBoosterCacheService {
         if (boosters.isEmpty()) {
             markActiveBoostersAsEmpty(telegramId);
         } else {
-            List<ActiveBoosterDto> boosterDtos = toDtoList(boosters);
+            List<ActiveBoosterR> boosterDtos = toRedisObjectList(boosters);
             redisTemplate.opsForValue().set(key, boosterDtos);
             redisTemplate.expire(key, 1, TimeUnit.HOURS);
         }

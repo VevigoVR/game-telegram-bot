@@ -1,7 +1,7 @@
 package com.creazione.space_learning.service;
 
-import com.creazione.space_learning.entities.AggregateNoticeEntity;
-import com.creazione.space_learning.entities.NoticeEntity;
+import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
+import com.creazione.space_learning.entities.postgres.NoticeP;
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.repository.NoticeRepository;
@@ -18,31 +18,31 @@ import java.util.Map;
 public class NoticeService {
     private final NoticeRepository noticeRepository;
 
-    public NoticeEntity save(NoticeEntity noticeEntity) {
+    public NoticeP save(NoticeP noticeEntity) {
         return noticeRepository.save(noticeEntity);
     }
 
-    public List<NoticeEntity> findAllByUserId(List<Long> ids) {
+    public List<NoticeP> findAllByUserId(List<Long> ids) {
         return noticeRepository.findAllByUserIdIn(ids);
     }
 
-    public List<AggregateNoticeEntity> aggregateNotices(
+    public List<AggregateNoticeP> aggregateNotices(
             List<Long> userIds,
             NoticeType noticeType
     ) {
         List<Object[]> groupedData = noticeRepository.findGroupedNotices(userIds, noticeType);
 
         // Группировка по userId
-        Map<Long, AggregateNoticeEntity> resultMap = new HashMap<>();
+        Map<Long, AggregateNoticeP> resultMap = new HashMap<>();
 
         for (Object[] row : groupedData) {
             Long userId = (Long) row[0];
             ResourceType resourceType = (ResourceType) row[2];
             Long count = (Long) row[3];
 
-            AggregateNoticeEntity aggregate = resultMap.computeIfAbsent(
+            AggregateNoticeP aggregate = resultMap.computeIfAbsent(
                     userId,
-                    id -> new AggregateNoticeEntity(userId, noticeType, 0)
+                    id -> new AggregateNoticeP(userId, noticeType, 0)
             );
 
             // Обновляем общее количество

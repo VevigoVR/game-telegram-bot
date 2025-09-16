@@ -1,6 +1,6 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.entities.Resource;
+import com.creazione.space_learning.entities.postgres.ResourceP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import static com.creazione.space_learning.service.redis.CacheKey.*;
 public class ResourceCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void cacheResources(Long userId, List<Resource> resources) {
+    public void cacheResources(Long userId, List<ResourceP> resources) {
         deleteResources(userId);
         String key = RESOURCE_KEY_PREFIX.getName() + userId;
 
@@ -33,7 +33,7 @@ public class ResourceCacheService {
         return redisTemplate.hasKey(RESOURCE_KEY_PREFIX.getName() + userId);
     }
 
-    public List<Resource> getResources(Long userId) {
+    public List<ResourceP> getResources(Long userId) {
         String key = RESOURCE_KEY_PREFIX.getName() + userId;
 
         // Проверяем, есть ли отметка о пустоте
@@ -47,7 +47,7 @@ public class ResourceCacheService {
         if (resources instanceof List) {
             try {
                 @SuppressWarnings("unchecked")
-                List<Resource> result = (List<Resource>) resources;
+                List<ResourceP> result = (List<ResourceP>) resources;
                 return result;
             } catch (ClassCastException e) {
                 // Если произошла ошибка приведения типа, очищаем кэш
@@ -59,11 +59,11 @@ public class ResourceCacheService {
         return List.of();
     }
 
-    public void updateSingleResource(Long userId, Resource resource) {
+    public void updateSingleResource(Long userId, ResourceP resource) {
         String key = RESOURCE_KEY_PREFIX.getName() + userId;
 
         // Получаем текущий список ресурсов
-        List<Resource> resources = getResources(userId);
+        List<ResourceP> resources = getResources(userId);
 
         // Удаляем старый ресурс с таким же именем (если есть)
         resources = resources.stream()

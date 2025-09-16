@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.enums.NoticeType;
 import jakarta.persistence.*;
@@ -21,7 +21,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AggregateNoticeEntity {
+public class AggregateNoticeP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,7 +43,7 @@ public class AggregateNoticeEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
 
-    public AggregateNoticeEntity(Long userId, NoticeType type, long quantity) {
+    public AggregateNoticeP(Long userId, NoticeType type, long quantity) {
         this.userId = userId;
         this.noticeType = type;
         this.quantity = quantity;

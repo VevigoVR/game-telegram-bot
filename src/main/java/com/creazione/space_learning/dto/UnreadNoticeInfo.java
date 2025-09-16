@@ -1,6 +1,6 @@
 package com.creazione.space_learning.dto;
 
-import com.creazione.space_learning.entities.AggregateNoticeEntity;
+import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UnreadNoticeInfo {
-    private AggregateNoticeEntity latestNotice;
+    private AggregateNoticeP latestNotice;
     private boolean hasMoreUnread;
-
 }

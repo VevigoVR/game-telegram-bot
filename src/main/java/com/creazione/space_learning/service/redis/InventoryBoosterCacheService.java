@@ -1,7 +1,7 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.dto.InventoryBoosterDto;
-import com.creazione.space_learning.entities.InventoryBooster;
+import com.creazione.space_learning.entities.redis.InventoryBoosterR;
+import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,8 +21,8 @@ public class InventoryBoosterCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     // Методы преобразования
-    private InventoryBoosterDto toDto(InventoryBooster booster) {
-        return new InventoryBoosterDto(
+    private InventoryBoosterR toRedisObject(InventoryBoosterP booster) {
+        return new InventoryBoosterR(
                 booster.getId(),
                 booster.getUserId(),
                 booster.getName(),
@@ -32,8 +32,8 @@ public class InventoryBoosterCacheService {
         );
     }
 
-    private InventoryBooster toEntity(InventoryBoosterDto dto) {
-        InventoryBooster booster = new InventoryBooster();
+    private InventoryBoosterP toGameObject(InventoryBoosterR dto) {
+        InventoryBoosterP booster = new InventoryBoosterP();
         booster.setId(dto.getId());
         booster.setUserId(dto.getUserId());
         booster.setName(dto.getName());
@@ -43,34 +43,34 @@ public class InventoryBoosterCacheService {
         return booster;
     }
 
-    private List<InventoryBoosterDto> toDtoList(List<InventoryBooster> boosters) {
+    private List<InventoryBoosterR> toRedisObjectList(List<InventoryBoosterP> boosters) {
         return boosters.stream()
-                .map(this::toDto)
+                .map(this::toRedisObject)
                 .collect(Collectors.toList());
     }
 
-    private List<InventoryBooster> toEntityList(List<InventoryBoosterDto> boosterDtos) {
+    private List<InventoryBoosterP> toGameObjectList(List<InventoryBoosterR> boosterDtos) {
         return boosterDtos.stream()
-                .map(this::toEntity)
+                .map(this::toGameObject)
                 .collect(Collectors.toList());
     }
 
-    public void cacheInventoryBoosters(Long telegramId, List<InventoryBooster> boosters) {
+    public void cacheInventoryBoosters(Long telegramId, List<InventoryBoosterP> boosters) {
         deleteInventoryBoosters(telegramId);
         String key = INVENTORY_BOOSTERS_KEY.getKey(telegramId);
-        List<InventoryBoosterDto> boosterDtos = toDtoList(boosters);
+        List<InventoryBoosterR> boosterDtos = toRedisObjectList(boosters);
         redisTemplate.opsForValue().set(key, boosterDtos);
         redisTemplate.expire(key, 1, TimeUnit.HOURS);
     }
 
-    public Optional<InventoryBooster> getInventoryBooster(Long telegramId, String boosterName) {
-        List<InventoryBooster> allBoosters = getInventoryBoosters(telegramId);
+    public Optional<InventoryBoosterP> getInventoryBooster(Long telegramId, String boosterName) {
+        List<InventoryBoosterP> allBoosters = getInventoryBoosters(telegramId);
         return allBoosters.stream()
                 .filter(booster -> booster.getName().name().equals(boosterName))
                 .findFirst();
     }
 
-    public List<InventoryBooster> getInventoryBoosters(Long telegramId) {
+    public List<InventoryBoosterP> getInventoryBoosters(Long telegramId) {
         String key = INVENTORY_BOOSTERS_KEY.getName() + telegramId;
 
         if (isInventoryBoostersEmpty(telegramId)) {
@@ -82,8 +82,8 @@ public class InventoryBoosterCacheService {
         if (boosters instanceof List) {
             try {
                 @SuppressWarnings("unchecked")
-                List<InventoryBoosterDto> boosterDtos = (List<InventoryBoosterDto>) boosters;
-                return toEntityList(boosterDtos);
+                List<InventoryBoosterR> boosterDtos = (List<InventoryBoosterR>) boosters;
+                return toGameObjectList(boosterDtos);
             } catch (ClassCastException e) {
                 deleteInventoryBoosters(telegramId);
                 return new ArrayList<>();
@@ -93,24 +93,24 @@ public class InventoryBoosterCacheService {
         return new ArrayList<>();
     }
 
-    public List<InventoryBooster> getInventoryBoostersByName(Long telegramId, ResourceType type) {
-        List<InventoryBooster> allBoosters = getInventoryBoosters(telegramId);
+    public List<InventoryBoosterP> getInventoryBoostersByName(Long telegramId, ResourceType type) {
+        List<InventoryBoosterP> allBoosters = getInventoryBoosters(telegramId);
         return allBoosters.stream()
                 .filter(booster -> booster.getName().equals(type))
                 .collect(Collectors.toList());
     }
 
-    public void addInventoryBooster(Long telegramId, InventoryBooster booster) {
+    public void addInventoryBooster(Long telegramId, InventoryBoosterP booster) {
         String key = INVENTORY_BOOSTERS_KEY.getName() + telegramId;
 
         // Получаем текущий список бустеров
-        List<InventoryBooster> boosters = getInventoryBoosters(telegramId);
+        List<InventoryBoosterP> boosters = getInventoryBoosters(telegramId);
 
         // Добавляем новый бустер
         boosters.add(booster);
 
         // Сохраняем обновленный список
-        List<InventoryBoosterDto> boosterDtos = toDtoList(boosters);
+        List<InventoryBoosterR> boosterDtos = toRedisObjectList(boosters);
         redisTemplate.opsForValue().set(key, boosterDtos);
         redisTemplate.expire(key, 1, TimeUnit.HOURS);
 
@@ -118,11 +118,11 @@ public class InventoryBoosterCacheService {
         clearInventoryBoostersEmptyMark(telegramId);
     }
 
-    public void updateInventoryBooster(Long telegramId, InventoryBooster booster) {
+    public void updateInventoryBooster(Long telegramId, InventoryBoosterP booster) {
         String key = INVENTORY_BOOSTERS_KEY.getName() + telegramId;
 
         // Получаем текущий список бустеров
-        List<InventoryBooster> boosters = getInventoryBoosters(telegramId);
+        List<InventoryBoosterP> boosters = getInventoryBoosters(telegramId);
 
         // Удаляем старый бустер с таким же именем и характеристиками
         boosters = boosters.stream()
@@ -135,7 +135,7 @@ public class InventoryBoosterCacheService {
         boosters.add(booster);
 
         // Сохраняем обновленный список
-        List<InventoryBoosterDto> boosterDtos = toDtoList(boosters);
+        List<InventoryBoosterR> boosterDtos = toRedisObjectList(boosters);
         redisTemplate.opsForValue().set(key, boosterDtos);
         redisTemplate.expire(key, 1, TimeUnit.HOURS);
 
@@ -143,11 +143,11 @@ public class InventoryBoosterCacheService {
         clearInventoryBoostersEmptyMark(telegramId);
     }
 
-    public void removeInventoryBooster(Long telegramId, InventoryBooster booster) {
+    public void removeInventoryBooster(Long telegramId, InventoryBoosterP booster) {
         String key = INVENTORY_BOOSTERS_KEY.getName() + telegramId;
 
         // Получаем текущий список бустеров
-        List<InventoryBooster> boosters = getInventoryBoosters(telegramId);
+        List<InventoryBoosterP> boosters = getInventoryBoosters(telegramId);
 
         // Удаляем бустер с такими же характеристиками
         boosters = boosters.stream()
@@ -160,7 +160,7 @@ public class InventoryBoosterCacheService {
         if (boosters.isEmpty()) {
             markInventoryBoostersAsEmpty(telegramId);
         } else {
-            List<InventoryBoosterDto> boosterDtos = toDtoList(boosters);
+            List<InventoryBoosterR> boosterDtos = toRedisObjectList(boosters);
             redisTemplate.opsForValue().set(key, boosterDtos);
             redisTemplate.expire(key, 1, TimeUnit.HOURS);
         }

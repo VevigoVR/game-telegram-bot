@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.responces;
 
-import com.creazione.space_learning.entities.SuperAggregateEntity;
+import com.creazione.space_learning.entities.postgres.SuperAggregateP;
 import com.creazione.space_learning.enums.Emoji;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 public class SuperAggregateMessage extends Response {
-    private SuperAggregateEntity superAggregateEntity;
+    private SuperAggregateP superAggregateEntity;
 
-    public SuperAggregateMessage(SuperAggregateEntity superAggregateEntity) {
+    public SuperAggregateMessage(SuperAggregateP superAggregateEntity) {
         super();
         this.superAggregateEntity = superAggregateEntity;
     }

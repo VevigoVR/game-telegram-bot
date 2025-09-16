@@ -1,4 +1,4 @@
-package com.creazione.space_learning.entities;
+package com.creazione.space_learning.entities.postgres;
 
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.enums.ResourceType;
@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoticeEntity {
+public class NoticeP {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +31,7 @@ public class NoticeEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt = new Date();
 
-    public NoticeEntity(Long userId, NoticeType noticeType, ResourceType resourceType) {
+    public NoticeP(Long userId, NoticeType noticeType, ResourceType resourceType) {
         this.userId = userId;
         this.noticeType = noticeType;
         this.resourceType = resourceType;
