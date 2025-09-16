@@ -22,6 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -311,6 +312,7 @@ public class BuildingInfo extends Query {
         }
 
         List<ActiveBoosterP> boosters = DataSet.getBoosterService().findAllABByUserIdAndNameIn(userId, telegramId, types);
+        boosters = boosters.stream().filter(booster -> booster.getEndsAt().toEpochMilli() > Instant.now().toEpochMilli()).toList();
         if (boosters.isEmpty()) return 0;
 
         double rate = 0.0;
