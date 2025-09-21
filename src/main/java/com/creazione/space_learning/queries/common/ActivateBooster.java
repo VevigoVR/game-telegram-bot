@@ -113,21 +113,20 @@ public class ActivateBooster extends Query {
                 activateAcceleration(ResourceType.ACCELERATION_METAL, rate, time);
                 break;
             }
-            case "wood": {
-                activateAcceleration(ResourceType.ACCELERATION_WOOD, rate, time);
-                break;
-            }
             case "stone": {
                 activateAcceleration(ResourceType.ACCELERATION_STONE, rate, time);
                 break;
             }
-            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
                 /*
+            case "wood": {
+                activateAcceleration(ResourceType.ACCELERATION_WOOD, rate, time);
+                break;
+            }
             case "gold": {
                 activateAcceleration(ResourceType.ACCELERATION_GOLD, rate, time);
                 break;
             }
-
                  */
             default: return;
         }

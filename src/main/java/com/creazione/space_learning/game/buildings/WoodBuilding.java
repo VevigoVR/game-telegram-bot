@@ -18,7 +18,7 @@ public class WoodBuilding extends BuildingP {
         super(BuildingType.WOOD_BUILDING, ResourceType.WOOD);
         this.setIncrementPrice(2);
         this.setIncrementMining(1.25);
-        this.setQuantityMining(0.0001);
+        this.setQuantityMining(0.01);
         this.setEmojiProduction(Emoji.WOOD);
     }
 

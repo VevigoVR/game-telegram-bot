@@ -18,7 +18,7 @@ public class GoldBuilding extends BuildingP {
         super(BuildingType.GOLD_BUILDING, ResourceType.GOLD);
         this.setIncrementPrice(2);
         this.setIncrementMining(1.25);
-        this.setQuantityMining(0.0001);
+        this.setQuantityMining(0.01);
         this.setEmojiProduction(Emoji.FULL_MOON);
     }
 
@@ -26,7 +26,7 @@ public class GoldBuilding extends BuildingP {
     public List<ResourceP> viewPrice(int level) {
         List<ResourceP> price = new ArrayList<>();
         int goldQuantity = 5;
-        int woodQuantity = 7;
+        //int woodQuantity = 7;
         int stoneQuantity = 5;
         int metalQuantity = 7;
         if (level == 1) {

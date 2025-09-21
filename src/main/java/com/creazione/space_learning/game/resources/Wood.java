@@ -13,7 +13,7 @@ public class Wood extends ResourceP {
         super(ResourceType.WOOD, Emoji.WOOD);
     }
 
-    public Wood(double quantity) {
+    public Wood(long quantity) {
         super(ResourceType.WOOD, Emoji.WOOD, quantity);
     }
 }

@@ -12,7 +12,7 @@ public class Crypto extends ResourceP {
     public Crypto() {
         super(ResourceType.CRYPTO, Emoji.MONEY);
     }
-    public Crypto(double quantity) {
+    public Crypto(long quantity) {
         super(ResourceType.CRYPTO, Emoji.MONEY, quantity);
     }
 }

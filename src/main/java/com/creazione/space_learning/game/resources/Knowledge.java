@@ -13,7 +13,7 @@ public class Knowledge extends ResourceP {
         super(ResourceType.KNOWLEDGE, Emoji.SPARKLE);
     }
 
-    public Knowledge(double quantity) {
+    public Knowledge(long quantity) {
         super(ResourceType.KNOWLEDGE, Emoji.SPARKLE);
         this.setQuantity(quantity);
     }

@@ -13,7 +13,7 @@ public class LootBoxRare extends ResourceP {
         super(ResourceType.LOOT_BOX_RARE, Emoji.CARD_FILE_BOX);
     }
 
-    public LootBoxRare(double quantity) {
+    public LootBoxRare(long quantity) {
         super(ResourceType.LOOT_BOX_RARE, Emoji.CARD_FILE_BOX);
         this.setQuantity(quantity);
     }

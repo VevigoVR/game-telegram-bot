@@ -13,7 +13,7 @@ public class ReferralBox1 extends ResourceP {
         super(ResourceType.REFERRAL_BOX_1, Emoji.SCHOOL_SATCHEL);
     }
 
-    public ReferralBox1(double quantity) {
+    public ReferralBox1(long quantity) {
         super(ResourceType.REFERRAL_BOX_1, Emoji.SCHOOL_SATCHEL, quantity);
     }
 }

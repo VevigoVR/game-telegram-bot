@@ -13,7 +13,7 @@ public class Gold extends ResourceP {
         super(ResourceType.GOLD, Emoji.FULL_MOON);
     }
 
-    public Gold(double quantity) {
+    public Gold(long quantity) {
         super(ResourceType.GOLD, Emoji.FULL_MOON, quantity);
     }
 }

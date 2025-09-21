@@ -52,19 +52,15 @@ public class LootBoxService {
                 milliSecondsGift = 7_200_000;
                 return Arrays.asList(
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         //new Knowledge(1),
@@ -75,9 +71,6 @@ public class LootBoxService {
                                 ResourceType.ACCELERATION_STONE,
                                 0.2, Duration.ofHours(24).toMillis(), 1),
                         new InventoryBoosterP(
-                                ResourceType.ACCELERATION_WOOD,
-                                0.2, Duration.ofHours(24).toMillis(), 1),
-                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 0.2, Duration.ofHours(24).toMillis(), 1)
                 );
@@ -85,7 +78,6 @@ public class LootBoxService {
                 milliSecondsGift = 18_000_000;
                 return Arrays.asList(
                         new Gold(50),
-                        new Wood(50),
                         new Stone(50),
                         new Metal(50),
                         new InventoryBoosterP(
@@ -101,7 +93,6 @@ public class LootBoxService {
                         new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 0.5, Duration.ofHours(24).toMillis(), 1),
-                        new Wood(50),
                         new Metal(50),
                         new Stone(50)
                         //new Knowledge(10)
@@ -113,7 +104,6 @@ public class LootBoxService {
                         new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 1.0, Duration.ofHours(24).toMillis(), 1),
-                        new Wood(150),
                         new Metal(150),
                         new Stone(150)
                         //new Knowledge(25)
@@ -125,7 +115,6 @@ public class LootBoxService {
                         new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 1.5, Duration.ofHours(24).toMillis(), 1),
-                        new Wood(2000),
                         new Metal(2000),
                         new Stone(2000)
                         //new Knowledge(50)

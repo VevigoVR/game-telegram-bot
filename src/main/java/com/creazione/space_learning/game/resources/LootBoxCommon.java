@@ -13,7 +13,7 @@ public class LootBoxCommon extends ResourceP {
         super(ResourceType.LOOT_BOX_COMMON, Emoji.PACKAGE);
     }
 
-    public LootBoxCommon(double quantity) {
+    public LootBoxCommon(long quantity) {
         super(ResourceType.LOOT_BOX_COMMON, Emoji.PACKAGE);
         this.setQuantity(quantity);
     }

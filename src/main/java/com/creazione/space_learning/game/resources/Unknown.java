@@ -12,7 +12,7 @@ public class Unknown extends ResourceP {
     public Unknown() {
         super(ResourceType.UNKNOWN, Emoji.ARROW_RIGHT);
     }
-    public Unknown(double quantity) {
+    public Unknown(long quantity) {
         super(ResourceType.UNKNOWN, Emoji.ARROW_RIGHT, quantity);
     }
 }

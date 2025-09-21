@@ -13,7 +13,7 @@ public class Metal extends ResourceP {
         super(ResourceType.METAL, Emoji.BLACK_CIRCLE);
     }
 
-    public Metal(double quantity) {
+    public Metal(long quantity) {
         super(ResourceType.METAL, Emoji.BLACK_CIRCLE);
         this.setQuantity(quantity);
     }

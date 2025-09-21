@@ -4,6 +4,7 @@ import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.enums.Emoji;
+import com.creazione.space_learning.utils.Formatting;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -52,6 +53,7 @@ public class BuildingP {
     private Emoji emojiProduction;
     @Transient
     private double incrementPrice;
+    private double resourcesInBuilding;
     private double incrementMining;
     private double quantityMining;
     private int level;
@@ -110,4 +112,15 @@ public class BuildingP {
     }
 
     public double calculateIncrementMining() { return 0.1; }
+
+    public long calculateStorageLimit() {
+        // возвращаем значение, равное 24 часам производства
+        if (this.getLevel() == 0) {
+            return 0;
+        }
+        long quantityInHour = 3_600 *
+                (long) (this.getQuantityMining() * Math.pow(this.getIncrementMining(), this.getLevel()));
+
+        return Formatting.roundNumber(quantityInHour * 24);
+    }
 }

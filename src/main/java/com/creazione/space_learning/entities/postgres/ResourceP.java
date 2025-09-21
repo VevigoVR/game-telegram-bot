@@ -50,7 +50,7 @@ public class ResourceP extends Item {
     private final ResourceType name;
     @Enumerated(EnumType.STRING)
     private final Emoji emoji;
-    private double quantity;
+    private long quantity;
 
     public ResourceP(ResourceType name, Emoji emoji) {
         super();
@@ -66,7 +66,7 @@ public class ResourceP extends Item {
         this.quantity = 0;
     }
 
-    public ResourceP(ResourceType name, Emoji emoji, double quantity) {
+    public ResourceP(ResourceType name, Emoji emoji, long quantity) {
         super();
         this.quantity = quantity;
         this.name = name;
@@ -84,8 +84,12 @@ public class ResourceP extends Item {
     }
 
     @Override
-    public void addQuantity(double quantity) {
+    public void addQuantity(long quantity) {
         this.quantity += quantity;
+    }
+
+    public void subtractQuantity(long quantity) {
+        this.quantity -= quantity;
     }
 
     @Override

@@ -125,7 +125,7 @@ public class BuildingService {
         for (ResourceP resource : resources) {
             sum += (long) resource.getQuantity();
         }
-        sum *= (long) 100.0; // необходимо преобразование в миллисекунды для метода, сохраняющего время для улучшения уровня строения
+        sum /= 10L; // необходимо преобразование в миллисекунды для метода, сохраняющего время для улучшения уровня строения
         return sum;
     }
 

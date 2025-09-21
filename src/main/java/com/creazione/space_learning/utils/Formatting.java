@@ -42,4 +42,22 @@ public class Formatting {
         // Убираем trailing нули и точку, если нужно
         return bd.stripTrailingZeros().toPlainString();
     }
+
+    public static long roundNumber(long number) {
+        if (number <= 10) return number;
+
+        int length = String.valueOf(number).length();
+
+        if (length <= 3) {
+            // Округление до десятков для чисел 11-999
+            return Math.round(number / 10.0) * 10;
+        } else if (length <= 5) {
+            // Округление до сотен для чисел 1000-99999
+            return Math.round(number / 100.0) * 100;
+        } else {
+            // Округление до 3 значащих цифр для больших чисел
+            double scale = Math.pow(10, length - 3);
+            return (long) (Math.round(number / scale) * scale);
+        }
+    }
 }

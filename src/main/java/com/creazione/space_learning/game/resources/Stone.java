@@ -13,7 +13,7 @@ public class Stone extends ResourceP {
         super(ResourceType.STONE, Emoji.ROCK);
     }
 
-    public Stone(double quantity) {
+    public Stone(long quantity) {
         super(ResourceType.STONE, Emoji.ROCK);
         this.setQuantity(quantity);
     }

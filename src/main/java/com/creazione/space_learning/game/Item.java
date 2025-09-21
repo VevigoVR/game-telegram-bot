@@ -9,9 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 public class Item {
     private ResourceType name;
-    private double quantity;
+    private long quantity;
 
-    public void addQuantity(double quantity) {
+    public void addQuantity(long quantity) {
         this.quantity += quantity;
     }
 }

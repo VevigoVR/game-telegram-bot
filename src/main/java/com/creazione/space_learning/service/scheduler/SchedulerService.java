@@ -2,7 +2,6 @@ package com.creazione.space_learning.service.scheduler;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.redis.UserR;
 import com.creazione.space_learning.entities.postgres.*;
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.enums.SchedulerType;
@@ -212,11 +211,11 @@ public class SchedulerService {
     private void grantReferralGifts(long referrerId, UserDto userDto) {
         UserDto userReferrer = userService.findUserWithResourcesById(referrerId);
         if (userReferrer != null) {
-            resourceService.addReferralBox1OrIncrement(new HashSet<>(userReferrer.getResources()), ResourceType.REFERRAL_BOX_1);
+            resourceService.addResourceOrIncrement(userReferrer.getResources(), ResourceType.REFERRAL_BOX_1);
 
             userService.saveFullWithoutCache(userReferrer);
         }
-        resourceService.addReferralBox1OrIncrement(new HashSet<>(userDto.getResources()), ResourceType.REFERRAL_BOX_1);
+        resourceService.addResourceOrIncrement(userDto.getResources(), ResourceType.REFERRAL_BOX_1);
     }
 
     public static void grantOldNotices(UserDto userDto, List<AggregateNoticeP> aggregateNotices) {

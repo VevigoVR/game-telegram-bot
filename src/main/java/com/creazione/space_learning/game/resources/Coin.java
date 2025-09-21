@@ -12,7 +12,7 @@ public class Coin extends ResourceP {
     public Coin() {
         super(ResourceType.COIN, Emoji.NAZAR_AMULET);
     }
-    public Coin(double quantity) {
+    public Coin(long quantity) {
         super(ResourceType.COIN, Emoji.NAZAR_AMULET, quantity);
     }
 }

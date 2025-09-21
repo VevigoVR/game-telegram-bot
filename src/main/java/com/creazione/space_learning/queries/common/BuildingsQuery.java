@@ -63,9 +63,12 @@ public class BuildingsQuery extends Query {
 
         if (!getUserDto().viewSortedBuildings().isEmpty()) {
             List<BuildingP> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingP::isVisible).toList();
-            if (buildingList.size() < 4) {
+            //System.out.println("Размер списка строений: " + buildingList.size());
+            if (buildingList.size() < 2) {
                 text.append("\n<b>Можно построить</b>:\n");
             }
+        } else {
+            text.append("\n<b>Можно построить</b>:\n");
         }
 
         for (BuildingP building : BuildingList.BUILDING_LIST) {
@@ -96,14 +99,14 @@ public class BuildingsQuery extends Query {
 
     @Override
     public InlineKeyboardMarkup getInlineKeyboardMarkup() {
-        List<Integer> buttonsInLine = List.of(1, 1, 2);
+        List<Integer> buttonsInLine = List.of(1, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));
-        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
         //buttons.add(getButton(BuildingType.GOLD_BUILDING.toString(), "/buildingGold"));
         buttons.add(getButton(BuildingType.STONE_BUILDING.toString(), "/buildingStone"));
         buttons.add(getButton(BuildingType.METAL_BUILDING.toString(), "/buildingMetal"));
-        buttons.add(getButton(BuildingType.WOOD_BUILDING.toString(), "/buildingWood"));
+        //buttons.add(getButton(BuildingType.WOOD_BUILDING.toString(), "/buildingWood"));
         return getKeyboard(buttonsInLine, buttons);
     }
 }

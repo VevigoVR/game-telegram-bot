@@ -31,23 +31,26 @@ import java.util.List;
 @Component
 @GameCommand(
         // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ value = {"/buildinggold",
+        // И ЛЕСОПИЛКУ ,"/buildingwood"
         value = {
                 "/buildingmetal",
-                "/buildingstone",
-                "/buildingwood"},
+                "/buildingstone"
+        },
         description = "Информация о здании"
 )
 public class BuildingInfo extends Query {
     private BuildingP targetBuilding;
     private BuildingP userBuilding;
+    private String takeButton = "Собрать ресурсы";
     private boolean hasBuilding = false;
 
     public BuildingInfo() {
-        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ super(List.of("/buildinggold",
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ super(List.of("/buildinggold",
+        // ,"/buildingwood"
         super(List.of(
                 "/buildingmetal",
-                "/buildingstone",
-                "/buildingwood"));
+                "/buildingstone"
+        ));
     }
 
     @Override
@@ -103,11 +106,16 @@ public class BuildingInfo extends Query {
                 setParameters();
                 break;
             }
+
+            // УДАЛЯЕМ ЛЕСОПИЛКУ
+                /*
             case "/buildingwood" : {
                 targetBuilding = new WoodBuilding();
                 setParameters();
                 break;
             }
+
+                 */
         }
     }
 
@@ -239,6 +247,9 @@ public class BuildingInfo extends Query {
                 }
                  */
             }
+            text.append("\n\n Произведено ресурсов: ").append(userBuilding.getResourcesInBuilding())
+                    .append(" из ").append(userBuilding.calculateStorageLimit())
+                    .append("\n чтобы забрать ресурсы на склад, нажмите " + takeButton);
 
             // ВЫВОДИМ СООБЩЕНИЕ О ТОМ, ЕСТЬ ЛИ АКТИВНЫЕ БУСТЕРЫ, И СКОЛЬКО ПРОЦЕНТОВ И ЧЕГО ОНИ ДОБАВЛЯЮТ
             if (!rateMessage.isEmpty()) {
@@ -268,13 +279,14 @@ public class BuildingInfo extends Query {
             }
             */
         }
+
         text.append("\n").append(getSpoiler());
 
         return text.toString();
     }
 
     public InlineKeyboardMarkup getInlineKeyboardMarkup(boolean hasBuilding) {
-        List<Integer> buttonsInLine = List.of(3, 1);
+        List<Integer> buttonsInLine;
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.ARROW_LEFT.toString(), "/buildings"));
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));
@@ -282,16 +294,28 @@ public class BuildingInfo extends Query {
 
         String nameButton;
         if (hasBuilding) {
+            buttonsInLine = List.of(3, 2);
             nameButton = "Улучшить";
         } else {
+            buttonsInLine = List.of(3, 1);
             nameButton = "Построить";
         }
         switch (targetBuilding.getName()) {
-            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
             //case GOLD_BUILDING -> buttons.add(getButton(nameButton, "/upGold"));
-            case WOOD_BUILDING -> buttons.add(getButton(nameButton, "/upWood"));
-            case STONE_BUILDING -> buttons.add(getButton(nameButton, "/UpStone"));
-            case METAL_BUILDING -> buttons.add(getButton(nameButton, "/upMetal"));
+            //case WOOD_BUILDING -> buttons.add(getButton(nameButton, "/upWood"));
+            case STONE_BUILDING -> {
+                if (hasBuilding) {
+                    buttons.add(getButton(takeButton, "/getResourcesStone"));
+                }
+                buttons.add(getButton(nameButton, "/UpStone"));
+            }
+            case METAL_BUILDING -> {
+                if (hasBuilding) {
+                    buttons.add(getButton(takeButton, "/getResourcesMetal"));
+                }
+                buttons.add(getButton(nameButton, "/upMetal"));
+            }
         }
         return getKeyboard(buttonsInLine, buttons);
     }
@@ -309,10 +333,14 @@ public class BuildingInfo extends Query {
                 types.addAll(ResourceType.getMetalBoosters());
                 break;
             }
+            // УДАЛЯЕМ ЛЕСОПИЛКУ
+                /*
             case WOOD : {
                 types.addAll(ResourceType.getWoodBoosters());
                 break;
             }
+
+                 */
             // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
                 /*
             case GOLD: {
