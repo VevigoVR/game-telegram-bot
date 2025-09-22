@@ -1,7 +1,8 @@
 package com.creazione.space_learning.service.scheduler;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.*;
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.enums.SchedulerType;
@@ -10,7 +11,7 @@ import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.queries.responces.Response;
 import com.creazione.space_learning.queries.responces.SuperAggregateMessage;
 import com.creazione.space_learning.service.*;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class SchedulerService {
-    private static final UserService userService = DataSet.getUserService();
+    private static final UserPostgresService userService = DataSet.getUserService();
     private static final BuildingService buildingService = DataSet.getBuildingService();
     private static final ResourceService resourceService = DataSet.getResourceService();
     private static final NoticeService noticeService = DataSet.getNoticeService();
@@ -240,10 +241,10 @@ public class SchedulerService {
              * Конвертируем в объекты Resource и добавляем ползователю методом addOrIncrementResource()
             */
             Map<String, Long> mapGrantedResources = userNotice.getResources();
-            List<ResourceP> listGrantedResources = convertToResources(mapGrantedResources);
+            List<ResourceDto> listGrantedResources = convertToResources(mapGrantedResources);
 
             // поиск по ресурсам одного пользователя
-            List<ResourceP> userResources = userDto.getResources();
+            List<ResourceDto> userResources = userDto.getResources();
             addOrIncrementResource(userResources, listGrantedResources, userDto.getId());
             // Отметка о том, что это сообщение больше не учитывать
             userNotice.setRead(true);
@@ -260,18 +261,18 @@ public class SchedulerService {
         return ids;
     }
 
-    public static List<ResourceP> convertToResources(Map<String, Long> grants) {
-        List<ResourceP> resourceList = new ArrayList<>();
+    public static List<ResourceDto> convertToResources(Map<String, Long> grants) {
+        List<ResourceDto> resourceList = new ArrayList<>();
         for (String grant : grants.keySet()) {
             resourceList.add(ResourceList.createResource(grant, grants.get(grant)));
         }
         return resourceList;
     }
 
-    public static void addOrIncrementResource(Set<ResourceP> userResources, List<ResourceP> grantedResources, Long userId) {
-        for (ResourceP grant : grantedResources) {
+    public static void addOrIncrementResource(List<ResourceDto> userResources, List<ResourceDto> grantedResources, Long userId) {
+        for (ResourceDto grant : grantedResources) {
             boolean found = false;
-            for (ResourceP userResource : userResources) {
+            for (ResourceDto userResource : userResources) {
                 if (userResource.getName().equals(grant.getName())) {
                     userResource.addQuantity(grant.getQuantity());
                     found = true;
@@ -341,23 +342,5 @@ public class SchedulerService {
         List<AggregateNoticeP> aggregateNotices = aggregateNoticeService.findGroupedNotices(List.of(userDto.getId()), false);
         if (aggregateNotices.isEmpty()) { return; }
         grantOldNotices(userDto, aggregateNotices);
-    }
-
-    public static void addOrIncrementResource(List<ResourceP> userResources, List<ResourceP> grantedResources, Long userId) {
-        for (ResourceP grant : grantedResources) {
-            boolean found = false;
-            for (ResourceP userResource : userResources) {
-                if (userResource.getName().equals(grant.getName())) {
-                    userResource.addQuantity(grant.getQuantity());
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                // Создаем новый ресурс правильного типа
-                grant.setUserId(userId);
-                userResources.add(grant);
-            }
-        }
     }
 }

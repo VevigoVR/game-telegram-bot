@@ -1,8 +1,8 @@
 package com.creazione.space_learning.game.buildings;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.postgres.BuildingP;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.resources.*;
@@ -24,8 +24,8 @@ public class StoneBuilding extends BuildingP {
     }
 
     @Override
-    public List<ResourceP> viewPrice(int level) {
-        List<ResourceP> price = new ArrayList<>();
+    public List<ResourceDto> viewPrice(int level) {
+        List<ResourceDto> price = new ArrayList<>();
         int goldQuantity = 5;
         int stoneQuantity = 7;
         int metalQuantity = 5;

@@ -1,20 +1,20 @@
 package com.creazione.space_learning.utils;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.service.AggregateNoticeService;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 
 import java.time.Duration;
 import java.util.*;
 
 public class Init {
     private AggregateNoticeService aggregateNoticeService;
-    private UserService userService;
+    private UserPostgresService userService;
 
     public Init() {
         this.aggregateNoticeService = DataSet.getAggregateNoticeService();
@@ -24,7 +24,7 @@ public class Init {
     public void init() {
         //createNotices();
         //createReferral();
-        //addGifts();
+        addGifts();
     }
 
     private void addGifts() {

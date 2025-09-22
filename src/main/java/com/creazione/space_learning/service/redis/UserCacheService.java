@@ -1,6 +1,6 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.redis.UserR;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,11 +25,12 @@ public class UserCacheService {
     private final IdTelegramCacheService idTelegramCacheService;
 
     public UserDto toGameObject(UserR userR) {
+
         return new UserDto(userR.getId(),
                 userR.getTelegramId(),
                 userR.getName(),
                 userR.getBuildings() == null ? new ArrayList<>() : userR.getBuildings(),
-                userR.getResources() == null ? new ArrayList<>() : userR.getResources(),
+                userR.getResources() == null ? new ArrayList<>() : resourceCacheService.toGameObjectList(userR.getResources()),
                 userR.getBoosters() == null ? new ArrayList<>() : userR.getBoosters(),
                 userR.getPlayerScore(),
                 userR.getReferrer(),
@@ -47,7 +48,7 @@ public class UserCacheService {
                 userDto.getTelegramId(),
                 userDto.getName(),
                 userDto.getBuildings() == null ? new ArrayList<>() : userDto.getBuildings(),
-                userDto.getResources() == null ? new ArrayList<>() : userDto.getResources(),
+                userDto.getResources() == null ? new ArrayList<>() : resourceCacheService.toRedisObjectList(userDto.getResources()),
                 userDto.getBoosters() == null ? new ArrayList<>() : userDto.getBoosters(),
                 userDto.getPlayerScore(),
                 userDto.getReferrer(),
@@ -64,7 +65,7 @@ public class UserCacheService {
         UserR user = toRedisObject(userDto);
         Long telegramId = user.getTelegramId();
         if (!user.getResources().isEmpty()) {
-            resourceCacheService.cacheResources(telegramId, user.getResources());
+            resourceCacheService.cacheResources(telegramId, userDto.getResources());
         }
         if (!user.getBuildings().isEmpty()) {
             buildingCacheService.cacheBuildings(telegramId, user.getBuildings());

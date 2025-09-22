@@ -1,9 +1,9 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.BuildingList;
 import com.creazione.space_learning.enums.BuildingType;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -85,8 +85,8 @@ public class BuildingsQuery extends Query {
 
             text.append(Emoji.WHITE_SMALL_SQUARE).append(" ").append(building.getName().toString().toUpperCase()).append("\n");
             text.append("Стоимость строительства:").append("\n");
-            List<ResourceP> resources = building.viewPrice(1);
-            for (ResourceP resource : resources) {
+            List<ResourceDto> resources = building.viewPrice(1);
+            for (ResourceDto resource : resources) {
                 text.append(resource.getName()).append(": ").append(resource.makeQuantityString())
                         .append(" ").append(resource.getEmoji()).append("\n");
             }

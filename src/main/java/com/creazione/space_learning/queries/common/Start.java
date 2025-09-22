@@ -1,8 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.PlayerScoreP;
-import com.creazione.space_learning.entities.postgres.UserP;
 import com.creazione.space_learning.game.resources.Gold;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -17,7 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Component
 @GameCommand(

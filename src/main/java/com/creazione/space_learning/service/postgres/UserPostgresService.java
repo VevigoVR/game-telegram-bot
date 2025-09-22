@@ -1,7 +1,7 @@
 package com.creazione.space_learning.service.postgres;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.UserP;
 import com.creazione.space_learning.repository.UserRepository;
 import com.creazione.space_learning.service.redis.UserCacheService;
@@ -18,16 +18,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserPostgresService {
     private final UserRepository userRepository;
     private final UserCacheService userCacheService;
+    private final ResourcePostgresService resourcePostgresService;
 
     private UserP toPostgresObject(UserDto userDto) {
         return new UserP(userDto.getId(),
                 userDto.getTelegramId(),
                 userDto.getName(),
                 userDto.getBuildings() == null ? new HashSet<>() : new HashSet<>(userDto.getBuildings()),
-                userDto.getResources() == null ? new HashSet<>() : new HashSet<>(userDto.getResources()),
+                userDto.getResources() == null ? new HashSet<>() : new HashSet<>(resourcePostgresService.toPostgresObjectList(userDto.getResources())),
                 userDto.getBoosters() == null ? new HashSet<>() : new HashSet<>(userDto.getBoosters()),
                 userDto.getPlayerScore(),
                 userDto.getReferrer(),
@@ -45,7 +46,7 @@ public class UserService {
                 userP.getTelegramId(),
                 userP.getName(),
                 userP.getBuildings() == null ? new ArrayList<>() : new ArrayList<>(userP.getBuildings()),
-                userP.getResources() == null ? new ArrayList<>() : new ArrayList<>(userP.getResources()),
+                userP.getResources() == null ? new ArrayList<>() : new ArrayList<>(resourcePostgresService.toGameObjectList(userP.getResources())),
                 userP.getBoosters() == null ? new ArrayList<>() : new ArrayList<>(userP.getBoosters()),
                 userP.getPlayerScore(),
                 userP.getReferrer(),
@@ -82,7 +83,7 @@ public class UserService {
         UserDto userDto = userCacheService.getUser(telegramId);
         if (userDto != null) {
             Long id = userDto.getId();
-            userDto.setResources(DataSet.getResourceService().getResources(id, telegramId));
+            userDto.setResources(resourcePostgresService.findResourcesById(id, telegramId));
             userDto.setBuildings(DataSet.getBuildingService().getBuildings(id, telegramId));
             userDto.setBoosters(DataSet.getBoosterService().findAllIBByUserIdToList(id, telegramId));
             return userDto;

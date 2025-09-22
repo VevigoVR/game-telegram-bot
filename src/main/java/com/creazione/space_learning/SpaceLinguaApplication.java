@@ -1,6 +1,7 @@
 package com.creazione.space_learning;
 
 import com.creazione.space_learning.exception.CommandConflictException;
+import com.creazione.space_learning.utils.Init;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,8 +24,8 @@ public class SpaceLinguaApplication {
 		try {
 			SpringApplication.run(SpaceLinguaApplication.class, args);
 			Thread.sleep(1000);
-			//Init init = new Init();
-			//init.init();
+			Init init = new Init();
+			init.init();
 			//log.trace("Это TRACE сообщение!!!!!!!");
 			//log.debug("Это DEBUG сообщение!!!!!");
 			//log.info("Это INFO сообщение");

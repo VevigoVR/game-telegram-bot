@@ -1,12 +1,12 @@
 package com.creazione.space_learning.queries;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
 import com.creazione.space_learning.service.ReferralService;
 import com.creazione.space_learning.service.ResourceService;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import com.creazione.space_learning.utils.Answer;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +34,7 @@ import java.util.List;
 public abstract class Query {
     protected ResourceService resourceService;
     protected BuildingService buildingService;
-    protected UserService userService;
+    protected UserPostgresService userService;
     protected ReferralService referralService;
 
     private  List<String> queries;

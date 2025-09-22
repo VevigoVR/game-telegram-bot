@@ -30,9 +30,9 @@ public class InventoryBoosterP extends Item {
     private ResourceType name; // Тип буста (SPEED)
     private Double value;     // Значение (0.5)
     private Long durationMilli; // Длительность (120)
-    private double quantity; // Количество штук (1000)
+    private long quantity; // Количество штук (1000)
 
-    public InventoryBoosterP(ResourceType name, Double value, Long durationMilli, double quantity) {
+    public InventoryBoosterP(ResourceType name, Double value, Long durationMilli, long quantity) {
         super();
         this.name = name;
         this.value = value;
@@ -41,7 +41,7 @@ public class InventoryBoosterP extends Item {
     }
 
     @Override
-    public void addQuantity(double quantity) {
+    public void addQuantity(long quantity) {
         this.quantity += quantity;
     }
 

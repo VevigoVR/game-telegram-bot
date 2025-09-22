@@ -1,6 +1,7 @@
 package com.creazione.space_learning.service.redis;
 
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.entities.postgres.ResourceP;
@@ -50,8 +51,8 @@ class UserCacheServiceIntegrationTest {
         testUser.setName("Test User");
 
         // Создаем тестовые ресурсы
-        ResourceP metal = new ResourceP(ResourceType.METAL, Emoji.ROCK, 100.0);
-        ResourceP wood = new ResourceP(ResourceType.WOOD, Emoji.WOOD, 50.0);
+        ResourceDto metal = new ResourceDto(ResourceType.METAL, Emoji.ROCK, 100L);
+        ResourceDto wood = new ResourceDto(ResourceType.WOOD, Emoji.WOOD, 50L);
         testUser.setResources(Arrays.asList(metal, wood));
 
         // Создаем тестовые здания
@@ -64,11 +65,11 @@ class UserCacheServiceIntegrationTest {
         // Создаем тестовые бустеры
         InventoryBoosterP booster1 = new InventoryBoosterP();
         booster1.setName(ResourceType.ACCELERATION_METAL);
-        booster1.setQuantity(3.0);
+        booster1.setQuantity(3L);
 
         InventoryBoosterP booster2 = new InventoryBoosterP();
         booster2.setName(ResourceType.ACCELERATION_WOOD);
-        booster2.setQuantity(2.0);
+        booster2.setQuantity(2L);
         testUser.setBoosters(Arrays.asList(booster1, booster2));
     }
 
@@ -107,7 +108,7 @@ class UserCacheServiceIntegrationTest {
         assertEquals(testUser.getName(), cachedUser.getName());
 
         // Проверяем, что ресурсы сохранены и доступны отдельно
-        List<ResourceP> cachedResources = resourceCacheService.getResources(testUser.getTelegramId());
+        List<ResourceDto> cachedResources = resourceCacheService.getResources(testUser.getTelegramId());
         assertEquals(2, cachedResources.size());
 
         // Проверяем, что здания сохранены и доступны отдельно

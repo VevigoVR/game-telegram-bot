@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.postgres.ResourceP;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -72,7 +72,7 @@ public class StorageLootBoxes extends Query {
         StringBuilder text = new StringBuilder();
         text.append("<b>Склад ").append(getUserName()).append("</b>\n\n<b>Коробки</b>:\n");
         if (!getUserDto().viewSortedLootBoxes().isEmpty()) {
-            for (ResourceP resource : getUserDto().viewSortedLootBoxes()) {
+            for (ResourceDto resource : getUserDto().viewSortedLootBoxes()) {
                 text.append(resource.getEmoji()).append(" ").append(resource.getName()).append(": ")
                         .append(resource.makeQuantityString())
                         .append(" шт.\n")

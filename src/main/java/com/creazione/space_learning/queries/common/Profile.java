@@ -1,7 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.redis.UserR;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;

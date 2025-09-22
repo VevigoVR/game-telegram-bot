@@ -10,7 +10,6 @@ import lombok.*;
 public class Item {
     private ResourceType name;
     private long quantity;
-
     public void addQuantity(long quantity) {
         this.quantity += quantity;
     }

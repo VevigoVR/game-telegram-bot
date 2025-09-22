@@ -1,13 +1,13 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.*;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.repository.BuildingRepository;
 import com.creazione.space_learning.enums.Emoji;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import com.creazione.space_learning.service.redis.BuildingCacheService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BuildingService {
-    private final UserService userService;
+    private final UserPostgresService userService;
     private final BuildingCacheService buildingCacheService;
     private final BuildingRepository buildingRepository;
 
@@ -50,8 +50,8 @@ public class BuildingService {
         DataSet.getResourceService().calculateQuantityChanges(user, Instant.now());
 
         //System.out.println("Класс строения: " + newBuilding.getClass());
-        List<ResourceP> needResources = newBuilding.viewPrice(1);
-        List<ResourceP> userResources = user.getResources();
+        List<ResourceDto> needResources = newBuilding.viewPrice(1);
+        List<ResourceDto> userResources = user.getResources();
 
         if (!checkResources(needResources, userResources)) {
             return "\n" + Emoji.EXCLAMATION + "<b>На строительство не хватает ресурсов</b>\n\n";
@@ -70,8 +70,8 @@ public class BuildingService {
         DataSet.getResourceService().calculateQuantityChanges(user, date);
 
         BuildingP building = user.getBuildings().get(iBuilding);
-        List<ResourceP> needResources = building.viewPrice(building.getLevel() + 1);
-        List<ResourceP> userResources = user.getResources();
+        List<ResourceDto> needResources = building.viewPrice(building.getLevel() + 1);
+        List<ResourceDto> userResources = user.getResources();
 
 
         if (!checkTime(building)) {
@@ -96,11 +96,11 @@ public class BuildingService {
         return expireDate >= 0;
     }
 
-    private boolean checkResources(List<ResourceP> needResources, List<ResourceP> userResources) {
-        for (ResourceP needResource : needResources) {
+    private boolean checkResources(List<ResourceDto> needResources, List<ResourceDto> userResources) {
+        for (ResourceDto needResource : needResources) {
             //System.out.println("needResource: " + needResource.getName() + " - " + needResource.getQuantity());
             boolean isHere = false;
-            for (ResourceP userResource : userResources) {
+            for (ResourceDto userResource : userResources) {
                 if (!needResource.getName().equals(userResource.getName())) {
                     continue;
                 }
@@ -108,7 +108,7 @@ public class BuildingService {
                     return false;
                 } else {
                     isHere = true;
-                    double quantity = userResource.getQuantity();
+                    long quantity = userResource.getQuantity();
                     quantity -= needResource.getQuantity();
                     userResource.setQuantity(quantity);
                 }
@@ -120,9 +120,9 @@ public class BuildingService {
         return true;
     }
 
-    public long getDuration(List<ResourceP> resources) {
+    public long getDuration(List<ResourceDto> resources) {
         long sum = 0;
-        for (ResourceP resource : resources) {
+        for (ResourceDto resource : resources) {
             sum += (long) resource.getQuantity();
         }
         sum /= 10L; // необходимо преобразование в миллисекунды для метода, сохраняющего время для улучшения уровня строения

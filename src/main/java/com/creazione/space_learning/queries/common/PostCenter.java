@@ -2,9 +2,9 @@ package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UnreadNoticeInfo;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
 import com.creazione.space_learning.enums.NoticeType;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
@@ -120,9 +120,9 @@ public class PostCenter extends Query {
             aggregateNoticeEntity.setTitle("Награда за активность в команде".toUpperCase());
             text.append("За участие и активность в команде Вы получаете:\n\n");
         }
-        List<ResourceP> resources = SchedulerService.convertToResources(aggregateNoticeEntity.getResources());
+        List<ResourceDto> resources = SchedulerService.convertToResources(aggregateNoticeEntity.getResources());
         SchedulerService.addOrIncrementResource(getUserDto().getResources(), resources, getUserDto().getId());
-        for (ResourceP resource : resources) {
+        for (ResourceDto resource : resources) {
             text.append(resource.getEmoji())
                     .append(" ")
                     .append(resource.getName())

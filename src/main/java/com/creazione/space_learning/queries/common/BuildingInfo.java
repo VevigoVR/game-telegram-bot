@@ -1,10 +1,10 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
 import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.*;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -221,8 +221,8 @@ public class BuildingInfo extends Query {
                         .append(userBuilding.getLevel() + 1)
                         .append(" уровня:</b>")
                         .append("\n");
-                List<ResourceP> resources = userBuilding.viewPrice(userBuilding.getLevel() + 1);
-                for (ResourceP resource : resources) {
+                List<ResourceDto> resources = userBuilding.viewPrice(userBuilding.getLevel() + 1);
+                for (ResourceDto resource : resources) {
                     text.append(resource.getName()).append(": ")
                             .append(resource.makeQuantityString())
                             .append(" ").append(resource.getEmoji()).append("\n");
@@ -257,8 +257,8 @@ public class BuildingInfo extends Query {
             }
         } else {
             text.append("\nСтоимость строительства:").append("\n");
-            List<ResourceP> resources = targetBuilding.viewPrice(1);
-            for (ResourceP resource : resources) {
+            List<ResourceDto> resources = targetBuilding.viewPrice(1);
+            for (ResourceDto resource : resources) {
                 text.append(resource.getName()).append(": ")
                         .append(resource.makeQuantityString())
                         .append(" ").append(resource.getEmoji()).append("\n");

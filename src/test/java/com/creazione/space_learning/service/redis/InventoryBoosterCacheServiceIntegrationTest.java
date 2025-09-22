@@ -33,8 +33,8 @@ class InventoryBoosterCacheServiceIntegrationTest {
         redisTemplate.getConnectionFactory().getConnection().flushAll();
 
         // Создаем тестовые бустеры
-        booster1 = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10.0);
-        booster2 = new InventoryBoosterP(ResourceType.ACCELERATION_METAL, 0.3, 1800000L, 5.0);
+        booster1 = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10L);
+        booster2 = new InventoryBoosterP(ResourceType.ACCELERATION_METAL, 0.3, 1800000L, 5L);
         boosters = List.of(booster1, booster2);
     }
 
@@ -146,13 +146,13 @@ class InventoryBoosterCacheServiceIntegrationTest {
         assertEquals(ResourceType.ACCELERATION_ALL, cachedBooster1.getName());
         assertEquals(0.5, cachedBooster1.getValue());
         assertEquals(3600000L, cachedBooster1.getDurationMilli());
-        assertEquals(10.0, cachedBooster1.getQuantity());
+        assertEquals(10L, cachedBooster1.getQuantity());
 
         InventoryBoosterP cachedBooster2 = cachedBoosters.get(1);
         assertEquals(ResourceType.ACCELERATION_METAL, cachedBooster2.getName());
         assertEquals(0.3, cachedBooster2.getValue());
         assertEquals(1800000L, cachedBooster2.getDurationMilli());
-        assertEquals(5.0, cachedBooster2.getQuantity());
+        assertEquals(5L, cachedBooster2.getQuantity());
     }
 
     @Test
@@ -161,7 +161,7 @@ class InventoryBoosterCacheServiceIntegrationTest {
         inventoryBoosterCacheService.cacheInventoryBoosters(USER_ID, boosters);
 
         // Создаем обновленный бустер
-        InventoryBoosterP updatedBooster = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10.0);
+        InventoryBoosterP updatedBooster = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10L);
 
         // Обновляем бустер
         inventoryBoosterCacheService.updateInventoryBooster(USER_ID, updatedBooster);
@@ -179,6 +179,6 @@ class InventoryBoosterCacheServiceIntegrationTest {
 
         assertTrue(foundUpdatedBooster.isPresent());
         assertEquals(0.5, foundUpdatedBooster.get().getValue());
-        assertEquals(10.0, foundUpdatedBooster.get().getQuantity());
+        assertEquals(10L, foundUpdatedBooster.get().getQuantity());
     }
 }

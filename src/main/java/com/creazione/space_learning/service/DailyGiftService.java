@@ -2,8 +2,7 @@ package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.MessageText;
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.redis.UserR;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.DailyGiftP;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.repository.DailyGiftRepository;

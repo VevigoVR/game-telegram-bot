@@ -1,4 +1,4 @@
-package com.creazione.space_learning.dto;
+package com.creazione.space_learning.entities.redis;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class IdTelegramMappingDto {
+public class IdTelegramMappingDtoR {
     private Long id;
     private Long telegramId;
 }

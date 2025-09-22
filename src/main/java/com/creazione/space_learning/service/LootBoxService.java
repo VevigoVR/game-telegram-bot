@@ -1,15 +1,15 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.redis.UserR;
-import com.creazione.space_learning.entities.postgres.ResourceP;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.repository.InventoryBoosterRepository;
 import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.resources.*;
+import com.creazione.space_learning.service.postgres.ResourcePostgresService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +19,18 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class LootBoxService {
+    private final ResourcePostgresService resourcePostgresService;
     private final InventoryBoosterRepository inventoryBoosterRepository;
     private final Random random = new Random();
     private UserDto userDto = new UserDto();
     private ResourceType boxType;
-    private Set<ResourceP> resources;
+    private List<ResourceDto> resources;
     private long milliSecondsGift;
 
     public List<Item> openBox(ResourceType boxType, UserDto userDto) {
         this.boxType = boxType;
         this.userDto = userDto;
-        this.resources = DataSet.getResourceService().findAllByUserId(userDto.getId());
+        this.resources = resourcePostgresService.findAllByUserId(userDto.getId());
         if (!decrementResources(resources)) {
             //System.out.println("получился быстрый false на проверке сундучка");
             return null;
@@ -40,7 +41,7 @@ public class LootBoxService {
 
     public List<Item> takeDailyGift(UserDto userDto) {
         this.userDto = userDto;
-        this.resources = DataSet.getResourceService().findAllByUserId(userDto.getId());
+        this.resources = resourcePostgresService.findAllByUserId(userDto.getId());
         List<Item> possibleRewards = getPossibleRewards(ResourceType.LOOT_BOX_COMMON);
         return save(selectRandomReward(possibleRewards, 1));
     }
@@ -125,7 +126,7 @@ public class LootBoxService {
         }
     }
 
-    private double incrementQuantityGiftByLevel(ResourceType type, double quantity) {
+    private long incrementQuantityGiftByLevel(ResourceType type, long quantity) {
         for (BuildingP building : userDto.getBuildings()) {
             if (building.getProduction().equals(type)) {
                 return Math.round (((building.getQuantityMining() * Math.pow(building.getIncrementMining(), building.getLevel()))) * milliSecondsGift);
@@ -144,7 +145,7 @@ public class LootBoxService {
             items.add(rewards.get(random.nextInt(rewards.size())));
         }
         for (Item item : items) {
-            if (!(item instanceof ResourceP)) {
+            if (!(item instanceof ResourceDto)) {
                 continue;
             }
             item.setQuantity(incrementQuantityGiftByLevel(item.getName(), item.getQuantity()));
@@ -153,11 +154,11 @@ public class LootBoxService {
     }
 
     private List<Item> save(List<Item> items) {
-        List<ResourceP> giftResources = new ArrayList<>();
+        List<ResourceDto> giftResources = new ArrayList<>();
         List<InventoryBoosterP> giftBoosters = new ArrayList<>();
         for (Item item : items) {
-            if (item instanceof ResourceP) {
-                giftResources.add((ResourceP) item);
+            if (item instanceof ResourceDto) {
+                giftResources.add((ResourceDto) item);
             } else {
                 giftBoosters.add((InventoryBoosterP) item);
             }
@@ -165,7 +166,7 @@ public class LootBoxService {
 
         if (!giftResources.isEmpty()) {
             addOrIncrementResource(resources, giftResources, userDto.getId()); // верно getId()
-            DataSet.getResourceService().saveAll(resources, userDto.getTelegramId()); // верно getTelegramId()
+            resourcePostgresService.saveAll(resources, userDto.getTelegramId()); // верно getTelegramId()
         }
         if (!giftBoosters.isEmpty()) {
             Set<InventoryBoosterP> boosters = DataSet.getBoosterService().findAllIBByUserId(userDto);
@@ -175,11 +176,11 @@ public class LootBoxService {
         return items;
     }
 
-    public void addOrIncrementResource(Set<ResourceP> userResources, List<ResourceP> grantedResources, Long userId) {
+    public void addOrIncrementResource(List<ResourceDto> userResources, List<ResourceDto> grantedResources, Long userId) {
 
-        for (ResourceP grant : grantedResources) {
+        for (ResourceDto grant : grantedResources) {
             boolean found = false;
-            for (ResourceP userResource : userResources) {
+            for (ResourceDto userResource : userResources) {
                 if (userResource.getName().equals(grant.getName())) {
                     userResource.addQuantity(grant.getQuantity());
                     found = true;
@@ -195,12 +196,12 @@ public class LootBoxService {
         }
     }
 
-    public boolean decrementResources(Set<ResourceP> resources) {
-        for (ResourceP resource : resources) {
+    public boolean decrementResources(List<ResourceDto> resources) {
+        for (ResourceDto resource : resources) {
             //System.out.println("resources for decrement :" + resource.getName());
             if (resource.getName().equals(boxType)) {
                 if (resource.getQuantity() <= 0) {
-                    DataSet.getResourceService().delete(resource, userDto.getTelegramId());
+                    resourcePostgresService.delete(resource, userDto.getTelegramId());
                     //System.out.println("result of decrement: " + false);
                     return false;
                 }

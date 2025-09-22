@@ -1,7 +1,7 @@
 package com.creazione.space_learning.config;
 
 import com.creazione.space_learning.service.BoosterService;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import com.creazione.space_learning.service.scheduler.SchedulerRepoService;
 import com.creazione.space_learning.service.*;
 import com.creazione.space_learning.utils.ThrottledMessageSender4;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataSet {
     @Getter
-    private static UserService userService;
+    private static UserPostgresService userService;
     @Getter
     private static BuildingService buildingService;
     @Getter
@@ -45,7 +45,7 @@ public class DataSet {
     private static ThrottledMessageSender4 throttledSender4;
 
     public DataSet (
-            UserService userService,
+            UserPostgresService userService,
             BuildingService buildingService,
             ResourceService resourceService,
             ReferralService referralService,

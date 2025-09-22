@@ -1,8 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.TransferResult;
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.postgres.ResourceP;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.game.resources.Gold;
 import com.creazione.space_learning.game.resources.Metal;
@@ -67,7 +67,7 @@ public class TradeWithNPC extends Query {
 
             if (!matcher.matches()) {
                 getText();
-                return new TransferResult("");
+                return new TransferResult(1L, 1.0);
             }
 
             String action = matcher.group(1).substring(1); // Убираем "/"
@@ -100,7 +100,7 @@ public class TradeWithNPC extends Query {
             }
 
             // Выбираем соответствующий ресурс
-            ResourceP resource;
+            ResourceDto resource;
             switch (resourceType) {
                 case "gold", "золото":
                     resource = new Gold(quantity);

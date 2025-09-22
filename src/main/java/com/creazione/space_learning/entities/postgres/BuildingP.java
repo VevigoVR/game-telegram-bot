@@ -1,5 +1,6 @@
 package com.creazione.space_learning.entities.postgres;
 
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.buildings.*;
@@ -90,7 +91,7 @@ public class BuildingP {
         this.level += 1;
     }
 
-    public List<ResourceP> viewPrice(int level) {
+    public List<ResourceDto> viewPrice(int level) {
         return new ArrayList<>();
     }
 
@@ -103,9 +104,9 @@ public class BuildingP {
     }
 
     public long getPointsForLevel(int level) {
-        List<ResourceP> resources = viewPrice(level);
+        List<ResourceDto> resources = viewPrice(level);
         long sum = 0;
-        for (ResourceP resource : resources) {
+        for (ResourceDto resource : resources) {
             sum += (long) resource.getQuantity();
         }
         return sum;
