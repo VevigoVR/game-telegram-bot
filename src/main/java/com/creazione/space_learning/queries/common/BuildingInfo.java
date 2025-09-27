@@ -247,9 +247,20 @@ public class BuildingInfo extends Query {
                 }
                  */
             }
-            text.append("\n\n Произведено ресурсов: ").append(userBuilding.getResourcesInBuilding())
+            double resInStorage = userBuilding.getResourcesInBuilding();
+            String resInStorageString = "";
+            if (resInStorage < 100) {
+                resInStorageString = Formatting.formatWithFraction(resInStorage, 2);
+            } else {
+                resInStorageString = Formatting.formatWithoutFraction(resInStorage);
+            }
+            System.out.println("userBuilding: " + userBuilding.getLevel());
+            System.out.println("userBuilding.getIncrementMining(): " + userBuilding.getIncrementMining());
+            System.out.println("userBuilding.calculateStorageLimit(): " + userBuilding.calculateStorageLimit());
+            text.append("\n\n Произведено ресурсов: ").append(resInStorageString)
                     .append(" из ").append(userBuilding.calculateStorageLimit())
-                    .append("\n чтобы забрать ресурсы на склад, нажмите " + takeButton);
+                    .append("\n чтобы забрать ресурсы на склад, нажмите ")
+                    .append(takeButton);
 
             // ВЫВОДИМ СООБЩЕНИЕ О ТОМ, ЕСТЬ ЛИ АКТИВНЫЕ БУСТЕРЫ, И СКОЛЬКО ПРОЦЕНТОВ И ЧЕГО ОНИ ДОБАВЛЯЮТ
             if (!rateMessage.isEmpty()) {

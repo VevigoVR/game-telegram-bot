@@ -33,12 +33,12 @@ public class Formatting {
     }
 
     // Метод для форматирования с дробной частью (до двух знаков, без trailing нулей, округляет в сторону нуля)
-    public static String formatWithFraction(double number) {
+    public static String formatWithFraction(double number, int scale) {
         if (Double.isInfinite(number) || Double.isNaN(number)) {
             return String.valueOf(number);
         }
         BigDecimal bd = new BigDecimal(String.valueOf(number));
-        bd = bd.setScale(2, RoundingMode.DOWN);
+        bd = bd.setScale(scale, RoundingMode.DOWN);
         // Убираем trailing нули и точку, если нужно
         return bd.stripTrailingZeros().toPlainString();
     }

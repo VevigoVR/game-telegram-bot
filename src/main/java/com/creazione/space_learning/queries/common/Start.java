@@ -49,7 +49,7 @@ public class Start extends Query {
             }
 
             user.setPlayerScore(new PlayerScoreP(user.getId()));
-            Gold gold = new Gold(25);
+            Gold gold = new Gold(25000);
             gold.setUserId(user.getId());
 
 /*

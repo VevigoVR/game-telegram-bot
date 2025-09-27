@@ -76,11 +76,11 @@ public class ResourcePostgresService {
     }
 
     public void saveAll(List<ResourceDto> resources, long telegramId) {
-        userCacheService.deleteFullUser(telegramId);
+        resourceCacheService.deleteResources(telegramId);
         resourcesRepository.saveAll(toPostgresObjectList(resources));
     }
     public void delete(ResourceDto resource, long telegramId) {
-        userCacheService.deleteFullUser(telegramId);
+        resourceCacheService.deleteResources(telegramId);
         resourcesRepository.delete(toPostgresObject(resource));
     }
 

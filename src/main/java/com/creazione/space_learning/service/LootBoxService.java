@@ -50,7 +50,7 @@ public class LootBoxService {
 
         switch (boxType.getMark()) {
             case "common":
-                milliSecondsGift = 7_200_000;
+                milliSecondsGift = 7_200;
                 return Arrays.asList(
                         new Gold(15),
                         new Stone(15),
@@ -76,7 +76,7 @@ public class LootBoxService {
                                 0.2, Duration.ofHours(24).toMillis(), 1)
                 );
             case "rare":
-                milliSecondsGift = 18_000_000;
+                milliSecondsGift = 18_000;
                 return Arrays.asList(
                         new Gold(50),
                         new Stone(50),
@@ -88,7 +88,7 @@ public class LootBoxService {
                 );
 
             case "ref 1":
-                milliSecondsGift = 18_000_000;
+                milliSecondsGift = 18_000;
                 return Arrays.asList(
                         new Gold(50),
                         new InventoryBoosterP(
@@ -99,7 +99,7 @@ public class LootBoxService {
                         //new Knowledge(10)
                 );
             case "ref 2":
-                milliSecondsGift = 36_000_000;
+                milliSecondsGift = 36_000;
                 return Arrays.asList(
                         new Gold(150),
                         new InventoryBoosterP(
@@ -110,7 +110,7 @@ public class LootBoxService {
                         //new Knowledge(25)
                 );
             case "ref 3":
-                milliSecondsGift = 72_000_000;
+                milliSecondsGift = 72_000;
                 return Arrays.asList(
                         new Gold(2000),
                         new InventoryBoosterP(

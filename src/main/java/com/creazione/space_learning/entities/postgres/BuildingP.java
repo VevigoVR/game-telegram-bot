@@ -107,7 +107,7 @@ public class BuildingP {
         List<ResourceDto> resources = viewPrice(level);
         long sum = 0;
         for (ResourceDto resource : resources) {
-            sum += (long) resource.getQuantity();
+            sum += resource.getQuantity();
         }
         return sum;
     }
@@ -119,9 +119,9 @@ public class BuildingP {
         if (this.getLevel() == 0) {
             return 0;
         }
-        long quantityInHour = 3_600 *
-                (long) (this.getQuantityMining() * Math.pow(this.getIncrementMining(), this.getLevel()));
+        System.out.println(3_600 * (this.getQuantityMining() * Math.pow(this.getIncrementMining(), this.getLevel())));
+        double quantityInHour = 3_600 * (this.getQuantityMining() * Math.pow(this.getIncrementMining(), this.getLevel())) * 24;
 
-        return Formatting.roundNumber(quantityInHour * 24);
+        return Formatting.roundNumber((long) quantityInHour);
     }
 }

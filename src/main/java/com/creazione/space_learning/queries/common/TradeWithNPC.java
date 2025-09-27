@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.dto.TransferResult;
+import com.creazione.space_learning.dto.TransferTradeResult;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.Emoji;
@@ -10,6 +10,8 @@ import com.creazione.space_learning.game.resources.Stone;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
+import com.creazione.space_learning.utils.Formatting;
+import com.creazione.space_learning.utils.WordUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,7 @@ public class TradeWithNPC extends Query {
     );
     private String quantityOfResource = "";
     private String wrong = "";
+    private TransferTradeResult tradeResult;
 
     public TradeWithNPC() {
         super(List.of());
@@ -43,6 +46,8 @@ public class TradeWithNPC extends Query {
 
     @Override
     public Answer respond(Update update) {
+        tradeResult = new TransferTradeResult();
+        tradeResult.setTransferred(true);
         quantityOfResource = ""; // чтобы не сохранялся старый результат
         wrong = "";
         Answer answer = new Answer();
@@ -54,23 +59,26 @@ public class TradeWithNPC extends Query {
             return answer;
         }
 
-        TransferResult transferResult = parseAndExecute(getQuery(), getUserDto());
+        parseAndExecute(getQuery(), getUserDto());
+        if (!tradeResult.isTransferred()) {
+            wrong = tradeResult.getMessage();
+        }
 
         SendMessage sendMessage = takeSendMessage();
         answer.setSendMessage(sendMessage);
         return answer;
     }
 
-    public TransferResult parseAndExecute(String command, UserDto userDto) {
+    public void parseAndExecute(String command, UserDto userDto) {
         try {
             Matcher matcher = COMMAND_PATTERN.matcher(command.trim());
 
             if (!matcher.matches()) {
                 getText();
-                return new TransferResult(1L, 1.0);
+                tradeResult = new TransferTradeResult("");
             }
 
-            String action = matcher.group(1).substring(1); // Убираем "/"
+            String action = matcher.group(1);//.substring(1); // Убираем "/"
             String resourceType = matcher.group(2).toLowerCase();
             String numberStr = matcher.group(3);
             String suffixes = matcher.group(4).toLowerCase();
@@ -79,7 +87,7 @@ public class TradeWithNPC extends Query {
             long baseValue = Long.parseLong(numberStr);
 
             if (baseValue <= 0) {
-                throw new IllegalArgumentException("Количество должно быть положительным числом");
+                throw new IllegalArgumentException("Количество должно быть положительным числом \uD83D\uDE09");
             }
 
             // Обрабатываем суффиксы
@@ -93,6 +101,10 @@ public class TradeWithNPC extends Query {
             }
 
             long quantity = baseValue * multiplier;
+
+            if (quantity < 100) {
+                throw new IllegalArgumentException("Продать/купить можно только оптом от 100 ресурсов!");
+            }
 
             // Проверяем на переполнение
             if (quantity / multiplier != baseValue) {
@@ -116,50 +128,80 @@ public class TradeWithNPC extends Query {
             }
 
             // Вызываем соответствующий метод сервиса
-            if ("sell".equals(action)) {
-                return resourceService.sellResource(resource, userDto);
-            } else if ("buy".equals(action)) {
-                return resourceService.buyResource(resource, userDto);
+            if ("/sell".equals(action)) {
+                tradeResult = resourceService.sellResource(resource, userDto);
+            } else if ("/buy".equals(action)) {
+                tradeResult = resourceService.buyResource(resource, userDto);
+            } else if ("продать".equals(action)) {
+                tradeResult = resourceService.sellResource(resource, userDto);
+            } else if ("купить".equals(action)) {
+                tradeResult = resourceService.buyResource(resource, userDto);
             } else {
                 getText();
             }
 
         } catch (NumberFormatException e) {
-            wrong = "Неверный числовой формат: " + e.getMessage();
+            if (e.getMessage().startsWith("For")) {
+                wrong = "Какие-то странные у вас числа!";
+            }
+            // wrong = e.getMessage(); //"Невозможно разобрать количество ресурсов!";
+            //System.out.println("wrong NumberFormatException: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             wrong = e.getMessage();
+            //System.out.println("wrong IllegalArgumentException: " + e.getMessage());
         } catch (Exception e) {
-            wrong = "Произошла ошибка при обработке команды: ";
+            wrong = "Не понимаю запрос, возможно неверный тип ресурса";
         }
-        return null;
     }
 
     @Override
     public String getText() {
-        String message = Emoji.EXCLAMATION + " " + """
-            Неверный формат команды. Используйте:
-            /sell gold|metal|stone количество[k|m]
-            /buy gold|metal|stone количество[k|m]
+        String message;
+        if (!tradeResult.isTransferred() && !tradeResult.getMessage().isEmpty()) {
+            message = Emoji.EXCLAMATION + " " + tradeResult.getMessage();
+        } else if (wrong != null && !wrong.isEmpty()) {
+            message = Emoji.EXCLAMATION + " " + wrong + "\n\n" + getWrong();
+        } else {
+            if (!tradeResult.isBuy()) {
+                message = "Поздравляю! Вы успешно продали "
+                        + tradeResult.getUserResource().getEmoji() + " "
+                        + tradeResult.getUserResource().getName() + " в размере "
+                        + Formatting.formatWithDots(tradeResult.getUserResource().getQuantity()) + " шт. и заработали "
+                        + tradeResult.getNpcResource().getEmoji() + " "
+                        + tradeResult.getNpcResource().getName() + ": "
+                        + Formatting.formatWithDots(tradeResult.getNpcResource().getQuantity()) + " "
+                        + WordUtils.rightWord(tradeResult.getNpcResource().getQuantity(), "единицу", "единицы", "единиц");
+            } else {
+                message = "Поздравляю! Вы успешно купили "
+                        + tradeResult.getNpcResource().getEmoji() + " "
+                        + tradeResult.getNpcResource().getName() + " в размере "
+                        + Formatting.formatWithDots(tradeResult.getNpcResource().getQuantity()) + " "
+                        + WordUtils.rightWord(tradeResult.getNpcResource().getQuantity(), "единицу", "единицы", "единиц") + " за "
+                        + tradeResult.getUserResource().getEmoji() + " "
+                        + tradeResult.getUserResource().getName() + ": "
+                        + Formatting.formatWithDots(tradeResult.getUserResource().getQuantity())
+                        + " шт.";
+            }
+        }
+        return message;
+    }
+
+    public String getWrong() {
+        return """
+            Используйте:
+            /sell metal|stone количество[k|m]
+            /buy metal|stone количество[k|m]
             
             Примеры:
-            /sell gold 100
-            /buy metal 5k
-            /sell stone 10m
+            <code>/sell metal 100</code>
+            <code>/buy metal 5k</code>
+            <code>/sell stone 10m</code>
             
             Суффиксы:
             к/k - умножить на 1000 (кило)
             м/m - умножить на 1000000 (мега)
             Можно использовать несколько суффиксов: 1kk = 1 000 000
             """;
-
-        if (wrong != null && !wrong.isEmpty()) {
-            message = Emoji.EXCLAMATION + " " + wrong + "\n\n" + message;
-        } else {
-            message = """
-                    
-                    """;
-        }
-        return message;
     }
 
     @Override
