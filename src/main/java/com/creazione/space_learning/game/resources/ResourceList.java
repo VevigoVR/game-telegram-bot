@@ -53,6 +53,6 @@ public class ResourceList {
                 }
             }
         }
-        return new Unknown(quantity);
+        return null;
     }
 }

@@ -1,26 +1,23 @@
 package com.creazione.space_learning.game.buildings;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.utils.Formatting;
-import jakarta.persistence.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class StoneBuilding extends BuildingP {
+public class StoneBuilding extends BuildingDto {
     public StoneBuilding() {
-        super(BuildingType.STONE_BUILDING, ResourceType.STONE);
+        super(BuildingType.STONE_BUILDING, ResourceType.STONE, Emoji.ROCK);
         this.setIncrementPrice(2);
         this.setIncrementMining(1.25);
         this.setQuantityMining(0.01);
-        this.setEmojiProduction(Emoji.ROCK);
     }
 
     @Override

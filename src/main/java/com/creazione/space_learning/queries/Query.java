@@ -2,6 +2,7 @@ package com.creazione.space_learning.queries;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.entities.game_entity.UserDto;
+import com.creazione.space_learning.service.TransferResourceService;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
 import com.creazione.space_learning.service.ReferralService;
@@ -10,6 +11,7 @@ import com.creazione.space_learning.service.postgres.UserPostgresService;
 import com.creazione.space_learning.utils.Answer;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -36,6 +38,8 @@ public abstract class Query {
     protected BuildingService buildingService;
     protected UserPostgresService userService;
     protected ReferralService referralService;
+    @Autowired
+    protected TransferResourceService transferResourceService;
 
     private  List<String> queries;
     private String query;

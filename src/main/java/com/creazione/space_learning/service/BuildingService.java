@@ -184,16 +184,5 @@ public class BuildingService {
         return sum/1000;
     }
 
-    public List<BuildingP> getBuildings(Long id, Long telegramId) {
-        if (buildingCacheService.isBuildingsEmpty(telegramId)) {
-            return new ArrayList<>();
-        }
-        List<BuildingP> buildings = buildingCacheService.getBuildings(telegramId);
-        if (!buildings.isEmpty()) {
-            return buildings;
-        }
-        List<BuildingP> result = buildingRepository.findAllByUserId(id).stream().toList();
-        buildingCacheService.cacheBuildings(telegramId, result);
-        return result;
-    }
+
 }

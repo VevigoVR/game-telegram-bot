@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -103,7 +102,7 @@ public class ResourceService {
     private void setQuantity(BuildingP building, double addResources) {
         double quantity = building.getResourcesInBuilding() + addResources;
         building.setResourcesInBuilding(
-                building.calculateStorageLimit() < quantity ? quantity : building.calculateStorageLimit()
+                building.calculateStorageLimit() > quantity ? quantity : building.calculateStorageLimit()
                 );
         //System.out.println("теперь ресурсов: " + resource.getQuantity());
     }
@@ -116,7 +115,7 @@ public class ResourceService {
                 (building.getQuantityMining() * Math.pow(building.getIncrementMining(), building.getLevel()));
     }
 
-    public void addResourceOrIncrement(List<ResourceDto> resources, ResourceType resourceType) {
+    public void addResourceRefBoxOrIncrement(List<ResourceDto> resources, ResourceType resourceType) {
         boolean isResourceHere = false;
         for (ResourceDto resource : resources) {
             if (resource.getName().equals(resourceType)) {
@@ -257,7 +256,7 @@ public class ResourceService {
         return isSubtract;
     }
 
-    public static TransferBuildingResult calculateTransfer(double accumulatedResources) {
+    public TransferBuildingResult calculateTransfer(double accumulatedResources) {
         // Проверяем, что накопилось хотя бы 1 единица
         if (accumulatedResources < 1.0) {
             return new TransferBuildingResult(0L, accumulatedResources);

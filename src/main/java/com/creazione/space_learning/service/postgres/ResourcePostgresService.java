@@ -29,9 +29,9 @@ public class ResourcePostgresService {
         return resourcePList;
     }
 
-    public List<ResourceDto> toGameObjectList(Set<ResourceP> resourcePList) {
+    public List<ResourceDto> toGameObjectList(Set<ResourceP> resourcePSet) {
         List<ResourceDto> resourceDtoList = new ArrayList<>();
-        for (ResourceP resource : resourcePList) {
+        for (ResourceP resource : resourcePSet) {
             resourceDtoList.add(toGameObject(resource));
         }
         return resourceDtoList;
@@ -62,7 +62,6 @@ public class ResourcePostgresService {
             case STONE -> new Stone(resourceP.getId(), resourceP.getUserId(), resourceP.getQuantity());
             case WOOD -> new Wood(resourceP.getId(), resourceP.getUserId(), resourceP.getQuantity());
             case UNKNOWN -> new Unknown(resourceP.getId(), resourceP.getUserId(), resourceP.getQuantity());
-            // Добавьте другие типы ресурсов
             default -> new Unknown(resourceP.getId(), resourceP.getUserId(), resourceP.getQuantity());
         };
     }

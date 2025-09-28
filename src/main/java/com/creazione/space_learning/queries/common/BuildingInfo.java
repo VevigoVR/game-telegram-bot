@@ -249,7 +249,7 @@ public class BuildingInfo extends Query {
             }
             double resInStorage = userBuilding.getResourcesInBuilding();
             String resInStorageString = "";
-            if (resInStorage < 100) {
+            if (resInStorage < 1000) {
                 resInStorageString = Formatting.formatWithFraction(resInStorage, 2);
             } else {
                 resInStorageString = Formatting.formatWithoutFraction(resInStorage);

@@ -212,11 +212,11 @@ public class SchedulerService {
     private void grantReferralGifts(long referrerId, UserDto userDto) {
         UserDto userReferrer = userService.findUserWithResourcesById(referrerId);
         if (userReferrer != null) {
-            resourceService.addResourceOrIncrement(userReferrer.getResources(), ResourceType.REFERRAL_BOX_1);
+            resourceService.addResourceRefBoxOrIncrement(userReferrer.getResources(), ResourceType.REFERRAL_BOX_1);
 
             userService.saveFullWithoutCache(userReferrer);
         }
-        resourceService.addResourceOrIncrement(userDto.getResources(), ResourceType.REFERRAL_BOX_1);
+        resourceService.addResourceRefBoxOrIncrement(userDto.getResources(), ResourceType.REFERRAL_BOX_1);
     }
 
     public static void grantOldNotices(UserDto userDto, List<AggregateNoticeP> aggregateNotices) {

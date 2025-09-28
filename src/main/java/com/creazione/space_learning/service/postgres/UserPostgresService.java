@@ -22,6 +22,7 @@ public class UserPostgresService {
     private final UserRepository userRepository;
     private final UserCacheService userCacheService;
     private final ResourcePostgresService resourcePostgresService;
+    private final BuildingPostgresService buildingPostgresService;
 
     private UserP toPostgresObject(UserDto userDto) {
         return new UserP(userDto.getId(),
@@ -84,7 +85,7 @@ public class UserPostgresService {
         if (userDto != null) {
             Long id = userDto.getId();
             userDto.setResources(resourcePostgresService.findResourcesById(id, telegramId));
-            userDto.setBuildings(DataSet.getBuildingService().getBuildings(id, telegramId));
+            userDto.setBuildings(buildingPostgresService.getBuildings(id, telegramId));
             userDto.setBoosters(DataSet.getBoosterService().findAllIBByUserIdToList(id, telegramId));
             return userDto;
         }

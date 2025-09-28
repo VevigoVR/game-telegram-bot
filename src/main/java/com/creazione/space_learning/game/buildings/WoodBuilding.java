@@ -1,8 +1,8 @@
 package com.creazione.space_learning.game.buildings;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.resources.*;
@@ -13,13 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class WoodBuilding extends BuildingP {
+public class WoodBuilding extends BuildingDto {
     public WoodBuilding() {
-        super(BuildingType.WOOD_BUILDING, ResourceType.WOOD);
+        super(BuildingType.WOOD_BUILDING, ResourceType.WOOD, Emoji.WOOD);
         this.setIncrementPrice(2);
         this.setIncrementMining(1.25);
         this.setQuantityMining(0.01);
-        this.setEmojiProduction(Emoji.WOOD);
     }
 
     @Override

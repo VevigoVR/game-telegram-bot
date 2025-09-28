@@ -34,7 +34,7 @@ spring:
     show-sql: true
     generate-ddl: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       default_batch_fetch_size: 20
       generate_statistics: true
     properties:
