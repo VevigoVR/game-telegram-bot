@@ -51,12 +51,15 @@ public class Start extends Query {
             }
 
             user.setPlayerScore(new PlayerScoreP(user.getId()));
-            Gold gold = new Gold(25000);
+            Gold gold = new Gold(25);
             gold.setUserId(user.getId());
+            /*
             Metal metal = new Metal(25000);
             metal.setUserId(user.getId());
             Stone stone = new Stone(25000);
             stone.setUserId(user.getId());
+
+             */
 
 /*
             MetalBuilding metalBuilding = new MetalBuilding();
@@ -71,7 +74,7 @@ public class Start extends Query {
             inventoryBooster.setUserId(user.getId());
  */
 
-            user.setResources(List.of(gold, metal, stone));
+            user.setResources(List.of(gold));
 //            user.setBoosters(Set.of(inventoryBooster));
 //            user.setBuildings(Set.of(metalBuilding));
             userService.saveFull(user);

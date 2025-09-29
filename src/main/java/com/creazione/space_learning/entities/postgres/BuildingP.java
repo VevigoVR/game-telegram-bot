@@ -48,6 +48,7 @@ public class BuildingP {
     private final BuildingType name;
     @Enumerated(EnumType.STRING)
     private final ResourceType production;
+    @Enumerated(EnumType.STRING)
     private Emoji emojiProduction;
     private double incrementPrice;
     private double resourcesInBuilding;

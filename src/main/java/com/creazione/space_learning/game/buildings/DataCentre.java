@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataCentre extends BuildingDto {
+
     public DataCentre() {
         super(BuildingType.DATA_CENTRE, ResourceType.KNOWLEDGE, Emoji.COIN);
         this.setIncrementPrice(3);

@@ -27,15 +27,15 @@ databaseChangeLog:
                   type: BIGINT
               - column:
                   name: last_start
-                  type: TIMESTAMP
+                  type: TIMESTAMP WITH TIME ZONE
               - column:
                   name: previous_start
-                  type: TIMESTAMP
+                  type: TIMESTAMP WITH TIME ZONE
               - column:
                   name: last_end
-                  type: TIMESTAMP
+                  type: TIMESTAMP WITH TIME ZONE
               - column:
                   name: previous_end
-                  type: TIMESTAMP
+                  type: TIMESTAMP WITH TIME ZONE
             constraints:
               primaryKeyName: pk_scheduler

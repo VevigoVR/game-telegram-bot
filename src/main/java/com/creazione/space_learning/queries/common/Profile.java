@@ -111,12 +111,12 @@ public class Profile extends Query {
 
     @Override
     public InlineKeyboardMarkup getInlineKeyboardMarkup() {
-        List<Integer> buttonsInLine = List.of(2, 3, 2);
+        List<Integer> buttonsInLine = List.of(2, 2, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/profile"));
         buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/profilenewwindow")));
         buttons.add(getButton("Строения", "/buildings"));
-        buttons.add(getButton(Emoji.SATELLITE.toString(), "/datacentre"));
+        //buttons.add(getButton(Emoji.SATELLITE.toString(), "/datacentre"));
         buttons.add(getButton("Склад", "/resources"));
         buttons.add(getButton(Emoji.BUSTS_IN_SILHOUETTE.toString(), "/referrals"));
         //buttons.add(getButton(Emoji.GEAR.toString(), "/help"));

@@ -32,7 +32,15 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: emoji_production
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: increment_price
+                  type: DOUBLE PRECISION
+              - column:
+                  name: resources_in_building
                   type: DOUBLE PRECISION
               - column:
                   name: increment_mining

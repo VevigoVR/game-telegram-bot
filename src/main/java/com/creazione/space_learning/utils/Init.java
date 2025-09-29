@@ -24,7 +24,7 @@ public class Init {
     public void init() {
         //createNotices();
         //createReferral();
-        addGifts();
+        //addGifts();
     }
 
     private void addGifts() {
