@@ -2,9 +2,9 @@ package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.dto.TransferBuildingResult;
 import com.creazione.space_learning.dto.TransferTradeResult;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.resources.Gold;
 import com.creazione.space_learning.game.resources.ReferralBox1;
 import com.creazione.space_learning.game.resources.ResourceList;
@@ -27,11 +27,11 @@ public class ResourceService {
 
     public boolean calculateQuantityChanges(UserDto userDto, Instant date) {
         List<ResourceDto> resources = userDto.getResources();
-        List<BuildingP> buildings = userDto.getBuildings();
+        List<BuildingDto> buildings = userDto.getBuildings();
         long dateLong = date.getEpochSecond();
         boolean isUpdateDB = false;
         //System.out.println("Текущее время: " + new Date(dateLong));
-        for (BuildingP building : buildings) {
+        for (BuildingDto building : buildings) {
             boolean flag = false;
             for (ResourceDto resource : resources) {
                 if (resource.getName().equals(building.getProduction())) {
@@ -58,7 +58,7 @@ public class ResourceService {
         return isUpdateDB;
     }
 
-    private boolean calculateUpdate(BuildingP building, ResourceDto resource, long date) {
+    private boolean calculateUpdate(BuildingDto building, ResourceDto resource, long date) {
         long timeUpgrade = building.getLastTimeUpgrade().getEpochSecond() + building.getTimeToUpdate();
         //System.out.println("время в которое производится обновление уровня в случае постройки/улучшения строения:");
         //System.out.println(new Date(timeUpgrade));
@@ -88,7 +88,7 @@ public class ResourceService {
         }
     }
 
-    private double simpleCalculateUpdate(BuildingP building, ResourceDto resource, long date) {
+    private double simpleCalculateUpdate(BuildingDto building, ResourceDto resource, long date) {
         if (building.getLevel() == 0) {
             return 0;
         }
@@ -99,7 +99,7 @@ public class ResourceService {
         return addResources;
     }
 
-    private void setQuantity(BuildingP building, double addResources) {
+    private void setQuantity(BuildingDto building, double addResources) {
         double quantity = building.getResourcesInBuilding() + addResources;
         building.setResourcesInBuilding(
                 building.calculateStorageLimit() > quantity ? quantity : building.calculateStorageLimit()
@@ -107,7 +107,7 @@ public class ResourceService {
         //System.out.println("теперь ресурсов: " + resource.getQuantity());
     }
 
-    public double getQuantityInHour(BuildingP building) {
+    public double getQuantityInHour(BuildingDto building) {
         if (building.getLevel() == 0) {
             return 0;
         }

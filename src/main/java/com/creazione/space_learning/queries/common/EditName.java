@@ -52,7 +52,7 @@ public class EditName extends Query {
         }
 
         if (!name.isEmpty()) {
-            int i = userService.updateNameById(getUserDto().getId(), name);
+            int i = userService.updateNameById(getUserDto().getId(), name, getUserDto().getTelegramId());
             if (i < 1) {
                 wrong = "❌ Обновить имя не удалось. \nПопробуйте ещё раз немного позже.";
             } else if (i > 2) {

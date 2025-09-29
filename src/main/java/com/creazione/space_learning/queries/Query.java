@@ -1,7 +1,9 @@
 package com.creazione.space_learning.queries;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.dto.PaginationDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
+import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.service.TransferResourceService;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
@@ -47,7 +49,7 @@ public abstract class Query {
     private final String targetImg = "profile.jpeg";
     private long chatId;
     private int messageId;
-    private String userName;
+    //private String userName;
     private volatile boolean status = false;
     private UserDto userDto;
 
@@ -62,12 +64,14 @@ public abstract class Query {
     public void initialQuery(Update update, boolean isUpdate) {
         if (update.hasCallbackQuery()) {
             setQuery(update.getCallbackQuery().getData().toLowerCase().trim());
+            System.out.println("Запрос call back: " + getQuery());
             setChatId(update.getCallbackQuery().getMessage().getChatId());
-            setUserName(update.getCallbackQuery().getFrom().getUserName());
+            //setUserName(update.getCallbackQuery().getFrom().getUserName());
             setMessageId(update.getCallbackQuery().getMessage().getMessageId());
             findInitialQuery(isUpdate);
         } else {
             setQuery(update.getMessage().getText().toLowerCase().trim());
+            System.out.println("Запрос: " + getQuery());
             setChatId(update.getMessage().getChatId());
             findInitialQuery(isUpdate);
         }
@@ -87,7 +91,7 @@ public abstract class Query {
                 }
             }
         } catch (Exception exception) {
-            System.out.println("Ошибка доступа пользователя по методу: findInitialQuery(boolean isUpdate): " + Query.class);
+            //System.out.println("Ошибка доступа пользователя по методу: findInitialQuery(boolean isUpdate): " + Query.class);
             exception.printStackTrace();
         }
     }
@@ -328,5 +332,64 @@ public abstract class Query {
 
         // Все остальное время (3:00-8:59) не входит в интервал
         return false;
+    }
+
+    public String[] getCommandArgsAbsolute(List<String> commands) {
+        String text = getQuery();
+        if (text == null || text.isEmpty()) {
+            return null;
+        }
+
+        boolean isRightCommand = false;
+        String argsPart = "";
+        for (String command : commands) {
+            if (text.startsWith(command)) {
+                isRightCommand = true;
+                // Убираем команду и разбиваем аргументы
+                argsPart = text.trim();
+                break;
+            }
+        }
+
+        if (!isRightCommand) {
+            return null;
+        }
+
+        if (!argsPart.isEmpty()) {
+            return argsPart.split("\\s+");
+        } else {
+            return null;
+        }
+    }
+
+    public void insertPagination(PaginationDto paginationDto, String query) {
+        List<InlineKeyboardButton> buttons = new ArrayList<>();
+        int totalPages = 1;
+        //System.out.println("paginationDto.getSize(): " + paginationDto.getSize());
+        int pages = paginationDto.getSize() / paginationDto.getLimit();
+        //System.out.println("int pages: " + pages);
+        //System.out.println("paginationDto.getLimit(): " + paginationDto.getLimit());
+        //System.out.println("paginationDto.getSize() % paginationDto.getLimit(): " + paginationDto.getSize() % paginationDto.getLimit());
+        if (paginationDto.getSize() % paginationDto.getLimit() == 0 && pages > 1) {
+            totalPages = pages;
+        } else if (paginationDto.getSize() % paginationDto.getLimit() != 0 && pages > 1) {
+            totalPages = pages + 1;
+        }
+        paginationDto.setTotalPages(totalPages);
+        //System.out.println("totalPages: " + paginationDto.getTotalPages());
+        if (totalPages <= 1) {
+            paginationDto.setButtons(buttons);
+            return;
+        }
+
+        if (paginationDto.getPage() > 1) {
+            buttons.add(getButton(Emoji.ARROW_LEFT.toString() + " " + (paginationDto.getPage() - 1), query + " " + (paginationDto.getPage() - 1)));
+        }
+
+        if (paginationDto.getPage() < totalPages) {
+            buttons.add(getButton((paginationDto.getPage() + 1) + " " + Emoji.ARROW_RIGHT.toString(), query + " " + (paginationDto.getPage() + 1)));
+        }
+
+        paginationDto.setButtons(buttons);
     }
 }

@@ -16,16 +16,16 @@ public class StoneBuilding extends BuildingDto {
     public StoneBuilding() {
         super(BuildingType.STONE_BUILDING, ResourceType.STONE, Emoji.ROCK);
         this.setIncrementPrice(2);
-        this.setIncrementMining(1.25);
+        this.setIncrementMining(1.5);
         this.setQuantityMining(0.01);
     }
 
     @Override
     public List<ResourceDto> viewPrice(int level) {
         List<ResourceDto> price = new ArrayList<>();
-        int goldQuantity = 5;
-        int stoneQuantity = 7;
-        int metalQuantity = 5;
+        long goldQuantity = 5;
+        long stoneQuantity = 7;
+        long metalQuantity = 5;
         if (level == 1) { // 1 уровень
             price.add(new Gold(goldQuantity));
         } else if (level > 1 && level < 5) { // 2,3,4 уровни

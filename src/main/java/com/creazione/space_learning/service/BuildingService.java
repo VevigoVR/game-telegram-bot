@@ -1,9 +1,9 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.repository.BuildingRepository;
 import com.creazione.space_learning.enums.Emoji;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class BuildingService {
     private final BuildingRepository buildingRepository;
 
     @Transactional
-    public String createBuilding(UserDto user, BuildingP newBuilding) {
+    public String createBuilding(UserDto user, BuildingDto newBuilding) {
         switch (newBuilding.getName()) {
             case GOLD_BUILDING -> {
                 return create(user, new GoldBuilding());
@@ -45,7 +44,7 @@ public class BuildingService {
     }
 
     @Transactional
-    private String create(UserDto user, BuildingP newBuilding) {
+    private String create(UserDto user, BuildingDto newBuilding) {
         // Производит вычисление, не сохраняет
         DataSet.getResourceService().calculateQuantityChanges(user, Instant.now());
 
@@ -66,10 +65,8 @@ public class BuildingService {
 
     public String upLevel(UserDto user, int iBuilding) {
         Instant date = Instant.now();
-        // Производит вычисление, не сохраняет
-        DataSet.getResourceService().calculateQuantityChanges(user, date);
 
-        BuildingP building = user.getBuildings().get(iBuilding);
+        BuildingDto building = user.getBuildings().get(iBuilding);
         List<ResourceDto> needResources = building.viewPrice(building.getLevel() + 1);
         List<ResourceDto> userResources = user.getResources();
 
@@ -90,9 +87,9 @@ public class BuildingService {
         return "\n" + Emoji.STAR2 + "<b>Строительство успешно начато!</b>\n\n";
     }
 
-    private boolean checkTime (BuildingP building) {
-        Date date = new Date();
-        long expireDate = date.getTime() - (building.getLastTimeUpgrade().toEpochMilli() + building.getTimeToUpdate());
+    private boolean checkTime (BuildingDto building) {
+        Instant date = Instant.now();
+        long expireDate = date.getEpochSecond() - (building.getLastTimeUpgrade().getEpochSecond() + building.getTimeToUpdate());
         return expireDate >= 0;
     }
 
@@ -123,14 +120,13 @@ public class BuildingService {
     public long getDuration(List<ResourceDto> resources) {
         long sum = 0;
         for (ResourceDto resource : resources) {
-            sum += (long) resource.getQuantity();
+            sum += resource.getQuantity();
         }
-        sum /= 10L; // необходимо преобразование в миллисекунды для метода, сохраняющего время для улучшения уровня строения
+        sum /= 10L;
         return sum;
     }
 
     public String getDurationToString(long duration) {
-        duration = duration / 1000;
         if (duration < 1) {
             return " 0с";
         }
@@ -162,10 +158,9 @@ public class BuildingService {
         return result.toString();
     }
 
-    public BuildingP cloneBuilding(BuildingP building) {
-        BuildingP clone = new BuildingP(building.getId(), building.getName(), building.getProduction());
+    public BuildingDto cloneBuilding(BuildingDto building) {
+        BuildingDto clone = new BuildingDto(building.getId(), building.getName(), building.getProduction(), building.getEmojiProduction());
         clone.setUserId(building.getUserId());
-        clone.setEmojiProduction(building.getEmojiProduction());
         clone.setIncrementPrice(building.getIncrementPrice());
         clone.setIncrementMining(building.getIncrementMining());
         clone.setQuantityMining(building.getQuantityMining());
@@ -176,9 +171,9 @@ public class BuildingService {
         return clone;
     }
 
-    public long getPointsForAllBuildings(List<BuildingP> buildings)  {
+    public long getPointsForAllBuildings(List<BuildingDto> buildings)  {
         long sum = 0;
-        for (BuildingP building : buildings) {
+        for (BuildingDto building : buildings) {
             sum += building.getPointsForBuilding(building.getLevel());
         }
         return sum/1000;

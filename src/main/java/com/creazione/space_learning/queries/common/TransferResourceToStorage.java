@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -86,7 +86,7 @@ public class TransferResourceToStorage extends Query {
             case "/getresourcesmetal" : {
                 buildingInfo.setTargetBuilding(new MetalBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
-                    BuildingP building = getUserDto().getBuildings().get(i);
+                    BuildingDto building = getUserDto().getBuildings().get(i);
                     if (building.getName().equals(buildingInfo.getTargetBuilding().getName())) {
                         buildingInfo.setUserBuilding(building);
                         buildingInfo.setHasBuilding(true);
@@ -99,7 +99,7 @@ public class TransferResourceToStorage extends Query {
             case "/getresourcesstone" : {
                 buildingInfo.setTargetBuilding(new StoneBuilding());
                 for (int i = 0; i < getUserDto().getBuildings().size(); i++) {
-                    BuildingP building = getUserDto().getBuildings().get(i);
+                    BuildingDto building = getUserDto().getBuildings().get(i);
                     if (building.getName().equals(buildingInfo.getTargetBuilding().getName())) {
                         buildingInfo.setUserBuilding(building);
                         buildingInfo.setHasBuilding(true);

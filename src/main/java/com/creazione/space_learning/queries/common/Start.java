@@ -3,6 +3,8 @@ package com.creazione.space_learning.queries.common;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.PlayerScoreP;
 import com.creazione.space_learning.game.resources.Gold;
+import com.creazione.space_learning.game.resources.Metal;
+import com.creazione.space_learning.game.resources.Stone;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -32,13 +34,13 @@ public class Start extends Query {
     public Answer respond(Update update) {
         Answer answer = new Answer();
         setChatId(update.getMessage().getChatId());
-        setUserName(craftUserName(update.getMessage().getFrom()));
+        String userName = craftUserName(update.getMessage().getFrom());
         UserDto userDto = userService.findFullUserByTelegramId(getChatId());
         if (userDto == null) {
             UserDto user = new UserDto();
             user.setTelegramId(getChatId());
             setQuery(update.getMessage().getText().trim());
-            user.setName(getUserName());
+            user.setName(userName);
             user = userService.saveFullWithoutCache(user);
 
             // ПРОВЕРКА, ЕСТЬ ЛИ РЕФЕРАЛЬНЫЙ КОД ПРИГЛАШЕНИЯ
@@ -51,6 +53,10 @@ public class Start extends Query {
             user.setPlayerScore(new PlayerScoreP(user.getId()));
             Gold gold = new Gold(25000);
             gold.setUserId(user.getId());
+            Metal metal = new Metal(25000);
+            metal.setUserId(user.getId());
+            Stone stone = new Stone(25000);
+            stone.setUserId(user.getId());
 
 /*
             MetalBuilding metalBuilding = new MetalBuilding();
@@ -65,14 +71,14 @@ public class Start extends Query {
             inventoryBooster.setUserId(user.getId());
  */
 
-            user.setResources(List.of(gold));
+            user.setResources(List.of(gold, metal, stone));
 //            user.setBoosters(Set.of(inventoryBooster));
 //            user.setBuildings(Set.of(metalBuilding));
             userService.saveFull(user);
 
             String img = "/static/image/start.jpg";
             String targetImg = "start.jpg";
-            String text = getWelcomeText(getUserName());
+            String text = getWelcomeText(userName);
             InlineKeyboardMarkup markupInline = getInlineKeyboardMarkup();
             SendPhoto message = sendCustomPhoto(getChatId(), img, targetImg, text);
             message.setReplyMarkup(markupInline);

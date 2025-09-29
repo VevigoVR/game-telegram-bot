@@ -10,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class ResourcePostgresService {
         return resourcePList;
     }
 
-    public List<ResourceDto> toGameObjectList(Set<ResourceP> resourcePSet) {
+    public List<ResourceDto> toGameObjectList(List<ResourceP> resourcePSet) {
         List<ResourceDto> resourceDtoList = new ArrayList<>();
         for (ResourceP resource : resourcePSet) {
             resourceDtoList.add(toGameObject(resource));
@@ -67,7 +65,7 @@ public class ResourcePostgresService {
     }
 
     public List<ResourceDto> findAllByUserId(long id) {
-        return toGameObjectList(new HashSet<>(resourcesRepository.findAllByUserId(id)));
+        return toGameObjectList(new ArrayList<>(resourcesRepository.findAllByUserId(id)));
     }
 
     public void save(List<ResourceDto> resources) {
@@ -92,8 +90,7 @@ public class ResourcePostgresService {
             return resources;
         }
         List<ResourceP> result = resourcesRepository.findAllByUserId(id).stream().toList();
-        Set<ResourceP> resultSet = new HashSet<>(result);
-        resourceCacheService.cacheResources(telegramId, toGameObjectList(resultSet));
-        return toGameObjectList(resultSet);
+        resourceCacheService.cacheResources(telegramId, toGameObjectList(result));
+        return toGameObjectList(result);
     }
 }

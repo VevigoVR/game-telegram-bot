@@ -22,7 +22,7 @@ public class UserDto {
     private Long id;
     private Long telegramId;
     private String name;
-    private List<BuildingP> buildings;
+    private List<BuildingDto> buildings;
     private List<ResourceDto> resources;
     private List<InventoryBoosterP> boosters;
     private PlayerScoreP playerScore;
@@ -50,7 +50,7 @@ public class UserDto {
         }
     }
 
-    public List<BuildingP> viewSortedBuildings() {
+    public List<BuildingDto> viewSortedBuildings() {
         if (buildings == null) {
             return  new ArrayList<>();
         } else {

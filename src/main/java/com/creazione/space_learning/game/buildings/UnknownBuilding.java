@@ -24,9 +24,9 @@ public class UnknownBuilding extends BuildingDto {
     @Override
     public List<ResourceDto> viewPrice(int level) {
         List<ResourceDto> price = new ArrayList<>();
-        int goldQuantity = 100;
-        int stoneQuantity = 100;
-        int metalQuantity = 100;
+        long goldQuantity = 100;
+        long stoneQuantity = 100;
+        long metalQuantity = 100;
         if (level < 5) {
             price.add(new Gold(Math.round(goldQuantity * Math.pow(getIncrementPrice(), level))));
             price.add(new Stone(Math.round(stoneQuantity * Math.pow(getIncrementPrice(), level))));

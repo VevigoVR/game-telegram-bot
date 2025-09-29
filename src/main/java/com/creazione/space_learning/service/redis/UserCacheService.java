@@ -29,7 +29,7 @@ public class UserCacheService {
         return new UserDto(userR.getId(),
                 userR.getTelegramId(),
                 userR.getName(),
-                userR.getBuildings() == null ? new ArrayList<>() : userR.getBuildings(),
+                userR.getBuildings() == null ? new ArrayList<>() : buildingCacheService.toGameObjectList(userR.getBuildings()),
                 userR.getResources() == null ? new ArrayList<>() : resourceCacheService.toGameObjectList(userR.getResources()),
                 userR.getBoosters() == null ? new ArrayList<>() : userR.getBoosters(),
                 userR.getPlayerScore(),
@@ -47,7 +47,7 @@ public class UserCacheService {
         return new UserR(userDto.getId(),
                 userDto.getTelegramId(),
                 userDto.getName(),
-                userDto.getBuildings() == null ? new ArrayList<>() : userDto.getBuildings(),
+                userDto.getBuildings() == null ? new ArrayList<>() : buildingCacheService.toRedisObjectList(userDto.getBuildings()),
                 userDto.getResources() == null ? new ArrayList<>() : resourceCacheService.toRedisObjectList(userDto.getResources()),
                 userDto.getBoosters() == null ? new ArrayList<>() : userDto.getBoosters(),
                 userDto.getPlayerScore(),
@@ -68,7 +68,7 @@ public class UserCacheService {
             resourceCacheService.cacheResources(telegramId, userDto.getResources());
         }
         if (!user.getBuildings().isEmpty()) {
-            buildingCacheService.cacheBuildings(telegramId, user.getBuildings());
+            buildingCacheService.cacheBuildings(telegramId, userDto.getBuildings());
         }
         if (!user.getBoosters().isEmpty()) {
             inventoryBoosterCacheService.cacheInventoryBoosters(telegramId, user.getBoosters());

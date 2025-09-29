@@ -70,7 +70,7 @@ public class StorageLootBoxes extends Query {
     @Override
     public String getText() {
         StringBuilder text = new StringBuilder();
-        text.append("<b>Склад ").append(getUserName()).append("</b>\n\n<b>Коробки</b>:\n");
+        text.append("<b>Склад ").append(getUserDto().getName()).append("</b>\n\n<b>Коробки</b>:\n");
         if (!getUserDto().viewSortedLootBoxes().isEmpty()) {
             for (ResourceDto resource : getUserDto().viewSortedLootBoxes()) {
                 text.append(resource.getEmoji()).append(" ").append(resource.getName()).append(": ")
@@ -101,7 +101,7 @@ public class StorageLootBoxes extends Query {
         buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/lootboxesnw")));
         buttons.add(getButton("Ресурсы", "/resources"));
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/lootboxes"));
-        buttons.add(getButton("Ускорители", "/boosters"));
+        buttons.add(getButton("Бустеры", "/boosters"));
         return getKeyboard(buttonsInLine, buttons);
     }
 }

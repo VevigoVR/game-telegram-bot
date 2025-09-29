@@ -1,12 +1,9 @@
 package com.creazione.space_learning.entities.postgres;
 
-import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.enums.Emoji;
-import com.creazione.space_learning.utils.Formatting;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -18,8 +15,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Getter

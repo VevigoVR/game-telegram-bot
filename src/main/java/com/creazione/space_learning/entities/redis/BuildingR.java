@@ -1,6 +1,5 @@
 package com.creazione.space_learning.entities.redis;
 
-import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.enums.ResourceType;

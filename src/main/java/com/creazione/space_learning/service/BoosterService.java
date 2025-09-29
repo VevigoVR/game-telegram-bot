@@ -1,8 +1,8 @@
 package com.creazione.space_learning.service;
 
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.repository.ActiveBoosterRepository;
@@ -31,7 +31,7 @@ public class BoosterService {
     private final IdTelegramCacheService idTelegramCacheService;
     private final UserPostgresService userService;
 
-    public double getIncrementMining(BuildingP building, Instant lastMiningUpdate) {
+    public double getIncrementMining(BuildingDto building, Instant lastMiningUpdate) {
         long userId = building.getUserId();
         Instant now = Instant.now();
         long durationMillis = Duration.between(lastMiningUpdate, now).toMillis();

@@ -1,9 +1,9 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.queries.GameCommand;
@@ -39,8 +39,8 @@ import java.util.List;
         description = "Информация о здании"
 )
 public class BuildingInfo extends Query {
-    private BuildingP targetBuilding;
-    private BuildingP userBuilding;
+    private BuildingDto targetBuilding;
+    private BuildingDto userBuilding;
     private String takeButton = "Собрать ресурсы";
     private boolean hasBuilding = false;
 
@@ -120,7 +120,7 @@ public class BuildingInfo extends Query {
     }
 
     private void setParameters() {
-        for (BuildingP userBuildingFromDB : getUserDto().getBuildings()) {
+        for (BuildingDto userBuildingFromDB : getUserDto().getBuildings()) {
             if (targetBuilding.getName().equals(userBuildingFromDB.getName())) {
                 userBuilding = userBuildingFromDB;
                 hasBuilding = true;
@@ -176,12 +176,12 @@ public class BuildingInfo extends Query {
                 text.append(" <b>-").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>");
             }
 
-            long timeUpgrade = userBuilding.getLastTimeUpgrade().toEpochMilli() + userBuilding.getTimeToUpdate();
+            long timeUpgrade = userBuilding.getLastTimeUpgrade().getEpochSecond() + userBuilding.getTimeToUpdate();
             // если обновление данных случилось без поднятия уровня
-            if (userBuilding.getLastUpdate().toEpochMilli() <= timeUpgrade) {
+            if (userBuilding.getLastUpdate().getEpochSecond() <= timeUpgrade) {
                 text.append("\nЗдание улучшается до уровня: <i>").append(userBuilding.getLevel() + 1).append("</i>");
                 text.append("\nВремя до улучшения: <i>")
-                        .append(buildingService.getDurationToString(timeUpgrade - userBuilding.getLastUpdate().toEpochMilli()))
+                        .append(buildingService.getDurationToString(timeUpgrade - userBuilding.getLastUpdate().getEpochSecond()))
                         .append("</i>");
 
                 /*
@@ -227,7 +227,7 @@ public class BuildingInfo extends Query {
                             .append(resource.makeQuantityString())
                             .append(" ").append(resource.getEmoji()).append("\n");
                 }
-                BuildingP futureBuilding = buildingService.cloneBuilding(userBuilding);
+                BuildingDto futureBuilding = buildingService.cloneBuilding(userBuilding);
                 futureBuilding.setLevel(userBuilding.getLevel() + 1);
                 text.append("Производство в час: <i>")
                         .append((int) resourceService.getQuantityInHour(futureBuilding)).append("</i>\n");
@@ -254,13 +254,11 @@ public class BuildingInfo extends Query {
             } else {
                 resInStorageString = Formatting.formatWithoutFraction(resInStorage);
             }
-            System.out.println("userBuilding: " + userBuilding.getLevel());
-            System.out.println("userBuilding.getIncrementMining(): " + userBuilding.getIncrementMining());
-            System.out.println("userBuilding.calculateStorageLimit(): " + userBuilding.calculateStorageLimit());
-            text.append("\n\n Произведено ресурсов: ").append(resInStorageString)
-                    .append(" из ").append(userBuilding.calculateStorageLimit())
-                    .append("\n чтобы забрать ресурсы на склад, нажмите ")
-                    .append(takeButton);
+            //System.out.println("userBuilding: " + userBuilding.getLevel());
+            //System.out.println("userBuilding.getIncrementMining(): " + userBuilding.getIncrementMining());
+            //System.out.println("userBuilding.calculateStorageLimit(): " + userBuilding.calculateStorageLimit());
+            text.append("\n\n Произведено ресурсов: \n<b>").append(resInStorageString)
+                    .append("</b> из ").append(userBuilding.calculateStorageLimit());
 
             // ВЫВОДИМ СООБЩЕНИЕ О ТОМ, ЕСТЬ ЛИ АКТИВНЫЕ БУСТЕРЫ, И СКОЛЬКО ПРОЦЕНТОВ И ЧЕГО ОНИ ДОБАВЛЯЮТ
             if (!rateMessage.isEmpty()) {
@@ -331,7 +329,7 @@ public class BuildingInfo extends Query {
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private int boosterRate(BuildingP building) {
+    private int boosterRate(BuildingDto building) {
         long telegramId = getUserDto().getTelegramId();
         long userId = getUserDto().getId();
         List<ResourceType> types = new ArrayList<>(List.of(ResourceType.ACCELERATION_ALL));

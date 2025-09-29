@@ -4,20 +4,23 @@ import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.enums.BuildingType;
-import com.creazione.space_learning.enums.ResourceType;
-import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.enums.Emoji;
+import com.creazione.space_learning.enums.ResourceType;
+import com.creazione.space_learning.game.resources.Gold;
+import com.creazione.space_learning.game.resources.Metal;
+import com.creazione.space_learning.game.resources.Stone;
 import com.creazione.space_learning.utils.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MetalBuilding extends BuildingDto {
-    public MetalBuilding() {
-        super(BuildingType.METAL_BUILDING, ResourceType.METAL, Emoji.BLACK_CIRCLE);
-        this.setIncrementPrice(2);
-        this.setIncrementMining(1.5);
-        this.setQuantityMining(0.005);
+public class DataCentre extends BuildingDto {
+    public DataCentre() {
+        super(BuildingType.DATA_CENTRE, ResourceType.KNOWLEDGE, Emoji.COIN);
+        this.setIncrementPrice(3);
+        this.setIncrementMining(2);
+        this.setQuantityMining(0.005
+        );
     }
 
     @Override
@@ -26,14 +29,10 @@ public class MetalBuilding extends BuildingDto {
         long goldQuantity = 5;
         long stoneQuantity = 3;
         long metalQuantity = 5;
+
         if (level == 1) { // 1 уровень
             price.add(new Gold(goldQuantity));
         } else if (level > 1 && level < 5) { // 2,3,4 уровни
-            //System.out.println("level: " + level);
-            //stem.out.println("getIncrementPrice(): " + getIncrementPrice());
-            //System.out.println("Math.pow(getIncrementPrice(), level): " + Math.pow(getIncrementPrice(), level));
-            //System.out.println("Math.round(metalQuantity * Math.pow(getIncrementPrice(), level)): " + Math.round(metalQuantity * Math.pow(getIncrementPrice(), level)));
-            //System.out.println("Formatting.roundNumber(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level))): " + Formatting.roundNumber(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level))));
             price.add(new Metal(Formatting.roundNumber(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level)))));
         } else if (level > 4 && level < 10) { // 5,6,7,8,9 уровни
             price.add(new Gold(Formatting.roundNumber(Math.round(goldQuantity * Math.pow(getIncrementPrice(), level)))));

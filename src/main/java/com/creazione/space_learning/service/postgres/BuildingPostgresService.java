@@ -2,7 +2,6 @@ package com.creazione.space_learning.service.postgres;
 
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.postgres.BuildingP;
-import com.creazione.space_learning.entities.redis.BuildingR;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.repository.BuildingRepository;
 import com.creazione.space_learning.service.redis.BuildingCacheService;
@@ -10,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

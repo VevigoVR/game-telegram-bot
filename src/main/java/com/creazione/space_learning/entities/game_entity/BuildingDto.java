@@ -7,7 +7,6 @@ import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.utils.Formatting;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -92,7 +91,6 @@ public class BuildingDto {
         if (this.getLevel() == 0) {
             return 0;
         }
-        //System.out.println(3_600 * (this.getQuantityMining() * Math.pow(this.getIncrementMining(), this.getLevel())));
         double quantityInHour = DataSet.getResourceService().getQuantityInHour(this) * 24;
         return Formatting.roundNumber((long) quantityInHour);
     }

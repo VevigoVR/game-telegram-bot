@@ -1,13 +1,13 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.repository.InventoryBoosterRepository;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.service.postgres.ResourcePostgresService;
 import lombok.RequiredArgsConstructor;
@@ -127,7 +127,7 @@ public class LootBoxService {
     }
 
     private long incrementQuantityGiftByLevel(ResourceType type, long quantity) {
-        for (BuildingP building : userDto.getBuildings()) {
+        for (BuildingDto building : userDto.getBuildings()) {
             if (building.getProduction().equals(type)) {
                 return Math.round (((building.getQuantityMining() * Math.pow(building.getIncrementMining(), building.getLevel()))) * milliSecondsGift);
             }

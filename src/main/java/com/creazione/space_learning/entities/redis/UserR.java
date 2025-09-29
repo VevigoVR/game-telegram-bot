@@ -28,7 +28,7 @@ public class UserR {
     @JsonProperty("name")
     private String name;
     @JsonProperty("buildings")
-    private List<BuildingP> buildings = new ArrayList<>();
+    private List<BuildingR> buildings = new ArrayList<>();
     @JsonProperty("resources")
     private List<ResourceR> resources = new ArrayList<>();
     @JsonProperty("boosters")

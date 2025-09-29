@@ -1,6 +1,7 @@
 package com.creazione.space_learning.service.scheduler;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.*;
@@ -42,7 +43,7 @@ public class SchedulerService {
     }
 
     // Формула расчета очков
-    private long calculateScore(List<BuildingP> buildings) {
+    private long calculateScore(List<BuildingDto> buildings) {
         return buildingService.getPointsForAllBuildings(buildings);
     }
 
@@ -71,7 +72,7 @@ public class SchedulerService {
 
             List<UserDto> userEntities = new ArrayList<>();
             for (UserDto userEntity : usersPage.getContent()) {
-                List<BuildingP> buildings = userEntity.getBuildings().stream().toList();
+                List<BuildingDto> buildings = userEntity.getBuildings().stream().toList();
                 resourceService.calculateQuantityChanges(userEntity, Instant.now());
 
                 if (!aggregateNotices.isEmpty()) {

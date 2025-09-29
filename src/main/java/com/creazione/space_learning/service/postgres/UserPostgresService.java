@@ -28,7 +28,7 @@ public class UserPostgresService {
         return new UserP(userDto.getId(),
                 userDto.getTelegramId(),
                 userDto.getName(),
-                userDto.getBuildings() == null ? new HashSet<>() : new HashSet<>(userDto.getBuildings()),
+                userDto.getBuildings() == null ? new HashSet<>() : new HashSet<>(buildingPostgresService.toPostgresObjectList(userDto.getBuildings())),
                 userDto.getResources() == null ? new HashSet<>() : new HashSet<>(resourcePostgresService.toPostgresObjectList(userDto.getResources())),
                 userDto.getBoosters() == null ? new HashSet<>() : new HashSet<>(userDto.getBoosters()),
                 userDto.getPlayerScore(),
@@ -46,8 +46,8 @@ public class UserPostgresService {
         return new UserDto(userP.getId(),
                 userP.getTelegramId(),
                 userP.getName(),
-                userP.getBuildings() == null ? new ArrayList<>() : new ArrayList<>(userP.getBuildings()),
-                userP.getResources() == null ? new ArrayList<>() : new ArrayList<>(resourcePostgresService.toGameObjectList(userP.getResources())),
+                userP.getBuildings() == null ? new ArrayList<>() : new ArrayList<>(buildingPostgresService.toGameObjectList(new ArrayList<>(userP.getBuildings()))),
+                userP.getResources() == null ? new ArrayList<>() : new ArrayList<>(resourcePostgresService.toGameObjectList(new ArrayList<>(userP.getResources()))),
                 userP.getBoosters() == null ? new ArrayList<>() : new ArrayList<>(userP.getBoosters()),
                 userP.getPlayerScore(),
                 userP.getReferrer(),
@@ -140,7 +140,8 @@ public class UserPostgresService {
         userRepository.saveAll(toPostgresObjectList(userDtos));
     }
 
-    public int updateNameById(Long id, String name) {
+    public int updateNameById(Long id, String name, long telegramId) {
+        userCacheService.deleteUser(telegramId);
         return userRepository.updateNameById(id, name);
     }
 

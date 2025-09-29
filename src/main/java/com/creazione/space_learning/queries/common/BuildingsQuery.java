@@ -1,7 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.BuildingList;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.queries.GameCommand;
@@ -45,11 +45,11 @@ public class BuildingsQuery extends Query {
     @Override
     public String getText() {
         StringBuilder text = new StringBuilder();
-        text.append("<b>").append("Строения ").append(getUserName()).append("</b>\n");
+        text.append("<b>").append("Строения ").append(getUserDto().getName()).append("</b>\n");
         if (getUserDto().getBuildings().isEmpty()) {
             text.append("<i>строений нет...</i>\n");
         }
-        for (BuildingP building : getUserDto().viewSortedBuildings()) {
+        for (BuildingDto building : getUserDto().viewSortedBuildings()) {
             if (!building.isVisible()) {
                 continue;
             }
@@ -62,7 +62,7 @@ public class BuildingsQuery extends Query {
         }
 
         if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            List<BuildingP> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingP::isVisible).toList();
+            List<BuildingDto> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
             //System.out.println("Размер списка строений: " + buildingList.size());
             if (buildingList.size() < 2) {
                 text.append("\n<b>Можно построить</b>:\n");
@@ -71,12 +71,12 @@ public class BuildingsQuery extends Query {
             text.append("\n<b>Можно построить</b>:\n");
         }
 
-        for (BuildingP building : BuildingList.BUILDING_LIST) {
+        for (BuildingDto building : BuildingList.BUILDING_LIST) {
             if (!building.isVisible()) {
                 continue;
             }
             boolean isExist = false;
-            for (BuildingP myBuilding : getUserDto().getBuildings()) {
+            for (BuildingDto myBuilding : getUserDto().getBuildings()) {
                 if (building.getName().equals(myBuilding.getName())) {
                     isExist = true;
                 }

@@ -30,16 +30,13 @@ public class Init {
     private void addGifts() {
         Set<InventoryBoosterP> inventoryBoosters = Set.of(new InventoryBoosterP(
                         ResourceType.ACCELERATION_METAL,
-                        0.2, Duration.ofHours(24).toMillis(), 10),
+                        0.2, Duration.ofHours(1).toMillis(), 10),
                 new InventoryBoosterP(
                         ResourceType.ACCELERATION_STONE,
-                        0.2, Duration.ofHours(24).toMillis(), 10),
-                new InventoryBoosterP(
-                        ResourceType.ACCELERATION_WOOD,
-                        0.2, Duration.ofHours(24).toMillis(), 10),
+                        0.2, Duration.ofHours(1).toMillis(), 10),
                 new InventoryBoosterP(
                         ResourceType.ACCELERATION_ALL,
-                        0.2, Duration.ofHours(24).toMillis(), 10));
+                        0.2, Duration.ofHours(1).toMillis(), 10));
         inventoryBoosters.forEach(booster -> booster.setUserId(1L));
         DataSet.getBoosterService().saveAllIB(inventoryBoosters, 5773183764L);
     }

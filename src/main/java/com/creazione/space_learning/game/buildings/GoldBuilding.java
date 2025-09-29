@@ -7,12 +7,10 @@ import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.enums.Emoji;
-import jakarta.persistence.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 public class GoldBuilding extends BuildingDto {
     public GoldBuilding() {
         super(BuildingType.GOLD_BUILDING, ResourceType.GOLD, Emoji.FULL_MOON);
@@ -24,10 +22,10 @@ public class GoldBuilding extends BuildingDto {
     @Override
     public List<ResourceDto> viewPrice(int level) {
         List<ResourceDto> price = new ArrayList<>();
-        int goldQuantity = 5;
-        //int woodQuantity = 7;
-        int stoneQuantity = 5;
-        int metalQuantity = 7;
+        long goldQuantity = 5;
+        //long woodQuantity = 7;
+        long stoneQuantity = 5;
+        long metalQuantity = 7;
         if (level == 1) {
             price.add(new Gold(goldQuantity));
         } else if (level < 20 && level > 0) {

@@ -70,7 +70,7 @@ public class Storage extends Query {
     @Override
     public String getText() {
         StringBuilder text = new StringBuilder();
-        text.append("<b>Склад ").append(getUserName()).append("</b>\n\n<b>Ресурсы</b>:\n");
+        text.append("<b>Склад ").append(getUserDto().getName()).append("</b>\n\n<b>Ресурсы</b>:\n");
         if (!getUserDto().viewSortedCommon().isEmpty()) {
             for (ResourceDto resource : getUserDto().viewSortedCommon()) {
                 text.append(resource.getEmoji()).append(" ").append(resource.getName()).append(": ")
@@ -93,7 +93,7 @@ public class Storage extends Query {
         buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/resourcesnw")));
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/resources"));
         buttons.add(getButton("Коробки", "/lootboxes"));
-        buttons.add(getButton("Ускорители", "/boosters"));
+        buttons.add(getButton("Бустеры", "/boosters"));
         return getKeyboard(buttonsInLine, buttons);
     }
 }

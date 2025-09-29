@@ -42,7 +42,8 @@ public enum Emoji {
     OUTBOX_TRAY(EmojiParser.parseToUnicode("\uD83D\uDCE4")),
     GEAR(EmojiParser.parseToUnicode(":gear:")),
     PACKAGE(EmojiParser.parseToUnicode("\uD83D\uDCE6")),
-    CARD_FILE_BOX(EmojiParser.parseToUnicode("\uD83D\uDDC3"))
+    CARD_FILE_BOX(EmojiParser.parseToUnicode("\uD83D\uDDC3")),
+    SATELLITE(EmojiParser.parseToUnicode("\uD83D\uDCE1"))
     ;
     private final String name;
 
