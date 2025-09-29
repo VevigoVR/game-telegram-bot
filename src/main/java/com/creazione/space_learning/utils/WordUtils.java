@@ -12,9 +12,9 @@ public class WordUtils {
      * @return Правильная форма слова
      */
     @Deprecated
-    public static String rightWord2(int n, String f1, String f2, String f5) {
-        int mod100 = Math.abs(n) % 100;
-        int mod10 = mod100 % 10;
+    public static String rightWord2(long n, String f1, String f2, String f5) {
+        long mod100 = Math.abs(n) % 100;
+        long mod10 = mod100 % 10;
 
         // Обработка исключений 11-14
         if (mod100 >= 11 && mod100 <= 14) {
@@ -26,8 +26,8 @@ public class WordUtils {
                 (mod10 >= 2 && mod10 <= 4) ? f2 : f5;
     }
 
-    public static String rightWord(int n, String f1, String f2, String f5) {
-        int mod = Math.abs(n) % 100;
+    public static String rightWord(long n, String f1, String f2, String f5) {
+        long mod = Math.abs(n) % 100;
         return (mod > 10 && mod < 15) ? f5 :
                 (mod % 10 == 1) ? f1 :
                         (mod % 10 > 1 && mod % 10 < 5) ? f2 : f5;
@@ -35,11 +35,11 @@ public class WordUtils {
 
     // Тесты
     public static void main(String[] args) {
-        int[] testValues = {0, 1, 2, 5, 11, 21, 22, 25, 111, 212};
-        for (int n : testValues) {
+        long[] testValues = {0, 1, 2, 5, 11, 21, 22, 25, 111, 212};
+        for (long n : testValues) {
             System.out.printf("%d %s%n", n, rightWord(n, "яблоко", "яблока", "яблок"));
         }
-        for (int n : testValues) {
+        for (long n : testValues) {
             System.out.printf("%d %s%n", n, rightWord2(n, "яблоко", "яблока", "яблок"));
         }
     }

@@ -1,8 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.redis.UserR;
-import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -68,7 +67,6 @@ public class Profile extends Query {
             userService.saveFull(userDto);
         }
         setChatId(update.getMessage().getChatId());
-        setUserName(userDto.getName());
         setUserDto(userDto);
         Answer answer = new Answer();
         answer.setSendPhoto(getSendPhoto());
@@ -90,14 +88,14 @@ public class Profile extends Query {
         long pointsLong = getUserDto().getPlayerScore().getScore();
         String points = Formatting.formatWithDots(pointsLong);
 
-        text.append("<b>").append("Планета ").append(getUserName()).append("</b>\n\n");
+        text.append("<b>").append("Планета ").append(getUserDto().getName()).append("</b>\n\n");
         if (pointsLong > 0) {
             text.append("<b>Набрано очков</b>:\n").append(points).append("\n\n");
         }
         text.append("<b>Строения</b>:\n");
 
         if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            for (BuildingP building : getUserDto().viewSortedBuildings()) {
+            for (BuildingDto building : getUserDto().viewSortedBuildings()) {
                 text.append(Emoji.WHITE_SMALL_SQUARE).append(" ").append(building.getName()).append(": ")
                         .append(building.getLevel())
                         .append(" уровень\n");
@@ -118,6 +116,7 @@ public class Profile extends Query {
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/profile"));
         buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/profilenewwindow")));
         buttons.add(getButton("Строения", "/buildings"));
+        //buttons.add(getButton(Emoji.SATELLITE.toString(), "/datacentre"));
         buttons.add(getButton("Склад", "/resources"));
         buttons.add(getButton(Emoji.BUSTS_IN_SILHOUETTE.toString(), "/referrals"));
         //buttons.add(getButton(Emoji.GEAR.toString(), "/help"));

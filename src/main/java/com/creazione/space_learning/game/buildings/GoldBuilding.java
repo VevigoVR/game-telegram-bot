@@ -1,34 +1,31 @@
 package com.creazione.space_learning.game.buildings;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.entities.postgres.BuildingP;
-import com.creazione.space_learning.entities.postgres.ResourceP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.enums.Emoji;
-import jakarta.persistence.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class GoldBuilding extends BuildingP {
+public class GoldBuilding extends BuildingDto {
     public GoldBuilding() {
-        super(BuildingType.GOLD_BUILDING, ResourceType.GOLD);
+        super(BuildingType.GOLD_BUILDING, ResourceType.GOLD, Emoji.FULL_MOON);
         this.setIncrementPrice(2);
         this.setIncrementMining(1.25);
-        this.setQuantityMining(0.0001);
-        this.setEmojiProduction(Emoji.FULL_MOON);
+        this.setQuantityMining(0.01);
     }
 
     @Override
-    public List<ResourceP> viewPrice(int level) {
-        List<ResourceP> price = new ArrayList<>();
-        int goldQuantity = 5;
-        int woodQuantity = 7;
-        int stoneQuantity = 5;
-        int metalQuantity = 7;
+    public List<ResourceDto> viewPrice(int level) {
+        List<ResourceDto> price = new ArrayList<>();
+        long goldQuantity = 5;
+        //long woodQuantity = 7;
+        long stoneQuantity = 5;
+        long metalQuantity = 7;
         if (level == 1) {
             price.add(new Gold(goldQuantity));
         } else if (level < 20 && level > 0) {

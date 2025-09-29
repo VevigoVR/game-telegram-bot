@@ -29,7 +29,7 @@ databaseChangeLog:
                   type: BIGINT
               - column:
                   name: quantity
-                  type: DOUBLE PRECISION
+                  type: BIGINT
                   defaultValue: 0
             constraints:
               primaryKeyName: pk_inventory_boosters

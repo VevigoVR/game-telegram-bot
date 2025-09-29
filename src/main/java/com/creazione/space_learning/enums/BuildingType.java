@@ -9,6 +9,7 @@ public enum BuildingType {
     STONE_BUILDING("Каменный карьер"),
     WOOD_BUILDING("Лесопилка"),
     STORAGE_BUILDING("Склад"),
+    DATA_CENTRE("Дата Центр"),
     UNKNOWN("unknown");
     ;
     private final String name;

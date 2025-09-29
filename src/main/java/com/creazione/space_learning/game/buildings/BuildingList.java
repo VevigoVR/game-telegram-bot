@@ -1,14 +1,15 @@
 package com.creazione.space_learning.game.buildings;
 
-import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 
 import java.util.List;
 
 public class BuildingList {
-    public static final List<BuildingP> BUILDING_LIST = List.of(
-            new GoldBuilding(),
+    public static final List<BuildingDto> BUILDING_LIST = List.of(
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
+            //new GoldBuilding(),
             new StoneBuilding(),
-            new WoodBuilding(),
+            // new WoodBuilding(),
             new MetalBuilding(),
             new StorageBuilding()
     );
@@ -16,7 +17,7 @@ public class BuildingList {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (BuildingP building : BUILDING_LIST) {
+        for (BuildingDto building : BUILDING_LIST) {
             stringBuilder.append(building);
             stringBuilder.append("\n");
         }

@@ -1,10 +1,10 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.buildings.*;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -30,22 +30,27 @@ import java.util.List;
 @Getter
 @Component
 @GameCommand(
-        value = {"/buildinggold",
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ value = {"/buildinggold",
+        // И ЛЕСОПИЛКУ ,"/buildingwood"
+        value = {
                 "/buildingmetal",
-                "/buildingstone",
-                "/buildingwood"},
+                "/buildingstone"
+        },
         description = "Информация о здании"
 )
 public class BuildingInfo extends Query {
-    private BuildingP targetBuilding;
-    private BuildingP userBuilding;
+    private BuildingDto targetBuilding;
+    private BuildingDto userBuilding;
+    private String takeButton = "Собрать ресурсы";
     private boolean hasBuilding = false;
 
     public BuildingInfo() {
-        super(List.of("/buildinggold",
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ super(List.of("/buildinggold",
+        // ,"/buildingwood"
+        super(List.of(
                 "/buildingmetal",
-                "/buildingstone",
-                "/buildingwood"));
+                "/buildingstone"
+        ));
     }
 
     @Override
@@ -82,11 +87,15 @@ public class BuildingInfo extends Query {
 
     private void setBuildingObjects(String query) {
         switch (query) {
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            /*
             case "/buildinggold" : {
                 targetBuilding = new GoldBuilding();
                 setParameters();
                 break;
             }
+
+             */
             case "/buildingmetal" : {
                 targetBuilding = new MetalBuilding();
                 setParameters();
@@ -97,16 +106,21 @@ public class BuildingInfo extends Query {
                 setParameters();
                 break;
             }
+
+            // УДАЛЯЕМ ЛЕСОПИЛКУ
+                /*
             case "/buildingwood" : {
                 targetBuilding = new WoodBuilding();
                 setParameters();
                 break;
             }
+
+                 */
         }
     }
 
     private void setParameters() {
-        for (BuildingP userBuildingFromDB : getUserDto().getBuildings()) {
+        for (BuildingDto userBuildingFromDB : getUserDto().getBuildings()) {
             if (targetBuilding.getName().equals(userBuildingFromDB.getName())) {
                 userBuilding = userBuildingFromDB;
                 hasBuilding = true;
@@ -162,12 +176,12 @@ public class BuildingInfo extends Query {
                 text.append(" <b>-").append(Formatting.formatWithoutFraction(gettingResourceRate)).append("</b>");
             }
 
-            long timeUpgrade = userBuilding.getLastTimeUpgrade().toEpochMilli() + userBuilding.getTimeToUpdate();
+            long timeUpgrade = userBuilding.getLastTimeUpgrade().getEpochSecond() + userBuilding.getTimeToUpdate();
             // если обновление данных случилось без поднятия уровня
-            if (userBuilding.getLastUpdate().toEpochMilli() <= timeUpgrade) {
+            if (userBuilding.getLastUpdate().getEpochSecond() <= timeUpgrade) {
                 text.append("\nЗдание улучшается до уровня: <i>").append(userBuilding.getLevel() + 1).append("</i>");
                 text.append("\nВремя до улучшения: <i>")
-                        .append(buildingService.getDurationToString(timeUpgrade - userBuilding.getLastUpdate().toEpochMilli()))
+                        .append(buildingService.getDurationToString(timeUpgrade - userBuilding.getLastUpdate().getEpochSecond()))
                         .append("</i>");
 
                 /*
@@ -207,13 +221,13 @@ public class BuildingInfo extends Query {
                         .append(userBuilding.getLevel() + 1)
                         .append(" уровня:</b>")
                         .append("\n");
-                List<ResourceP> resources = userBuilding.viewPrice(userBuilding.getLevel() + 1);
-                for (ResourceP resource : resources) {
+                List<ResourceDto> resources = userBuilding.viewPrice(userBuilding.getLevel() + 1);
+                for (ResourceDto resource : resources) {
                     text.append(resource.getName()).append(": ")
                             .append(resource.makeQuantityString())
                             .append(" ").append(resource.getEmoji()).append("\n");
                 }
-                BuildingP futureBuilding = buildingService.cloneBuilding(userBuilding);
+                BuildingDto futureBuilding = buildingService.cloneBuilding(userBuilding);
                 futureBuilding.setLevel(userBuilding.getLevel() + 1);
                 text.append("Производство в час: <i>")
                         .append((int) resourceService.getQuantityInHour(futureBuilding)).append("</i>\n");
@@ -233,6 +247,18 @@ public class BuildingInfo extends Query {
                 }
                  */
             }
+            double resInStorage = userBuilding.getResourcesInBuilding();
+            String resInStorageString = "";
+            if (resInStorage < 1000) {
+                resInStorageString = Formatting.formatWithFraction(resInStorage, 2);
+            } else {
+                resInStorageString = Formatting.formatWithoutFraction(resInStorage);
+            }
+            //System.out.println("userBuilding: " + userBuilding.getLevel());
+            //System.out.println("userBuilding.getIncrementMining(): " + userBuilding.getIncrementMining());
+            //System.out.println("userBuilding.calculateStorageLimit(): " + userBuilding.calculateStorageLimit());
+            text.append("\n\n Произведено ресурсов: \n<b>").append(resInStorageString)
+                    .append("</b> из ").append(userBuilding.calculateStorageLimit());
 
             // ВЫВОДИМ СООБЩЕНИЕ О ТОМ, ЕСТЬ ЛИ АКТИВНЫЕ БУСТЕРЫ, И СКОЛЬКО ПРОЦЕНТОВ И ЧЕГО ОНИ ДОБАВЛЯЮТ
             if (!rateMessage.isEmpty()) {
@@ -240,8 +266,8 @@ public class BuildingInfo extends Query {
             }
         } else {
             text.append("\nСтоимость строительства:").append("\n");
-            List<ResourceP> resources = targetBuilding.viewPrice(1);
-            for (ResourceP resource : resources) {
+            List<ResourceDto> resources = targetBuilding.viewPrice(1);
+            for (ResourceDto resource : resources) {
                 text.append(resource.getName()).append(": ")
                         .append(resource.makeQuantityString())
                         .append(" ").append(resource.getEmoji()).append("\n");
@@ -262,13 +288,14 @@ public class BuildingInfo extends Query {
             }
             */
         }
+
         text.append("\n").append(getSpoiler());
 
         return text.toString();
     }
 
     public InlineKeyboardMarkup getInlineKeyboardMarkup(boolean hasBuilding) {
-        List<Integer> buttonsInLine = List.of(3, 1);
+        List<Integer> buttonsInLine;
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.ARROW_LEFT.toString(), "/buildings"));
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));
@@ -276,20 +303,33 @@ public class BuildingInfo extends Query {
 
         String nameButton;
         if (hasBuilding) {
+            buttonsInLine = List.of(3, 2);
             nameButton = "Улучшить";
         } else {
+            buttonsInLine = List.of(3, 1);
             nameButton = "Построить";
         }
         switch (targetBuilding.getName()) {
-            case GOLD_BUILDING -> buttons.add(getButton(nameButton, "/upGold"));
-            case WOOD_BUILDING -> buttons.add(getButton(nameButton, "/upWood"));
-            case STONE_BUILDING -> buttons.add(getButton(nameButton, "/UpStone"));
-            case METAL_BUILDING -> buttons.add(getButton(nameButton, "/upMetal"));
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
+            //case GOLD_BUILDING -> buttons.add(getButton(nameButton, "/upGold"));
+            //case WOOD_BUILDING -> buttons.add(getButton(nameButton, "/upWood"));
+            case STONE_BUILDING -> {
+                if (hasBuilding) {
+                    buttons.add(getButton(takeButton, "/getResourcesStone"));
+                }
+                buttons.add(getButton(nameButton, "/UpStone"));
+            }
+            case METAL_BUILDING -> {
+                if (hasBuilding) {
+                    buttons.add(getButton(takeButton, "/getResourcesMetal"));
+                }
+                buttons.add(getButton(nameButton, "/upMetal"));
+            }
         }
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private int boosterRate(BuildingP building) {
+    private int boosterRate(BuildingDto building) {
         long telegramId = getUserDto().getTelegramId();
         long userId = getUserDto().getId();
         List<ResourceType> types = new ArrayList<>(List.of(ResourceType.ACCELERATION_ALL));
@@ -302,13 +342,21 @@ public class BuildingInfo extends Query {
                 types.addAll(ResourceType.getMetalBoosters());
                 break;
             }
+            // УДАЛЯЕМ ЛЕСОПИЛКУ
+                /*
             case WOOD : {
                 types.addAll(ResourceType.getWoodBoosters());
                 break;
             }
+
+                 */
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+                /*
             case GOLD: {
                 types.addAll(ResourceType.getGoldBoosters());
             }
+
+                 */
         }
 
         List<ActiveBoosterP> boosters = DataSet.getBoosterService().findAllABByUserIdAndNameIn(userId, telegramId, types);

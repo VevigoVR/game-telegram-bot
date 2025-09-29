@@ -1,13 +1,13 @@
 package com.creazione.space_learning.service;
 
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.repository.ActiveBoosterRepository;
 import com.creazione.space_learning.repository.InventoryBoosterRepository;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import com.creazione.space_learning.service.redis.ActiveBoosterCacheService;
 import com.creazione.space_learning.service.redis.IdTelegramCacheService;
 import com.creazione.space_learning.service.redis.InventoryBoosterCacheService;
@@ -29,9 +29,9 @@ public class BoosterService {
     private final InventoryBoosterCacheService inventoryBoosterCacheService;
     private final ActiveBoosterCacheService activeBoosterCacheService;
     private final IdTelegramCacheService idTelegramCacheService;
-    private final UserService userService;
+    private final UserPostgresService userService;
 
-    public double getIncrementMining(BuildingP building, Instant lastMiningUpdate) {
+    public double getIncrementMining(BuildingDto building, Instant lastMiningUpdate) {
         long userId = building.getUserId();
         Instant now = Instant.now();
         long durationMillis = Duration.between(lastMiningUpdate, now).toMillis();
@@ -46,7 +46,8 @@ public class BoosterService {
         List<ActiveBoosterP> activeBoosters = new ArrayList<>();
 
         switch (building.getName()) {
-            case GOLD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getGoldBoosters()));
+            // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
+            // case GOLD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getGoldBoosters()));
             case STONE_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getStoneBoosters()));
             case METAL_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getMetalBoosters()));
             case WOOD_BUILDING -> activeBoosters.addAll(findAllABByUserIdAndNameIn(userId, telegramId, ResourceType.getWoodBoosters()));

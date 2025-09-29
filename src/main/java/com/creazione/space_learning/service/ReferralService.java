@@ -2,10 +2,10 @@ package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.ReferralCodec;
 import com.creazione.space_learning.dto.ReferralStats;
-import com.creazione.space_learning.dto.UserDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.ReferralP;
 import com.creazione.space_learning.repository.ReferralRepository;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +23,9 @@ public class ReferralService {
     private String botName;
     private ReferralCodec referralCodec;
     private ReferralRepository referralRepository;
-    private UserService userService;
+    private UserPostgresService userService;
 
-    public ReferralService(ReferralRepository referralRepository, UserService userService) throws NoSuchAlgorithmException, InvalidKeyException {
+    public ReferralService(ReferralRepository referralRepository, UserPostgresService userService) throws NoSuchAlgorithmException, InvalidKeyException {
         this.referralCodec = new ReferralCodec("1aWEdfHq+LUKebfG53t+1g==");
         this.referralRepository = referralRepository;
         this.userService = userService;

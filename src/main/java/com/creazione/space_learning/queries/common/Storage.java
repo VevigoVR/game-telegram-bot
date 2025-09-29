@@ -1,6 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.postgres.ResourceP;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -70,9 +70,9 @@ public class Storage extends Query {
     @Override
     public String getText() {
         StringBuilder text = new StringBuilder();
-        text.append("<b>Склад ").append(getUserName()).append("</b>\n\n<b>Ресурсы</b>:\n");
+        text.append("<b>Склад ").append(getUserDto().getName()).append("</b>\n\n<b>Ресурсы</b>:\n");
         if (!getUserDto().viewSortedCommon().isEmpty()) {
-            for (ResourceP resource : getUserDto().viewSortedCommon()) {
+            for (ResourceDto resource : getUserDto().viewSortedCommon()) {
                 text.append(resource.getEmoji()).append(" ").append(resource.getName()).append(": ")
                         .append(resource.makeQuantityString())
                         .append("\n");
@@ -93,7 +93,7 @@ public class Storage extends Query {
         buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/resourcesnw")));
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/resources"));
         buttons.add(getButton("Коробки", "/lootboxes"));
-        buttons.add(getButton("Ускорители", "/boosters"));
+        buttons.add(getButton("Бустеры", "/boosters"));
         return getKeyboard(buttonsInLine, buttons);
     }
 }

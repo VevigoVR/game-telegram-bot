@@ -24,8 +24,8 @@ public class SpaceLinguaApplication {
 		try {
 			SpringApplication.run(SpaceLinguaApplication.class, args);
 			Thread.sleep(1000);
-			//Init init = new Init();
-			//init.init();
+			Init init = new Init();
+			init.init();
 			//log.trace("Это TRACE сообщение!!!!!!!");
 			//log.debug("Это DEBUG сообщение!!!!!");
 			//log.info("Это INFO сообщение");

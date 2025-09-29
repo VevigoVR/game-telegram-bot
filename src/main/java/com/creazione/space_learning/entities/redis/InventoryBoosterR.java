@@ -18,7 +18,7 @@ public class InventoryBoosterR {
     private ResourceType name;
     private Double value;
     private Long durationMilli;
-    private double quantity;
+    private long quantity;
 
     @Override
     public boolean equals(Object o) {

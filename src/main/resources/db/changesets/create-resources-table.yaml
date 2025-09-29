@@ -31,7 +31,7 @@ databaseChangeLog:
                   type: VARCHAR(255)
               - column:
                   name: quantity
-                  type: DOUBLE PRECISION
+                  type: BIGINT
                   defaultValue: 0
             constraints:
               primaryKeyName: pk_resources

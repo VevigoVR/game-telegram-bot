@@ -2,14 +2,9 @@ package com.creazione.space_learning.entities.redis;
 
 import com.creazione.space_learning.entities.postgres.NoticeP;
 import com.creazione.space_learning.entities.postgres.PlayerScoreP;
-import com.creazione.space_learning.entities.postgres.UserP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.entities.postgres.ResourceP;
-import com.creazione.space_learning.enums.ResourceType;
-import com.creazione.space_learning.utils.InventoryBoosterSorter;
-import com.creazione.space_learning.utils.BuildingSorter;
-import com.creazione.space_learning.utils.ResourceSorter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.PrePersist;
@@ -33,9 +28,9 @@ public class UserR {
     @JsonProperty("name")
     private String name;
     @JsonProperty("buildings")
-    private List<BuildingP> buildings = new ArrayList<>();
+    private List<BuildingR> buildings = new ArrayList<>();
     @JsonProperty("resources")
-    private List<ResourceP> resources = new ArrayList<>();
+    private List<ResourceR> resources = new ArrayList<>();
     @JsonProperty("boosters")
     private List<InventoryBoosterP> boosters = new ArrayList<>();
     @JsonProperty("player_score")

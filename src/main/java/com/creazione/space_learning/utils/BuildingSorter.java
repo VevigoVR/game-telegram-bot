@@ -1,35 +1,35 @@
 package com.creazione.space_learning.utils;
 
-import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class BuildingSorter {
-    private static final Comparator<BuildingP> BY_NAME =
+    private static final Comparator<BuildingDto> BY_NAME =
             Comparator.comparing(b -> b.getName().name(), String.CASE_INSENSITIVE_ORDER);
 
-    private static final Comparator<BuildingP> BY_LEVEL_DESC =
-            Comparator.comparingInt(BuildingP::getLevel).reversed();
+    private static final Comparator<BuildingDto> BY_LEVEL_DESC =
+            Comparator.comparingInt(BuildingDto::getLevel).reversed();
 
-    public static Set<BuildingP> sortBuildingsAsSet(Set<BuildingP> buildings) {
+    public static Set<BuildingDto> sortBuildingsAsSet(Set<BuildingDto> buildings) {
         if (buildings == null || buildings.isEmpty()) {
             return buildings;
         }
         return buildings.stream()
                 .sorted(Comparator.comparing(
-                        BuildingP::getName
+                        BuildingDto::getName
                 ))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     // Основной метод сортировки
-    public static List<BuildingP> sortBuildings(List<BuildingP> buildings, SortOrder order) {
+    public static List<BuildingDto> sortBuildings(List<BuildingDto> buildings, SortOrder order) {
         if (buildings == null || buildings.isEmpty()) {
             return buildings; // Возвращаем пустой неизменяемый список
         }
 
-        List<BuildingP> mutableList = new ArrayList<>(buildings);
+        List<BuildingDto> mutableList = new ArrayList<>(buildings);
 
         switch (order) {
             case NAME_ASC:

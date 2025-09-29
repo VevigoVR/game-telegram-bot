@@ -41,8 +41,8 @@ class InventoryBoosterCacheServiceTest {
 
     @BeforeEach
     void setUp() {
-        booster1 = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10.0);
-        booster2 = new InventoryBoosterP(ResourceType.ACCELERATION_METAL, 0.3, 1800000L, 5.0);
+        booster1 = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.5, 3600000L, 10L);
+        booster2 = new InventoryBoosterP(ResourceType.ACCELERATION_METAL, 0.3, 1800000L, 5L);
         boosters = Arrays.asList(booster1, booster2);
     }
 
@@ -213,7 +213,7 @@ class InventoryBoosterCacheServiceTest {
         when(valueOperations.get("inventory_boosters:" + USER_ID)).thenReturn(toRedisObjectList(boosters));
         when(redisTemplate.hasKey("empty_inv_boosters:" + USER_ID)).thenReturn(false);
 
-        InventoryBoosterP updatedBooster = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.7, 3600000L, 15.0);
+        InventoryBoosterP updatedBooster = new InventoryBoosterP(ResourceType.ACCELERATION_ALL, 0.7, 3600000L, 15L);
 
         // Act
         inventoryBoosterCacheService.updateInventoryBooster(USER_ID, updatedBooster);

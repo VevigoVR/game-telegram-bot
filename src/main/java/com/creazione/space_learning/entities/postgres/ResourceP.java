@@ -4,7 +4,6 @@ import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.enums.Emoji;
-import com.creazione.space_learning.utils.Formatting;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -50,7 +49,7 @@ public class ResourceP extends Item {
     private final ResourceType name;
     @Enumerated(EnumType.STRING)
     private final Emoji emoji;
-    private double quantity;
+    private long quantity;
 
     public ResourceP(ResourceType name, Emoji emoji) {
         super();
@@ -66,30 +65,10 @@ public class ResourceP extends Item {
         this.quantity = 0;
     }
 
-    public ResourceP(ResourceType name, Emoji emoji, double quantity) {
+    public ResourceP(ResourceType name, Emoji emoji, long quantity) {
         super();
         this.quantity = quantity;
         this.name = name;
         this.emoji = emoji;
-    }
-
-    public String makeQuantityString() {
-        //DecimalFormat df = new DecimalFormat("0.#");
-        //return df.format(quantity);
-        return Formatting.formatWithDots(this.quantity);
-    }
-
-    public void incrementQuantity() {
-        this.quantity++;
-    }
-
-    @Override
-    public void addQuantity(double quantity) {
-        this.quantity += quantity;
-    }
-
-    @Override
-    public String toString() {
-        return  this.getName() + ": " + this.makeQuantityString();
     }
 }

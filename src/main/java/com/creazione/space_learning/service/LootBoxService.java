@@ -1,15 +1,15 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.redis.UserR;
-import com.creazione.space_learning.entities.postgres.ResourceP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.repository.InventoryBoosterRepository;
-import com.creazione.space_learning.entities.postgres.BuildingP;
 import com.creazione.space_learning.game.resources.*;
+import com.creazione.space_learning.service.postgres.ResourcePostgresService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +19,18 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class LootBoxService {
+    private final ResourcePostgresService resourcePostgresService;
     private final InventoryBoosterRepository inventoryBoosterRepository;
     private final Random random = new Random();
     private UserDto userDto = new UserDto();
     private ResourceType boxType;
-    private Set<ResourceP> resources;
+    private List<ResourceDto> resources;
     private long milliSecondsGift;
 
     public List<Item> openBox(ResourceType boxType, UserDto userDto) {
         this.boxType = boxType;
         this.userDto = userDto;
-        this.resources = DataSet.getResourceService().findAllByUserId(userDto.getId());
+        this.resources = resourcePostgresService.findAllByUserId(userDto.getId());
         if (!decrementResources(resources)) {
             //System.out.println("получился быстрый false на проверке сундучка");
             return null;
@@ -40,7 +41,7 @@ public class LootBoxService {
 
     public List<Item> takeDailyGift(UserDto userDto) {
         this.userDto = userDto;
-        this.resources = DataSet.getResourceService().findAllByUserId(userDto.getId());
+        this.resources = resourcePostgresService.findAllByUserId(userDto.getId());
         List<Item> possibleRewards = getPossibleRewards(ResourceType.LOOT_BOX_COMMON);
         return save(selectRandomReward(possibleRewards, 1));
     }
@@ -49,22 +50,18 @@ public class LootBoxService {
 
         switch (boxType.getMark()) {
             case "common":
-                milliSecondsGift = 7_200_000;
+                milliSecondsGift = 7_200;
                 return Arrays.asList(
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         new Gold(15),
-                        new Wood(15),
                         new Stone(15),
                         new Metal(15),
                         //new Knowledge(1),
@@ -75,17 +72,13 @@ public class LootBoxService {
                                 ResourceType.ACCELERATION_STONE,
                                 0.2, Duration.ofHours(24).toMillis(), 1),
                         new InventoryBoosterP(
-                                ResourceType.ACCELERATION_WOOD,
-                                0.2, Duration.ofHours(24).toMillis(), 1),
-                        new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 0.2, Duration.ofHours(24).toMillis(), 1)
                 );
             case "rare":
-                milliSecondsGift = 18_000_000;
+                milliSecondsGift = 18_000;
                 return Arrays.asList(
                         new Gold(50),
-                        new Wood(50),
                         new Stone(50),
                         new Metal(50),
                         new InventoryBoosterP(
@@ -95,37 +88,34 @@ public class LootBoxService {
                 );
 
             case "ref 1":
-                milliSecondsGift = 18_000_000;
+                milliSecondsGift = 18_000;
                 return Arrays.asList(
                         new Gold(50),
                         new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 0.5, Duration.ofHours(24).toMillis(), 1),
-                        new Wood(50),
                         new Metal(50),
                         new Stone(50)
                         //new Knowledge(10)
                 );
             case "ref 2":
-                milliSecondsGift = 36_000_000;
+                milliSecondsGift = 36_000;
                 return Arrays.asList(
                         new Gold(150),
                         new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 1.0, Duration.ofHours(24).toMillis(), 1),
-                        new Wood(150),
                         new Metal(150),
                         new Stone(150)
                         //new Knowledge(25)
                 );
             case "ref 3":
-                milliSecondsGift = 72_000_000;
+                milliSecondsGift = 72_000;
                 return Arrays.asList(
                         new Gold(2000),
                         new InventoryBoosterP(
                                 ResourceType.ACCELERATION_ALL,
                                 1.5, Duration.ofHours(24).toMillis(), 1),
-                        new Wood(2000),
                         new Metal(2000),
                         new Stone(2000)
                         //new Knowledge(50)
@@ -136,8 +126,8 @@ public class LootBoxService {
         }
     }
 
-    private double incrementQuantityGiftByLevel(ResourceType type, double quantity) {
-        for (BuildingP building : userDto.getBuildings()) {
+    private long incrementQuantityGiftByLevel(ResourceType type, long quantity) {
+        for (BuildingDto building : userDto.getBuildings()) {
             if (building.getProduction().equals(type)) {
                 return Math.round (((building.getQuantityMining() * Math.pow(building.getIncrementMining(), building.getLevel()))) * milliSecondsGift);
             }
@@ -155,7 +145,7 @@ public class LootBoxService {
             items.add(rewards.get(random.nextInt(rewards.size())));
         }
         for (Item item : items) {
-            if (!(item instanceof ResourceP)) {
+            if (!(item instanceof ResourceDto)) {
                 continue;
             }
             item.setQuantity(incrementQuantityGiftByLevel(item.getName(), item.getQuantity()));
@@ -164,11 +154,11 @@ public class LootBoxService {
     }
 
     private List<Item> save(List<Item> items) {
-        List<ResourceP> giftResources = new ArrayList<>();
+        List<ResourceDto> giftResources = new ArrayList<>();
         List<InventoryBoosterP> giftBoosters = new ArrayList<>();
         for (Item item : items) {
-            if (item instanceof ResourceP) {
-                giftResources.add((ResourceP) item);
+            if (item instanceof ResourceDto) {
+                giftResources.add((ResourceDto) item);
             } else {
                 giftBoosters.add((InventoryBoosterP) item);
             }
@@ -176,7 +166,7 @@ public class LootBoxService {
 
         if (!giftResources.isEmpty()) {
             addOrIncrementResource(resources, giftResources, userDto.getId()); // верно getId()
-            DataSet.getResourceService().saveAll(resources, userDto.getTelegramId()); // верно getTelegramId()
+            resourcePostgresService.saveAll(resources, userDto.getTelegramId()); // верно getTelegramId()
         }
         if (!giftBoosters.isEmpty()) {
             Set<InventoryBoosterP> boosters = DataSet.getBoosterService().findAllIBByUserId(userDto);
@@ -186,11 +176,11 @@ public class LootBoxService {
         return items;
     }
 
-    public void addOrIncrementResource(Set<ResourceP> userResources, List<ResourceP> grantedResources, Long userId) {
+    public void addOrIncrementResource(List<ResourceDto> userResources, List<ResourceDto> grantedResources, Long userId) {
 
-        for (ResourceP grant : grantedResources) {
+        for (ResourceDto grant : grantedResources) {
             boolean found = false;
-            for (ResourceP userResource : userResources) {
+            for (ResourceDto userResource : userResources) {
                 if (userResource.getName().equals(grant.getName())) {
                     userResource.addQuantity(grant.getQuantity());
                     found = true;
@@ -206,12 +196,12 @@ public class LootBoxService {
         }
     }
 
-    public boolean decrementResources(Set<ResourceP> resources) {
-        for (ResourceP resource : resources) {
+    public boolean decrementResources(List<ResourceDto> resources) {
+        for (ResourceDto resource : resources) {
             //System.out.println("resources for decrement :" + resource.getName());
             if (resource.getName().equals(boxType)) {
                 if (resource.getQuantity() <= 0) {
-                    DataSet.getResourceService().delete(resource, userDto.getTelegramId());
+                    resourcePostgresService.delete(resource, userDto.getTelegramId());
                     //System.out.println("result of decrement: " + false);
                     return false;
                 }

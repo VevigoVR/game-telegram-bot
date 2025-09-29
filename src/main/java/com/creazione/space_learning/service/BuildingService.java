@@ -1,32 +1,31 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.game.buildings.*;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.repository.BuildingRepository;
 import com.creazione.space_learning.enums.Emoji;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import com.creazione.space_learning.service.redis.BuildingCacheService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BuildingService {
-    private final UserService userService;
+    private final UserPostgresService userService;
     private final BuildingCacheService buildingCacheService;
     private final BuildingRepository buildingRepository;
 
     @Transactional
-    public String createBuilding(UserDto user, BuildingP newBuilding) {
+    public String createBuilding(UserDto user, BuildingDto newBuilding) {
         switch (newBuilding.getName()) {
             case GOLD_BUILDING -> {
                 return create(user, new GoldBuilding());
@@ -45,13 +44,13 @@ public class BuildingService {
     }
 
     @Transactional
-    private String create(UserDto user, BuildingP newBuilding) {
+    private String create(UserDto user, BuildingDto newBuilding) {
         // Производит вычисление, не сохраняет
         DataSet.getResourceService().calculateQuantityChanges(user, Instant.now());
 
         //System.out.println("Класс строения: " + newBuilding.getClass());
-        List<ResourceP> needResources = newBuilding.viewPrice(1);
-        List<ResourceP> userResources = user.getResources();
+        List<ResourceDto> needResources = newBuilding.viewPrice(1);
+        List<ResourceDto> userResources = user.getResources();
 
         if (!checkResources(needResources, userResources)) {
             return "\n" + Emoji.EXCLAMATION + "<b>На строительство не хватает ресурсов</b>\n\n";
@@ -66,12 +65,10 @@ public class BuildingService {
 
     public String upLevel(UserDto user, int iBuilding) {
         Instant date = Instant.now();
-        // Производит вычисление, не сохраняет
-        DataSet.getResourceService().calculateQuantityChanges(user, date);
 
-        BuildingP building = user.getBuildings().get(iBuilding);
-        List<ResourceP> needResources = building.viewPrice(building.getLevel() + 1);
-        List<ResourceP> userResources = user.getResources();
+        BuildingDto building = user.getBuildings().get(iBuilding);
+        List<ResourceDto> needResources = building.viewPrice(building.getLevel() + 1);
+        List<ResourceDto> userResources = user.getResources();
 
 
         if (!checkTime(building)) {
@@ -90,17 +87,17 @@ public class BuildingService {
         return "\n" + Emoji.STAR2 + "<b>Строительство успешно начато!</b>\n\n";
     }
 
-    private boolean checkTime (BuildingP building) {
-        Date date = new Date();
-        long expireDate = date.getTime() - (building.getLastTimeUpgrade().toEpochMilli() + building.getTimeToUpdate());
+    private boolean checkTime (BuildingDto building) {
+        Instant date = Instant.now();
+        long expireDate = date.getEpochSecond() - (building.getLastTimeUpgrade().getEpochSecond() + building.getTimeToUpdate());
         return expireDate >= 0;
     }
 
-    private boolean checkResources(List<ResourceP> needResources, List<ResourceP> userResources) {
-        for (ResourceP needResource : needResources) {
+    private boolean checkResources(List<ResourceDto> needResources, List<ResourceDto> userResources) {
+        for (ResourceDto needResource : needResources) {
             //System.out.println("needResource: " + needResource.getName() + " - " + needResource.getQuantity());
             boolean isHere = false;
-            for (ResourceP userResource : userResources) {
+            for (ResourceDto userResource : userResources) {
                 if (!needResource.getName().equals(userResource.getName())) {
                     continue;
                 }
@@ -108,7 +105,7 @@ public class BuildingService {
                     return false;
                 } else {
                     isHere = true;
-                    double quantity = userResource.getQuantity();
+                    long quantity = userResource.getQuantity();
                     quantity -= needResource.getQuantity();
                     userResource.setQuantity(quantity);
                 }
@@ -120,17 +117,16 @@ public class BuildingService {
         return true;
     }
 
-    public long getDuration(List<ResourceP> resources) {
+    public long getDuration(List<ResourceDto> resources) {
         long sum = 0;
-        for (ResourceP resource : resources) {
-            sum += (long) resource.getQuantity();
+        for (ResourceDto resource : resources) {
+            sum += resource.getQuantity();
         }
-        sum *= (long) 100.0; // необходимо преобразование в миллисекунды для метода, сохраняющего время для улучшения уровня строения
+        sum /= 10L;
         return sum;
     }
 
     public String getDurationToString(long duration) {
-        duration = duration / 1000;
         if (duration < 1) {
             return " 0с";
         }
@@ -162,10 +158,9 @@ public class BuildingService {
         return result.toString();
     }
 
-    public BuildingP cloneBuilding(BuildingP building) {
-        BuildingP clone = new BuildingP(building.getId(), building.getName(), building.getProduction());
+    public BuildingDto cloneBuilding(BuildingDto building) {
+        BuildingDto clone = new BuildingDto(building.getId(), building.getName(), building.getProduction(), building.getEmojiProduction());
         clone.setUserId(building.getUserId());
-        clone.setEmojiProduction(building.getEmojiProduction());
         clone.setIncrementPrice(building.getIncrementPrice());
         clone.setIncrementMining(building.getIncrementMining());
         clone.setQuantityMining(building.getQuantityMining());
@@ -176,24 +171,13 @@ public class BuildingService {
         return clone;
     }
 
-    public long getPointsForAllBuildings(List<BuildingP> buildings)  {
+    public long getPointsForAllBuildings(List<BuildingDto> buildings)  {
         long sum = 0;
-        for (BuildingP building : buildings) {
+        for (BuildingDto building : buildings) {
             sum += building.getPointsForBuilding(building.getLevel());
         }
         return sum/1000;
     }
 
-    public List<BuildingP> getBuildings(Long id, Long telegramId) {
-        if (buildingCacheService.isBuildingsEmpty(telegramId)) {
-            return new ArrayList<>();
-        }
-        List<BuildingP> buildings = buildingCacheService.getBuildings(telegramId);
-        if (!buildings.isEmpty()) {
-            return buildings;
-        }
-        List<BuildingP> result = buildingRepository.findAllByUserId(id).stream().toList();
-        buildingCacheService.cacheBuildings(telegramId, result);
-        return result;
-    }
+
 }

@@ -1,9 +1,9 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.entities.postgres.BuildingP;
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.game.buildings.BuildingList;
 import com.creazione.space_learning.enums.BuildingType;
-import com.creazione.space_learning.entities.postgres.ResourceP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -45,11 +45,11 @@ public class BuildingsQuery extends Query {
     @Override
     public String getText() {
         StringBuilder text = new StringBuilder();
-        text.append("<b>").append("Строения ").append(getUserName()).append("</b>\n");
+        text.append("<b>").append("Строения ").append(getUserDto().getName()).append("</b>\n");
         if (getUserDto().getBuildings().isEmpty()) {
             text.append("<i>строений нет...</i>\n");
         }
-        for (BuildingP building : getUserDto().viewSortedBuildings()) {
+        for (BuildingDto building : getUserDto().viewSortedBuildings()) {
             if (!building.isVisible()) {
                 continue;
             }
@@ -62,18 +62,21 @@ public class BuildingsQuery extends Query {
         }
 
         if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            List<BuildingP> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingP::isVisible).toList();
-            if (buildingList.size() < 4) {
+            List<BuildingDto> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
+            //System.out.println("Размер списка строений: " + buildingList.size());
+            if (buildingList.size() < 2) {
                 text.append("\n<b>Можно построить</b>:\n");
             }
+        } else {
+            text.append("\n<b>Можно построить</b>:\n");
         }
 
-        for (BuildingP building : BuildingList.BUILDING_LIST) {
+        for (BuildingDto building : BuildingList.BUILDING_LIST) {
             if (!building.isVisible()) {
                 continue;
             }
             boolean isExist = false;
-            for (BuildingP myBuilding : getUserDto().getBuildings()) {
+            for (BuildingDto myBuilding : getUserDto().getBuildings()) {
                 if (building.getName().equals(myBuilding.getName())) {
                     isExist = true;
                 }
@@ -82,8 +85,8 @@ public class BuildingsQuery extends Query {
 
             text.append(Emoji.WHITE_SMALL_SQUARE).append(" ").append(building.getName().toString().toUpperCase()).append("\n");
             text.append("Стоимость строительства:").append("\n");
-            List<ResourceP> resources = building.viewPrice(1);
-            for (ResourceP resource : resources) {
+            List<ResourceDto> resources = building.viewPrice(1);
+            for (ResourceDto resource : resources) {
                 text.append(resource.getName()).append(": ").append(resource.makeQuantityString())
                         .append(" ").append(resource.getEmoji()).append("\n");
             }
@@ -96,13 +99,14 @@ public class BuildingsQuery extends Query {
 
     @Override
     public InlineKeyboardMarkup getInlineKeyboardMarkup() {
-        List<Integer> buttonsInLine = List.of(1, 2, 2);
+        List<Integer> buttonsInLine = List.of(1, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));
-        buttons.add(getButton(BuildingType.GOLD_BUILDING.toString(), "/buildingGold"));
+        // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
+        //buttons.add(getButton(BuildingType.GOLD_BUILDING.toString(), "/buildingGold"));
         buttons.add(getButton(BuildingType.STONE_BUILDING.toString(), "/buildingStone"));
         buttons.add(getButton(BuildingType.METAL_BUILDING.toString(), "/buildingMetal"));
-        buttons.add(getButton(BuildingType.WOOD_BUILDING.toString(), "/buildingWood"));
+        //buttons.add(getButton(BuildingType.WOOD_BUILDING.toString(), "/buildingWood"));
         return getKeyboard(buttonsInLine, buttons);
     }
 }

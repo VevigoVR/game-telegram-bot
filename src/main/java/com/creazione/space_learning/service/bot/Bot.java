@@ -1,15 +1,14 @@
 package com.creazione.space_learning.service.bot;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.UserDto;
-import com.creazione.space_learning.entities.postgres.UserP;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.responces.MaintenanceMessage;
 import com.creazione.space_learning.queries.responces.Response;
 import com.creazione.space_learning.queries.AIPlaceholder;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.queries.QueryList;
 import com.creazione.space_learning.service.AIDataCollector;
-import com.creazione.space_learning.service.postgres.UserService;
+import com.creazione.space_learning.service.postgres.UserPostgresService;
 import com.creazione.space_learning.utils.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -35,7 +34,7 @@ public class Bot extends TelegramLongPollingBot {
     private final QueryList queryList;
     private final AIPlaceholder aiPlaceholder;
     private final AIDataCollector aiDataCollector;
-    private final UserService userService;
+    private final UserPostgresService userService;
     private Long userId = 0L;
     @Value("${bot.name}")
     private String botName;
@@ -46,7 +45,7 @@ public class Bot extends TelegramLongPollingBot {
     public Bot(
             @Value("${bot.token}") String botToken, RedisTemplate<String, Object> redisTemplate, RedissonClient redissonClient,
             QueryList queryList,
-            AIPlaceholder aiPlaceholder, AIDataCollector aiDataCollector, UserService userService
+            AIPlaceholder aiPlaceholder, AIDataCollector aiDataCollector, UserPostgresService userService
     ) {
         super(botToken);
         this.redisTemplate = redisTemplate;
@@ -80,7 +79,9 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void processCommonQuery(Update update) {
-        String messageText = update.getMessage().getText().trim().toLowerCase();
+        String messageText = update.getMessage().getText();
+        if (messageText == null || messageText.isEmpty()) { return; }
+        messageText = messageText.trim().toLowerCase();
         this.userId = update.getMessage().getChatId();
         //System.out.println("messageText from " + userId + " : " + messageText);
         boolean isQuery = false;

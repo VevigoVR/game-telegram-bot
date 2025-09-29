@@ -32,5 +32,10 @@ databaseChangeLog:
       file: db/changesets/create-user-channel-table.yaml
   - include:
       file: db/changesets/create-points-award-table.yaml
-  - include:
-      file: db/changelog/changes/10_09_2025_17_42.sql
+
+
+      # Изменения/дополнения к таблицам
+  #- include:
+  #    file: db/changelog/changes/10_09_2025_17_42.sql
+  #- include:
+  #    file: db/changelog/changes/20_09_2025_17_14_add_storage_limit.sql

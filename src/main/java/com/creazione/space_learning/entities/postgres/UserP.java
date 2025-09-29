@@ -1,7 +1,5 @@
 package com.creazione.space_learning.entities.postgres;
 
-import com.creazione.space_learning.utils.BuildingSorter;
-import com.creazione.space_learning.utils.ResourceSorter;
 import jakarta.persistence.*;
 import lombok.*;
 
