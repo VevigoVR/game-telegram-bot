@@ -5,9 +5,7 @@ import com.creazione.space_learning.dto.TransferTradeResult;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
-import com.creazione.space_learning.game.resources.Gold;
-import com.creazione.space_learning.game.resources.ReferralBox1;
-import com.creazione.space_learning.game.resources.ResourceList;
+import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.service.postgres.ResourcePostgresService;
 import com.creazione.space_learning.utils.Formatting;
@@ -136,8 +134,8 @@ public class ResourceService {
                     && (userResource.getQuantity() >= resourceForSell.getQuantity())
             ) {
                 if (resourceForSell.getName().getName().equals(ResourceType.METAL.getName())) {
-
-                    Gold gold = new Gold((resourceForSell.getQuantity() / 100 * 75));
+                    Metal metal = new Metal();
+                    Gold gold = new Gold((long) (resourceForSell.getQuantity() * metal.getSellForGold()));
                     //System.out.println("Количество золота: " + gold.getQuantity());
                     gold.setUserId(userDto.getId());
                     addResourceOrIncrement(userResources, gold);
@@ -149,7 +147,8 @@ public class ResourceService {
                     resourcePostgresService.saveAll(userResources, userDto.getTelegramId());
                     return transferResult;
                 } else if (resourceForSell.getName().getName().equals(ResourceType.STONE.getName())) {
-                    Gold gold = new Gold((resourceForSell.getQuantity() / 100 * 50));
+                    Stone stone = new Stone();
+                    Gold gold = new Gold((long) (resourceForSell.getQuantity() * stone.getSellForGold()));
                     gold.setUserId(userDto.getId());
                     addResourceOrIncrement(userResources, gold);
                     userResource.subtractQuantity(resourceForSell.getQuantity());
@@ -187,10 +186,12 @@ public class ResourceService {
 
         switch (resourceForBuy.getName()) {
             case METAL -> {
-                needGold = resourceForBuy.getQuantity() / 100 * 80;
+                Metal metal = new Metal();
+                needGold = (long) (resourceForBuy.getQuantity() * metal.getBuyForGold());
             }
             case STONE -> {
-                needGold = resourceForBuy.getQuantity() / 100 * 55;
+                Stone stone = new Stone();
+                needGold = (long) (resourceForBuy.getQuantity() * stone.getBuyForGold());
             }
         }
 

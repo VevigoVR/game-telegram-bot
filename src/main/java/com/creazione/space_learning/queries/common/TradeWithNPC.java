@@ -195,7 +195,8 @@ public class TradeWithNPC extends Query {
             Примеры:
             <code>/sell metal 100</code>
             <code>/buy metal 5k</code>
-            <code>/sell stone 10m</code>
+            <code>/buy stone 5kk</code>
+            <code>/sell stone 10mk</code>
             
             Суффиксы:
             к/k - умножить на 1000 (кило)

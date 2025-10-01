@@ -79,6 +79,11 @@ public class BuildingPostgresService {
                 convertNotFinalFieldToGameObject(storageBuilding, buildingP);
                 return storageBuilding;
             }
+            case DATA_CENTRE -> {
+                DataCentreBuilding dataCentreBuilding = new DataCentreBuilding();
+                convertNotFinalFieldToGameObject(dataCentreBuilding, buildingP);
+                return dataCentreBuilding;
+            }
             default -> {
                 UnknownBuilding unknownBuilding = new UnknownBuilding();
                 convertNotFinalFieldToGameObject(unknownBuilding, buildingP);

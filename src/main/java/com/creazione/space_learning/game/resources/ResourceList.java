@@ -22,6 +22,11 @@ public class ResourceList {
             new LootBoxRare()
     );
 
+    public static final List<ResourceDto> TRADE_RESOURCES_LIST = List.of(
+            new Metal(),
+            new Stone()
+    );
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();

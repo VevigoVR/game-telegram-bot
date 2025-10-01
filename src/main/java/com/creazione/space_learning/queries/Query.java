@@ -4,6 +4,7 @@ import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.PaginationDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.Emoji;
+import com.creazione.space_learning.game.aidata.Spoiler;
 import com.creazione.space_learning.service.TransferResourceService;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
@@ -32,6 +33,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -62,7 +64,9 @@ public abstract class Query {
     }
 
     public void initialQuery(Update update, boolean isUpdate) {
+        userDto = null;
         if (update.hasCallbackQuery()) {
+
             setQuery(update.getCallbackQuery().getData().toLowerCase().trim());
             //System.out.println("Запрос call back: " + getQuery());
             setChatId(update.getCallbackQuery().getMessage().getChatId());
@@ -214,9 +218,10 @@ public abstract class Query {
     }
 
     public String getSpoiler() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("HH:mm:ss.SSS");//dd/MM/yyyy
-        //return "\n<span class=\"tg-spoiler\">" + sdfDate.format(new Date()) + "</span>";
-        return "\n" + sdfDate.format(new Date());
+        System.out.println(Spoiler.AI_SPOILER_PHRASES.size());
+        List<String> spoilerList = Spoiler.AI_SPOILER_PHRASES;
+        Random random = new Random();
+        return "\n---------------\n<code>" + Emoji.ROBOT_FACE + ": " + spoilerList.get(random.nextInt(spoilerList.size())) + "</code>";
     }
 
     public String[] getCommandArgsAbsolute(String command) {

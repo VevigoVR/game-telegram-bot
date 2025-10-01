@@ -265,7 +265,7 @@ public class BuildingInfo extends Query {
                 text.append("\n\n").append(rateMessage);
             }
         } else {
-            text.append("\nСтоимость строительства:").append("\n");
+            text.append("Стоимость строительства:").append("\n");
             List<ResourceDto> resources = targetBuilding.viewPrice(1);
             for (ResourceDto resource : resources) {
                 text.append(resource.getName()).append(": ")
@@ -274,7 +274,7 @@ public class BuildingInfo extends Query {
             }
             text.append("Время строительства:");
             long duration = buildingService.getDuration(resources);
-            text.append(buildingService.getDurationToString(duration)).append("\n");
+            text.append(buildingService.getDurationToString(duration));
             /*
             text.append("\n<b>Следующие уровни:</b>\n");
             for (int i = 2; i < 6; i++) {

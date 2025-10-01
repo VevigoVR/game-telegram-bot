@@ -45,9 +45,9 @@ public class BuildingsQuery extends Query {
     @Override
     public String getText() {
         StringBuilder text = new StringBuilder();
-        text.append("<b>").append("Строения ").append(getUserDto().getName()).append("</b>\n");
+        text.append("<b>").append("Производство ").append(getUserDto().getName()).append("</b>\n\n");
         if (getUserDto().getBuildings().isEmpty()) {
-            text.append("<i>строений нет...</i>\n");
+            text.append("<i>строений производства нет...</i>\n");
         }
         for (BuildingDto building : getUserDto().viewSortedBuildings()) {
             if (!building.isVisible()) {
