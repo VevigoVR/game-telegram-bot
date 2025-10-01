@@ -18,8 +18,8 @@ public class Scheduler {
         this.scoreService = scoreService;
     }
 
-    //@Scheduled(fixedRate = 60_000) // запуск раз в 1 минуту (60_000)
-    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(fixedRate = 60_000) // запуск раз в 1 минуту (60_000)
+    //@Scheduled(cron = "0 0 3 * * ?")
     public void scoresGrantsAggregates() throws InterruptedException {
         Instant start = Instant.now();
         log.info("Starting score calculation job");
@@ -38,8 +38,8 @@ public class Scheduler {
         DataSet.setMaintenance(false);
     }
 
-    //@Scheduled(fixedRate = 30_000)
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(fixedRate = 30_000)
+    //@Scheduled(cron = "0 0 9 * * ?")
     public void sendSuperNotices() {
         Instant start = Instant.now();
         log.info("Starting sending super notices");

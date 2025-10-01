@@ -14,14 +14,14 @@ import com.creazione.space_learning.utils.Formatting;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataCentre extends BuildingDto {
+public class DataCentreBuilding extends BuildingDto {
 
-    public DataCentre() {
+    public DataCentreBuilding() {
         super(BuildingType.DATA_CENTRE, ResourceType.KNOWLEDGE, Emoji.COIN);
         this.setIncrementPrice(3);
         this.setIncrementMining(2);
-        this.setQuantityMining(0.005
-        );
+        this.setQuantityMining(0.005);
+        this.setVisible(false);
     }
 
     @Override

@@ -87,8 +87,8 @@ public class Profile extends Query {
         StringBuilder text = new StringBuilder();
         long pointsLong = getUserDto().getPlayerScore().getScore();
         String points = Formatting.formatWithDots(pointsLong);
-
-        text.append("<b>").append("Планета ").append(getUserDto().getName()).append("</b>\n\n");
+        System.out.println("points: " + points);
+        text.append("<b>").append("Планета ").append(getUserDto().getName()).append(":</b>\n\n");
         if (pointsLong > 0) {
             text.append("<b>Набрано очков</b>:\n").append(points).append("\n\n");
         }
@@ -111,13 +111,16 @@ public class Profile extends Query {
 
     @Override
     public InlineKeyboardMarkup getInlineKeyboardMarkup() {
-        List<Integer> buttonsInLine = List.of(2, 2, 2);
+        List<Integer> buttonsInLine = List.of(2, 3, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
+
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/profile"));
         buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/profilenewwindow")));
-        buttons.add(getButton("Строения", "/buildings"));
-        //buttons.add(getButton(Emoji.SATELLITE.toString(), "/datacentre"));
+
+        buttons.add(getButton("Шахты", "/buildings"));
+        buttons.add(getButton(Emoji.SATELLITE.toString(), "/datacentre"));
         buttons.add(getButton("Склад", "/resources"));
+
         buttons.add(getButton(Emoji.BUSTS_IN_SILHOUETTE.toString(), "/referrals"));
         //buttons.add(getButton(Emoji.GEAR.toString(), "/help"));
         if (getUserDto().isPost()) {
@@ -125,6 +128,7 @@ public class Profile extends Query {
         } else {
             buttons.add(getButton(Emoji.POST_WITHOUT_MAILS.toString(), "/post"));
         }
+
         //buttons.add(getButton("Фондовый рынок", "/market"));
         //buttons.add(getButton("Поиск ресурсов", "/expedition"));
         return getKeyboard(buttonsInLine, buttons);

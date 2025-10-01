@@ -8,10 +8,13 @@ import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.game.resources.*;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.utils.Formatting;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class MetalBuilding extends BuildingDto {
     public MetalBuilding() {
         super(BuildingType.METAL_BUILDING, ResourceType.METAL, Emoji.BLACK_CIRCLE);
@@ -29,11 +32,6 @@ public class MetalBuilding extends BuildingDto {
         if (level == 1) { // 1 уровень
             price.add(new Gold(goldQuantity));
         } else if (level > 1 && level < 5) { // 2,3,4 уровни
-            //System.out.println("level: " + level);
-            //stem.out.println("getIncrementPrice(): " + getIncrementPrice());
-            //System.out.println("Math.pow(getIncrementPrice(), level): " + Math.pow(getIncrementPrice(), level));
-            //System.out.println("Math.round(metalQuantity * Math.pow(getIncrementPrice(), level)): " + Math.round(metalQuantity * Math.pow(getIncrementPrice(), level)));
-            //System.out.println("Formatting.roundNumber(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level))): " + Formatting.roundNumber(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level))));
             price.add(new Metal(Formatting.roundNumber(Math.round(metalQuantity * Math.pow(getIncrementPrice(), level)))));
         } else if (level > 4 && level < 10) { // 5,6,7,8,9 уровни
             price.add(new Gold(Formatting.roundNumber(Math.round(goldQuantity * Math.pow(getIncrementPrice(), level)))));

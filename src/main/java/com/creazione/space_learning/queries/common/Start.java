@@ -2,9 +2,8 @@ package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.PlayerScoreP;
+import com.creazione.space_learning.game.buildings.DataCentreBuilding;
 import com.creazione.space_learning.game.resources.Gold;
-import com.creazione.space_learning.game.resources.Metal;
-import com.creazione.space_learning.game.resources.Stone;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -16,8 +15,12 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @GameCommand(
@@ -61,11 +64,12 @@ public class Start extends Query {
 
              */
 
-/*
-            MetalBuilding metalBuilding = new MetalBuilding();
-            metalBuilding.setUserId(user.getId());
-            metalBuilding.setLevel(35);
- */
+            DataCentreBuilding dataCentre = new DataCentreBuilding();
+            dataCentre.setUserId(user.getId());
+            dataCentre.setLevel(1);
+            Instant now = Instant.now();
+            dataCentre.setLastTimeUpgrade(now.minus(Duration.ofDays(3650)));
+            dataCentre.setLastUpdate(now.minus(1, ChronoUnit.MINUTES));
 
 /*
             InventoryBooster inventoryBooster = new InventoryBooster(
@@ -76,7 +80,7 @@ public class Start extends Query {
 
             user.setResources(List.of(gold));
 //            user.setBoosters(Set.of(inventoryBooster));
-//            user.setBuildings(Set.of(metalBuilding));
+            user.setBuildings(List.of(dataCentre));
             userService.saveFull(user);
 
             String img = "/static/image/start.jpg";

@@ -17,6 +17,9 @@ public class ResourceDto extends Item {
     private final ResourceType name;
     private final Emoji emoji;
     private long quantity;
+    private final boolean forTrade = false;
+    private final double buyForGold = 1_000_000;
+    private final double sellForGold = 1_000_000;
 
     public ResourceDto(ResourceType name, Emoji emoji) {
         super();

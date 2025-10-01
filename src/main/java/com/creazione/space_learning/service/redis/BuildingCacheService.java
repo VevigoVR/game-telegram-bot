@@ -80,6 +80,11 @@ public class BuildingCacheService {
                 convertNotFinalFieldToGameObject(storageBuilding, buildingR);
                 return storageBuilding;
             }
+            case DATA_CENTRE -> {
+                DataCentreBuilding dataCentreBuilding = new DataCentreBuilding();
+                convertNotFinalFieldToGameObject(dataCentreBuilding, buildingR);
+                return dataCentreBuilding;
+            }
             default -> {
                 UnknownBuilding unknownBuilding = new UnknownBuilding();
                 convertNotFinalFieldToGameObject(unknownBuilding, buildingR);
