@@ -64,7 +64,9 @@ public abstract class Query {
     }
 
     public void initialQuery(Update update, boolean isUpdate) {
+        userDto = null;
         if (update.hasCallbackQuery()) {
+
             setQuery(update.getCallbackQuery().getData().toLowerCase().trim());
             //System.out.println("Запрос call back: " + getQuery());
             setChatId(update.getCallbackQuery().getMessage().getChatId());

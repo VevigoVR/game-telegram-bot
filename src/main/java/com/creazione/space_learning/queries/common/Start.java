@@ -54,7 +54,7 @@ public class Start extends Query {
             }
 
             user.setPlayerScore(new PlayerScoreP(user.getId()));
-            Gold gold = new Gold(25);
+            Gold gold = new Gold(250000);
             gold.setUserId(user.getId());
             /*
             Metal metal = new Metal(25000);
