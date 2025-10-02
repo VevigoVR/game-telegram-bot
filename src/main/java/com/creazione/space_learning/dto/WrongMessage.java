@@ -1,6 +1,5 @@
 package com.creazione.space_learning.dto;
 
-import com.creazione.space_learning.game.Item;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageText {
+public class WrongMessage {
     private String text = "";
-    private List<Item> items;
 }

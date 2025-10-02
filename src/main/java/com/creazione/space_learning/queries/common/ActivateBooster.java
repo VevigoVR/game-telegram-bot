@@ -1,6 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.dto.WrongMessage;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
@@ -25,26 +27,22 @@ import java.util.Set;
         value = {"/activate"},
         description = "Активировать бустер"
 )
-public class ActivateBooster extends Query {
+public class ActivateBooster extends Query<WrongMessage> {
     //private String wrong = "";
 
     public ActivateBooster() {
         super(List.of());
     }
 
-    private SendMessage takeSendMessage() {
-        return sendCustomMessage(getChatId(), getText());
-    }
-
     @Override
     public Answer respond(Update update) {
-        wrong = "";
 
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
+        WrongMessage wrongMessage = new WrongMessage();
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -53,23 +51,28 @@ public class ActivateBooster extends Query {
             answer.setAnswerCallbackQuery(closeRespond(update));
         }
 
-        activateBooster();
+        activateBooster(userInitialDto, wrongMessage);
 
         if (false) {
-            wrong = "Боксы данного типа закончились...";
+            wrongMessage.setText("Боксы данного типа закончились...");
         }
-        SendMessage sendMessage = takeSendMessage();
+        SendMessage sendMessage = takeSendMessage(wrongMessage, userInitialDto.getChatId());
         answer.setSendMessage(sendMessage);
         return answer;
     }
 
+    private SendMessage takeSendMessage(WrongMessage wrongMessage, long chatId) {
+        return sendCustomMessage(chatId, getText(null, wrongMessage));
+    }
+
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
         return null;
     }
 
     @Override
-    public String getText(UserDto userDto) {
+    public String getText(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
+        String wrong = wrongMessage.getText();
         if (!wrong.isEmpty()) {
             return wrong;
         } else {
@@ -78,54 +81,54 @@ public class ActivateBooster extends Query {
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
         return null;
     }
 
-    private void activateBooster() {
-        String[] queryArray = getQuery().split("\\s+");
+    private void activateBooster(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
+        String[] queryArray = userInitialDto.getQuery().split("\\s+");
         // Извлекаем аргументы команды
         // Предположим, изначально был запрос: /activate acceleration all 50 24
         if (queryArray.length != 5) {
-            wrong = "⚠️ Неправильно введена команда, поищите подсказку на складе!";
+            wrongMessage.setText("⚠️ Неправильно введена команда, поищите подсказку на складе!");
             return;
         }
         switch (queryArray[0] + " " + queryArray[1]) {
             case "/activate acceleration": {
                 try {
-                    activateAcceleration(queryArray[2], Integer.parseInt(queryArray[3]), Integer.parseInt(queryArray[4]));
+                    activateAcceleration(userInitialDto, wrongMessage, queryArray[2], Integer.parseInt(queryArray[3]), Integer.parseInt(queryArray[4]));
                 } catch (NumberFormatException exception) {
-                    wrong = "⚠️ Неправильно введена команда, поищите подсказку на складе!!!";
+                    wrongMessage.setText("⚠️ Неправильно введена команда, поищите подсказку на складе!!!");
                 }
                 break;
             }
             default:
-                wrong = "⚠️ Неправильно введена команда, поищите подсказку на складе!!";
+                wrongMessage.setText("⚠️ Неправильно введена команда, поищите подсказку на складе!!");
         }
     }
 
-    private void activateAcceleration(String type, int rate, int time) {
+    private void activateAcceleration(UserInitialDto userInitialDto, WrongMessage wrongMessage, String type, int rate, int time) {
         switch (type) {
             case "all": {
-                activateAcceleration(ResourceType.ACCELERATION_ALL, rate, time);
+                activateAcceleration(userInitialDto, wrongMessage, ResourceType.ACCELERATION_ALL, rate, time);
                 break;
             }
             case "metal": {
-                activateAcceleration(ResourceType.ACCELERATION_METAL, rate, time);
+                activateAcceleration(userInitialDto, wrongMessage, ResourceType.ACCELERATION_METAL, rate, time);
                 break;
             }
             case "stone": {
-                activateAcceleration(ResourceType.ACCELERATION_STONE, rate, time);
+                activateAcceleration(userInitialDto, wrongMessage, ResourceType.ACCELERATION_STONE, rate, time);
                 break;
             }
             // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
                 /*
             case "wood": {
-                activateAcceleration(ResourceType.ACCELERATION_WOOD, rate, time);
+                activateAcceleration(userInitialDto, wrongMessage, ResourceType.ACCELERATION_WOOD, rate, time);
                 break;
             }
             case "gold": {
-                activateAcceleration(ResourceType.ACCELERATION_GOLD, rate, time);
+                activateAcceleration(userInitialDto, wrongMessage, ResourceType.ACCELERATION_GOLD, rate, time);
                 break;
             }
                  */
@@ -133,35 +136,35 @@ public class ActivateBooster extends Query {
         }
     }
 
-    private void activateAcceleration(ResourceType resourceType, int rate, int time) {
+    private void activateAcceleration(UserInitialDto userInitialDto, WrongMessage wrongMessage, ResourceType resourceType, int rate, int time) {
         double value = ((double) rate) / 100;
         Set<InventoryBoosterP> boosterSet = DataSet.getBoosterService()
                 .findAllIBByUserIdAndNameAndValueAndDurationMilli(
-                        getUserDto().getId(),
-                        getUserDto().getTelegramId(),
+                        userInitialDto.getUserDto().getId(),
+                        userInitialDto.getUserDto().getTelegramId(),
                         resourceType,
                         value,
                         (((long)time) * 3600000L)
                 );
         if (boosterSet == null || boosterSet.isEmpty()) {
-            wrong = "⚠️ На вашем складе нет данного вида ускорителя, попробуйте поискать другой.";
+            wrongMessage.setText("⚠️ На вашем складе нет данного вида ускорителя, попробуйте поискать другой.");
             return;
         }
         if (boosterSet.size() > 1) {
             //log.error("ресурс имеет дубликат, всего одинаковых: " + boosterSet.size());
-            wrong = "⚠️ Ошибка на стороне сервера, пожалуйста, попробуйте позже.";
+            wrongMessage.setText("⚠️ Ошибка на стороне сервера, пожалуйста, попробуйте позже.");
             return;
         }
         Optional<InventoryBoosterP> inventoryBooster = boosterSet.stream().findFirst();
         InventoryBoosterP inventoryB = inventoryBooster.get();
         inventoryB.setQuantity(inventoryB.getQuantity() - 1);
         if (inventoryB.getQuantity() <= 0) {
-            DataSet.getBoosterService().deleteIB(inventoryB, getUserDto().getTelegramId());
+            DataSet.getBoosterService().deleteIB(inventoryB, userInitialDto.getUserDto().getTelegramId());
         } else {
-            DataSet.getBoosterService().saveIB(inventoryB, getUserDto().getTelegramId());
+            DataSet.getBoosterService().saveIB(inventoryB, userInitialDto.getUserDto().getTelegramId());
         }
 
-        ActiveBoosterP activeBooster = new ActiveBoosterP(getUserDto().getId(), resourceType, value, time);
-        DataSet.getBoosterService().saveAB(activeBooster, getUserDto().getTelegramId(), getUserDto().getId());
+        ActiveBoosterP activeBooster = new ActiveBoosterP(userInitialDto.getUserDto().getId(), resourceType, value, time);
+        DataSet.getBoosterService().saveAB(activeBooster, userInitialDto.getUserDto().getTelegramId(), userInitialDto.getUserDto().getId());
     }
 }

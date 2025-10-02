@@ -1,6 +1,5 @@
 package com.creazione.space_learning.queries.common;
 
-import com.creazione.space_learning.dto.MessageText;
 import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
@@ -36,17 +35,18 @@ public class BuildingsQuery extends Query {
     }
 
     @Override
-    public SendPhoto getSendPhoto(UserInitialDto userInitialDto) {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         String img = getImg();
-        String text = getText(userInitialDto.getUserDto());
+        String text = getText(userInitialDto, null);
         String targetImg = getTargetImg();
         SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, targetImg, text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        message.setReplyMarkup(getInlineKeyboardMarkup(null, null));
         return message;
     }
 
     @Override
-    public String getText(UserDto userDto) {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
+        UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
         text.append("<b>").append("Производство ").append(userDto.getName()).append("</b>\n\n");
         if (userDto.getBuildings().isEmpty()) {
@@ -101,12 +101,7 @@ public class BuildingsQuery extends Query {
     }
 
     @Override
-    public String getText(UserDto userDto, MessageText wrong) {
-        return null;
-    }
-
-    @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(1, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));

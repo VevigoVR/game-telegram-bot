@@ -1,6 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.dto.UpdateBuildingDto;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
@@ -39,7 +41,7 @@ import java.util.List;
         },
         description = "Информация о здании"
 )
-public class BuildingInfo extends Query {
+public class BuildingInfo extends Query<UpdateBuildingDto> {
     //private BuildingDto targetBuilding;
     //private BuildingDto userBuilding;
     private String takeButton = "Собрать ресурсы";
@@ -56,38 +58,36 @@ public class BuildingInfo extends Query {
 
     @Override
     public Answer respond(Update update) {
-        targetBuilding = null;
-        userBuilding = null;
-        hasBuilding = false;
         Answer answer = new Answer();
-        initialQuery(update, true);
+        UserInitialDto userInitialDto = initialQuery(update, true);
+        UpdateBuildingDto updateBuildingDto = new UpdateBuildingDto();
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
 
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
-            setBuildingObjects(getQuery());
+            setBuildingObjects(userInitialDto, updateBuildingDto);
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, updateBuildingDto));
+            newText.setCaption(getText(userInitialDto, updateBuildingDto));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            setBuildingObjects(getQuery());
-            answer.setSendPhoto(getSendPhoto());
+            setBuildingObjects(userInitialDto, updateBuildingDto);
+            answer.setSendPhoto(getSendPhoto(userInitialDto, updateBuildingDto));
         }
         return answer;
     }
 
-    private void setBuildingObjects(String query) {
-        switch (query) {
+    private void setBuildingObjects(UserInitialDto userInitialDto, UpdateBuildingDto updateBuildingDto) {
+        switch (userInitialDto.getQuery()) {
             // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ
             /*
             case "/buildinggold" : {
@@ -98,13 +98,13 @@ public class BuildingInfo extends Query {
 
              */
             case "/buildingmetal" : {
-                targetBuilding = new MetalBuilding();
-                setParameters();
+                updateBuildingDto.setTargetBuilding(new MetalBuilding());
+                setParameters(userInitialDto, updateBuildingDto);
                 break;
             }
             case "/buildingstone" : {
-                targetBuilding = new StoneBuilding();
-                setParameters();
+                updateBuildingDto.setTargetBuilding(new StoneBuilding());
+                setParameters(userInitialDto, updateBuildingDto);
                 break;
             }
 
@@ -120,32 +120,30 @@ public class BuildingInfo extends Query {
         }
     }
 
-    private void setParameters() {
-        for (BuildingDto userBuildingFromDB : getUserDto().getBuildings()) {
-            if (targetBuilding.getName().equals(userBuildingFromDB.getName())) {
-                userBuilding = userBuildingFromDB;
-                hasBuilding = true;
+    private void setParameters(UserInitialDto userInitialDto, UpdateBuildingDto updateBuildingDto) {
+        for (BuildingDto userBuildingFromDB : userInitialDto.getUserDto().getBuildings()) {
+            if (updateBuildingDto.getTargetBuilding().getName().equals(userBuildingFromDB.getName())) {
+                updateBuildingDto.setUserBuilding(userBuildingFromDB);
+                updateBuildingDto.setHasBuilding(true);
                 break;
             }
         }
     }
 
-    @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
-        return getInlineKeyboardMarkup(hasBuilding);
-    }
-
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, UpdateBuildingDto updateBuildingDto) {
         String img = getImg();
         String targetImg = getTargetImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, targetImg, text);
-        message.setReplyMarkup(getInlineKeyboardMarkup(hasBuilding));
+        String text = getText(userInitialDto, updateBuildingDto);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, targetImg, text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, updateBuildingDto));
         return message;
     }
 
     @Override
-    public String getText(UserDto userDto) {
+    public String getText(UserInitialDto userInitialDto, UpdateBuildingDto updateBuildingDto) {
+        boolean hasBuilding = updateBuildingDto.isHasBuilding();
+        BuildingDto userBuilding = updateBuildingDto.getUserBuilding();
+        BuildingDto targetBuilding = updateBuildingDto.getTargetBuilding();
         StringBuilder text = new StringBuilder();
 
         if (hasBuilding) {
@@ -159,7 +157,7 @@ public class BuildingInfo extends Query {
 
         if (hasBuilding) {
             String rateMessage = "";
-            int rateBooster = boosterRate(userBuilding);
+            int rateBooster = boosterRate(userInitialDto.getUserDto(), userBuilding);
 
             if (rateBooster > 0) {
                 rateMessage = "Производство ресурса увеличено на " + Formatting.formatWithoutFraction(rateBooster) + " % (ускорители)";
@@ -295,12 +293,14 @@ public class BuildingInfo extends Query {
         return text.toString();
     }
 
-    public InlineKeyboardMarkup getInlineKeyboardMarkup(boolean hasBuilding) {
+    @Override
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, UpdateBuildingDto updateBuildingDto) {
+        boolean hasBuilding = updateBuildingDto.isHasBuilding();
         List<Integer> buttonsInLine;
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.ARROW_LEFT.toString(), "/buildings"));
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));
-        buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), getQuery()));
+        buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), userInitialDto.getQuery()));
 
         String nameButton;
         if (hasBuilding) {
@@ -310,7 +310,7 @@ public class BuildingInfo extends Query {
             buttonsInLine = List.of(3, 1);
             nameButton = "Построить";
         }
-        switch (targetBuilding.getName()) {
+        switch (updateBuildingDto.getTargetBuilding().getName()) {
             // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ
             //case GOLD_BUILDING -> buttons.add(getButton(nameButton, "/upGold"));
             //case WOOD_BUILDING -> buttons.add(getButton(nameButton, "/upWood"));
@@ -330,9 +330,9 @@ public class BuildingInfo extends Query {
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private int boosterRate(BuildingDto building) {
-        long telegramId = getUserDto().getTelegramId();
-        long userId = getUserDto().getId();
+    private int boosterRate(UserDto userDto, BuildingDto building) {
+        long telegramId = userDto.getTelegramId();
+        long userId = userDto.getId();
         List<ResourceType> types = new ArrayList<>(List.of(ResourceType.ACCELERATION_ALL));
         switch (building.getProduction()) {
             case STONE : {

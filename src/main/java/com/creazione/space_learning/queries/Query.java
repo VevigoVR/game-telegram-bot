@@ -1,7 +1,6 @@
 package com.creazione.space_learning.queries;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.MessageText;
 import com.creazione.space_learning.dto.PaginationDto;
 import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
@@ -37,7 +36,7 @@ import java.util.Random;
 
 @Getter
 @Setter
-public abstract class Query {
+public abstract class Query<T> {
     protected ResourceService resourceService;
     protected BuildingService buildingService;
     protected UserPostgresService userService;
@@ -184,8 +183,6 @@ public abstract class Query {
             return answer;
         }
 
-
-
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
 
@@ -193,12 +190,12 @@ public abstract class Query {
                     .chatId(userInitialDto.getChatId())
                     .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText(userInitialDto.getUserDto()));
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
+            newText.setCaption(getText(userInitialDto, null));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto(userInitialDto));
+            answer.setSendPhoto(getSendPhoto(userInitialDto, null));
         }
         return answer;
     }
@@ -265,14 +262,9 @@ public abstract class Query {
         }
     }
 
-    public abstract InlineKeyboardMarkup getInlineKeyboardMarkup();
-    public String getText(UserDto userDto) {
-        return null;
-    }
-    public String getText(UserDto userDto, MessageText text) {
-        return null;
-    }
-    public abstract SendPhoto getSendPhoto(UserInitialDto userInitialDto);
+    public abstract InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, T context);
+    public abstract String getText(UserInitialDto userInitialDto, T context);
+    public abstract SendPhoto getSendPhoto(UserInitialDto userInitialDto, T context);
 
     public String processReferrerAndReferrals(String code, UserDto user) {
         boolean isAddReferral = false;

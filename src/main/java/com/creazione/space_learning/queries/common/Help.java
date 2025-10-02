@@ -17,7 +17,7 @@ import java.util.List;
         value = {"/help", "помощь", "справка", ".help", ".помощь"},
         description = "Помощь по командам"
 )
-public class Help extends Query {
+public class Help extends Query<Object> {
     public Help() {
         super(List.of());
     }
@@ -29,21 +29,11 @@ public class Help extends Query {
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             chatId = update.getCallbackQuery().getMessage().getChatId();
-            //setUserName(update.getCallbackQuery().getFrom().getUserName());
-            String text = """
-                <b>Помощь по вселенной Creazione</b> \n
-                Начать путешествие: /start
-                """;
-            answer.setSendMessage(sendCustomMessage(chatId, text));
+            answer.setSendMessage(sendCustomMessage(chatId, getText(null, null)));
 
         } else {
             chatId = update.getMessage().getChatId();
-            //setUserName(update.getMessage().getChat().getUserName());
-            String text = """
-                <b>Помощь по вселенной Creazione</b> \n
-                Начать путешествие: /start
-                """;
-            answer.setSendMessage(sendCustomMessage(chatId, text));
+            answer.setSendMessage(sendCustomMessage(chatId, getText(null, null)));
         }
 
 
@@ -52,17 +42,21 @@ public class Help extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object object) {
         return null;
     }
 
     @Override
-    public String getText(UserDto userDto) {
-        return "";
+    public String getText(UserInitialDto userInitialDto, Object object) {
+        return  """
+                <b>Помощь по вселенной Creazione</b>
+                
+                Начать путешествие: /start
+                """;
     }
 
     @Override
-    public SendPhoto getSendPhoto(UserInitialDto userInitialDto) {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object object) {
         return null;
     }
 }

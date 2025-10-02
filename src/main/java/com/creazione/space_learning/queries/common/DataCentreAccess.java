@@ -1,6 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.DataCentreAccessTextDto;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.BuildingType;
@@ -34,12 +35,12 @@ public class DataCentreAccess extends Query {
 
     @Override
     public Answer respond(Update update) {
-        data = new DataCentreAccessTextDto();
+        DataCentreAccessTextDto data = new DataCentreAccessTextDto();
         Answer answer = new Answer();
-        initialQuery(update, true);
+        UserInitialDto userInitialDto = initialQuery(update, true);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -53,11 +54,11 @@ public class DataCentreAccess extends Query {
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
             newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setCaption(getText(userInitialDto));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
