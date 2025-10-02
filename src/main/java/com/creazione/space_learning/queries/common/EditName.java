@@ -1,6 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.dto.WrongMessage;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -19,7 +20,7 @@ import java.util.List;
         value = {"/edit", "изменить"},
         description = "Изменить имя"
 )
-public class EditName extends Query {
+public class EditName extends Query<WrongMessage> {
     //private String[] args;
     //private String[] args2;
     //private String name = "";
@@ -31,8 +32,6 @@ public class EditName extends Query {
 
     @Override
     public Answer respond(Update update) {
-        String[] args;
-        String[] args2;
         String name = "";
         Answer answer = new Answer();
         UserInitialDto userInitialDto = initialQuery(update, false);
@@ -42,10 +41,10 @@ public class EditName extends Query {
             answer.setSendMessage(sendMessage);
             return answer;
         }
-
+        WrongMessage wrongMessage = new WrongMessage();
         // Извлекаем аргументы команды
-        args = getCommandArgsAbsolute(userInitialDto, "/edit");
-        args2 = getCommandArgsAbsolute(userInitialDto, "изменить");
+        String[] args = getCommandArgsAbsolute(userInitialDto, "/edit");
+        String[] args2 = getCommandArgsAbsolute(userInitialDto, "изменить");
 
         if (args != null && args[0].equals("name")) {
             //System.out.println("args != null && args[0].equals(\"name\")");
@@ -58,42 +57,40 @@ public class EditName extends Query {
         if (!name.isEmpty()) {
             int i = userService.updateNameById(userInitialDto.getUserDto().getId(), name, userInitialDto.getUserDto().getTelegramId());
             if (i < 1) {
-                wrong = "❌ Обновить имя не удалось. \nПопробуйте ещё раз немного позже.";
+                wrongMessage.setText("❌ Обновить имя не удалось. \nПопробуйте ещё раз немного позже.");
             } else if (i > 2) {
-                wrong = "❌ Обновить имя удалось. \nНо не только Вам...";
+                wrongMessage.setText("❌ Обновить имя удалось. \nНо не только Вам...");
             }
+        } else {
+            wrongMessage.setText("⚠️ Смена имени не удалась! \nЧтобы изменить имя: \n/edit name Имя");
         }
-        SendMessage sendMessage = takeSendMessage();
+        userInitialDto.getUserDto().setName(name);
+        SendMessage sendMessage = takeSendMessage(userInitialDto, wrongMessage);
         answer.setSendMessage(sendMessage);
         return answer;
     }
 
-    private SendMessage takeSendMessage() {
-        return sendCustomMessage(getChatId(), getText());
+    private SendMessage takeSendMessage(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
+        return sendCustomMessage(userInitialDto.getChatId(), getText(userInitialDto, wrongMessage));
     }
 
-    @Override
-    public SendPhoto getSendPhoto() {
-        String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
-        return message;
-    }
 
     @Override
-    public String getText(UserDto userDto) {
-        if (!wrong.isEmpty()) {
-            return wrong;
-        } else if (name.isEmpty()) {
-            return  "⚠️ Смена имени не удалась! \nЧтобы изменить имя: \n/edit name Имя";
+    public String getText(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
+        if (!wrongMessage.getText().isEmpty()) {
+            return wrongMessage.getText();
         } else {
-            return "✅ Смена имени завершена успешно! \nТеперь Вы: " + name;
+            return "✅ Смена имени завершена успешно! \nТеперь Вы: " + userInitialDto.getUserDto().getName();
         }
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
+        return null;
+    }
+
+    @Override
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, WrongMessage wrongMessage) {
         return null;
     }
 

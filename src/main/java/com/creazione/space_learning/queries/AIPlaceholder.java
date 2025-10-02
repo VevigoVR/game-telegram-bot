@@ -1,5 +1,6 @@
 package com.creazione.space_learning.queries;
 
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.utils.Answer;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -39,17 +40,17 @@ public class AIPlaceholder extends Query {
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         return null;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
         return null;
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         return null;
     }
 }

@@ -7,21 +7,20 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Getter
 @Setter
-public class MaintenanceMessage extends Response {
+public class MaintenanceMessage extends Response<Long> {
     //private long telegramId;
 
-    public MaintenanceMessage(long telegramId) {
+    public MaintenanceMessage() {
         super();
-        this.telegramId = telegramId;
     }
 
     @Override
-    public void initResponse() {
-        createResponse(answer -> answer.setSendMessage(constructSendMessage()));
+    public void initResponse(Long telegramId) {
+        createResponse(answer -> answer.setSendMessage(constructSendMessage(telegramId)));
     }
 
-    private SendMessage constructSendMessage() {
-        return createCustomMessage(getTelegramId(), createMessageText());
+    private SendMessage constructSendMessage(long telegramId) {
+        return createCustomMessage(telegramId, createMessageText());
     }
 
     private String createMessageText() {

@@ -26,7 +26,7 @@ import java.util.List;
         value = {"/datacentre", "дата", "центр", "/datacentrenewwindow"},
         description = "Здание Дата Центра"
 )
-public class DataCentreAccess extends Query {
+public class DataCentreAccess extends Query<DataCentreAccessTextDto> {
     //private DataCentreAccessTextDto data;
 
     public DataCentreAccess() {
@@ -45,41 +45,41 @@ public class DataCentreAccess extends Query {
             return answer;
         }
 
-        execute();
+        execute(userInitialDto.getUserDto(), data);
 
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             if (update.getCallbackQuery().getData().equals("/datacentrenewwindow")) {
-                answer.setSendPhoto(getSendPhoto());
+                answer.setSendPhoto(getSendPhoto(userInitialDto, data));
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
                     .chatId(userInitialDto.getChatId())
                     .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText(userInitialDto));
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
+            newText.setCaption(getText(userInitialDto, data));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto, data));
         }
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, DataCentreAccessTextDto data) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(userInitialDto, data);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
         return message;
     }
 
     @Override
-    public String getText(UserDto userDto) {
+    public String getText(UserInitialDto userInitialDto, DataCentreAccessTextDto data) {
         StringBuilder text = new StringBuilder();
-        text.append("<b>").append("Дата Центр ").append(getUserDto().getName()).append(":</b>\n\n");
+        text.append("<b>").append("Дата Центр ").append(userInitialDto.getUserDto().getName()).append(":</b>\n\n");
         if (data.getBuilding() != null) {
             text.append("<b>Уровень</b>: ").append(data.getBuilding().getLevel()).append("\n");
         } else {
@@ -90,7 +90,7 @@ public class DataCentreAccess extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, DataCentreAccessTextDto noObject) {
         List<Integer> buttonsInLine = List.of(3, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/datacentre"));
@@ -101,13 +101,13 @@ public class DataCentreAccess extends Query {
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private void execute() {
-        data.setBuilding(findDataCentreBuilding());
+    private void execute(UserDto userDto, DataCentreAccessTextDto data) {
+        data.setBuilding(findDataCentreBuilding(userDto));
 
     }
 
-    private BuildingDto findDataCentreBuilding() {
-        List<BuildingDto> buildings = getUserDto().getBuildings();
+    private BuildingDto findDataCentreBuilding(UserDto userDto) {
+        List<BuildingDto> buildings = userDto.getBuildings();
         BuildingDto building = null;
         for (BuildingDto buildingDto : buildings) {
             if (buildingDto.getName().name().equals(BuildingType.DATA_CENTRE.name())) {

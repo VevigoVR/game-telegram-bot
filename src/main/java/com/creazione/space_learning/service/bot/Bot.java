@@ -79,36 +79,38 @@ public class Bot extends TelegramLongPollingBot {
 
     private void processCommonQuery(Update update) {
         String messageText = update.getMessage().getText();
+        System.out.println("Data query: " + messageText);
         if (messageText == null || messageText.isEmpty()) { return; }
         messageText = messageText.trim().toLowerCase();
-        Long userId = update.getMessage().getChatId();
+        Long telegramId = update.getMessage().getChatId();
         //System.out.println("messageText from " + userId + " : " + messageText);
         boolean isQuery = false;
 
         // Проверяем не спамит ли пользователь
-        if (userId != null) {
-            String rateKey = "user_rate:" + userId;
+        if (telegramId != null) {
+            String rateKey = "user_rate:" + telegramId;
             long requests = redisTemplate.opsForValue().increment(rateKey, 1);
             redisTemplate.expire(rateKey, 1, TimeUnit.MINUTES);
 
             if (requests > 30) { // > 30 запросов/минуту
-                log.warn("User {} is rate-limited", userId);
+                log.warn("User {} is rate-limited", telegramId);
                 return; // Игнорируем сообщение
             }
         }
 
         for (Query query : queryList.getQueryList()) {
-            for (String subQuery : query.getQueries()) {
+            for (Object subQueryObject : query.getQueries()) {
+                String subQuery = (String) subQueryObject;
                 String[] text = messageText.split(" ");
                 if (text[0].equals(subQuery)) {
                     isQuery = true;
                     if (DataSet.isMaintenance()) {
-                        Response response = new MaintenanceMessage(userId);
-                        response.initResponse();
+                        Response response = new MaintenanceMessage();
+                        response.initResponse(telegramId);
                         return;
                     }
                     // Создаём блокировку по userId
-                    RLock lock = redissonClient.getLock("userLock:" + userId);
+                    RLock lock = redissonClient.getLock("userLock:" + telegramId);
 
                     try {
                         // Пытаемся заблокировать (ждём до 500мс, TTL=3сек)
@@ -117,7 +119,7 @@ public class Bot extends TelegramLongPollingBot {
                         }  else {
                             // Отправляем сообщение о занятости
                             Answer answer = new Answer();
-                            answer.setSendMessage(new SendMessage(userId.toString(), "⏳ Система занята, попробуйте через 5 секунд"));
+                            answer.setSendMessage(new SendMessage(telegramId.toString(), "⏳ Система занята, попробуйте через 5 секунд"));
                             throttledSender4.enqueueMessage(answer);
                         }
                     }   catch (InterruptedException e) {
@@ -136,15 +138,15 @@ public class Bot extends TelegramLongPollingBot {
         // Если команда не найдена
         if (!isQuery) {
             if (DataSet.isMaintenance()) {
-                Response response = new MaintenanceMessage(userId);
-                response.initResponse();
+                Response response = new MaintenanceMessage();
+                response.initResponse(telegramId);
                 return;
             }
             // Если не команда - логируем для ИИ
             aiDataCollector.logInteraction(
-                    userId,
+                    telegramId,
                     messageText,
-                    getCurrentGameContext(userId) // контекст игры
+                    getCurrentGameContext(telegramId) // контекст игры
             );
             //System.out.println("userId in processCommonQuery(): " + userId);
 
@@ -164,25 +166,26 @@ public class Bot extends TelegramLongPollingBot {
 
     private void processCallBackQuery(Update update) {
         boolean isQuery = false;
-        //System.out.println("Data call back: " + update.getCallbackQuery().getData());
+        System.out.println("Data call back: " + update.getCallbackQuery().getData());
         //System.out.println("messageID: " + update.getCallbackQuery().getMessage().getMessageId());
         String messageText = update.getCallbackQuery().getData().toLowerCase().trim();
-        Long userId = update.getCallbackQuery().getMessage().getChatId();
+        Long telegramId = update.getCallbackQuery().getMessage().getChatId();
         //System.out.println("messageText from " + userId + " : " + messageText);
         for (Query query : queryList.getQueryList()) {
             //System.out.println("- " + query.getQueries());
-            for (String subQuery : query.getQueries()) {
+            for (Object subQueryObject : query.getQueries()) {
+                String subQuery = (String) subQueryObject;
                 String[] text = messageText.split(" ");
                 if (text[0].equals(subQuery)) {
                     isQuery = true;
                     if (DataSet.isMaintenance()) {
-                        Response response = new MaintenanceMessage(userId);
-                        response.initResponse();
+                        Response response = new MaintenanceMessage();
+                        response.initResponse(telegramId);
                         return;
                     }
 
                     // Создаём блокировку по userId
-                    RLock lock = redissonClient.getLock("userLock:" + userId);
+                    RLock lock = redissonClient.getLock("userLock:" + telegramId);
 
                     try {
                         // Пытаемся заблокировать (ждём до 500мс, TTL=3сек)
@@ -191,7 +194,7 @@ public class Bot extends TelegramLongPollingBot {
                         }  else {
                             // Отправляем сообщение о занятости
                             Answer answer = new Answer();
-                            answer.setSendMessage(new SendMessage(userId.toString(), "⏳ Система занята, попробуйте через 5 секунд"));
+                            answer.setSendMessage(new SendMessage(telegramId.toString(), "⏳ Система занята, попробуйте через 5 секунд"));
                             throttledSender4.enqueueMessage(answer);
                         }
                     }   catch (InterruptedException e) {
@@ -211,15 +214,15 @@ public class Bot extends TelegramLongPollingBot {
         // Если команда не найдена
         if (!isQuery) {
             if (DataSet.isMaintenance()) {
-                Response response = new MaintenanceMessage(userId);
-                response.initResponse();
+                Response response = new MaintenanceMessage();
+                response.initResponse(telegramId);
                 return;
             }
             // Если не команда - логируем для ИИ
             aiDataCollector.logInteraction(
-                    userId,
+                    telegramId,
                     messageText,
-                    getCurrentGameContext(userId) // контекст игры
+                    getCurrentGameContext(telegramId) // контекст игры
             );
 
             //System.out.println("userId in processCallBackQuery(): " + userId);

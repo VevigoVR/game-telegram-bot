@@ -1,5 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.game.resources.Gold;
 import com.creazione.space_learning.game.resources.ResourceList;
@@ -34,47 +35,45 @@ public class TradeInformation extends Query {
     @Override
     public Answer respond(Update update) {
         Answer answer = new Answer();
-        initialQuery(update, true);
+        UserInitialDto userInitialDto = initialQuery(update, true);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
 
-        execute();
-
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             if (update.getCallbackQuery().getData().equals("/tradenewwindow")) {
-                answer.setSendPhoto(getSendPhoto());
+                answer.setSendPhoto(getSendPhoto(userInitialDto, null));
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setReplyMarkup(getInlineKeyboardMarkup(null, null));
+            newText.setCaption(getText(null, null));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto, null));
         }
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(null, null);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(null, null));
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
         StringBuilder text = new StringBuilder();
         text.append("<b>").append("Торговля ресурсами:</b>\n\n")
         .append(getActualInfo()).append("\n")
@@ -91,7 +90,7 @@ public class TradeInformation extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(3, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
 
@@ -104,17 +103,13 @@ public class TradeInformation extends Query {
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private void execute() {
-        resourcesForTrade = ResourceList.TRADE_RESOURCES_LIST;
-    }
-
     private String getActualInfo() {
         Gold gold = new Gold();
         StringBuilder text = new StringBuilder();
-        if (resourcesForTrade.isEmpty()) {
+        if (ResourceList.TRADE_RESOURCES_LIST.isEmpty()) {
             return "";
         }
-        for (ResourceDto resource : resourcesForTrade) {
+        for (ResourceDto resource : ResourceList.TRADE_RESOURCES_LIST) {
             text.append(resource.getEmoji()).append(" <b>").append(resource.getName().getName())
                     .append("</b>\nПродажа: за каждые 100 шт. прибавится ")
                     .append(gold.getEmoji()).append(" ").append((int) (100 * resource.getSellForGold())).append(" шт.\n")

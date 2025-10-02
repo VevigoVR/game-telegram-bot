@@ -44,7 +44,7 @@ public abstract class Query<T> {
     @Autowired
     protected TransferResourceService transferResourceService;
 
-    private final List<String> queries;
+    private List<String> queries;
     //private String query;
     private final String img = "/static/image/profile.jpeg";
     private final String targetImg = "profile.jpeg";

@@ -1,6 +1,9 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.dto.OpenLootBoxDto;
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.enums.ResourceType;
 import com.creazione.space_learning.queries.GameCommand;
@@ -22,7 +25,7 @@ import java.util.List;
         value = {"/open"},
         description = "Открыть лут бокс"
 )
-public class OpenLootBox extends Query {
+public class OpenLootBox extends Query<OpenLootBoxDto> {
     //private String[] args;
     //private String wrong = "";
     //private List<Item> items;
@@ -34,55 +37,56 @@ public class OpenLootBox extends Query {
 
     @Override
     public Answer respond(Update update) {
-        wrong = "";
-
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
+
+        OpenLootBoxDto openLootBoxDto = new OpenLootBoxDto();
 
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
         }
 
-        openLootBox();
+        openLootBox(userInitialDto, openLootBoxDto);
 
-        if (items == null) {
-            wrong = "Коробки данного типа закончились...";
+        if (openLootBoxDto.getItems() == null) {
+            openLootBoxDto.setWrong("Коробки данного типа закончились...");
         }
-        SendMessage sendMessage = takeSendMessage();
-        if (wrong.isEmpty()) {
-            sendMessage.setReplyMarkup(getInlineKeyboardMarkup());
+        SendMessage sendMessage = takeSendMessage(userInitialDto, openLootBoxDto);
+        if (openLootBoxDto.getWrong().isEmpty()) {
+            sendMessage.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, openLootBoxDto));
         }
         answer.setSendMessage(sendMessage);
         return answer;
     }
 
-    private SendMessage takeSendMessage() {
-        return sendCustomMessage(getChatId(), getText());
+    private SendMessage takeSendMessage(UserInitialDto userInitialDto, OpenLootBoxDto openLootBoxDto) {
+        return sendCustomMessage(userInitialDto.getChatId(), getText(userInitialDto, openLootBoxDto));
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, OpenLootBoxDto openLootBoxDto) {
         return null;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, OpenLootBoxDto openLootBoxDto) {
+        String wrong = openLootBoxDto.getWrong();
         if (!wrong.isEmpty()) {
             return wrong;
         } else {
-            return "✅ <b>Вы открыли " + resourceType.getName() + ":</b> \n\n" + getGiftToString();
+            return "✅ <b>Вы открыли " + openLootBoxDto.getResourceType().getName() + ":</b> \n\n" + getGiftToString(openLootBoxDto);
         }
     }
 
-    private String getGiftToString() {
+    private String getGiftToString(OpenLootBoxDto openLootBoxDto) {
         StringBuilder itemsToString = new StringBuilder();
-        for (Item item : items) {
+        for (Item item : openLootBoxDto.getItems()) {
             itemsToString.append(item.getName().getEmoji()).append(" ")
                     .append(item.getName().getName()).append(": +")
                     .append(Formatting.formatWithDots(item.getQuantity()))
@@ -93,43 +97,45 @@ public class OpenLootBox extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, OpenLootBoxDto openLootBoxDto) {
         List<Integer> buttonsInLine = List.of(1);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
-        buttons.add(getButton("Открыть ещё", getQuery()));
+        buttons.add(getButton("Открыть ещё", userInitialDto.getQuery()));
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private void openLootBox() {
+    private void openLootBox(UserInitialDto userInitialDto, OpenLootBoxDto openLootBoxDto) {
+        UserDto userDto = userInitialDto.getUserDto();
         // Извлекаем аргументы команды
-        args = getCommandArgsAbsolute("/open");
+        openLootBoxDto.setArgs(getCommandArgsAbsolute(userInitialDto, "/open"));
+        String[] args = openLootBoxDto.getArgs();
         if (args == null) {
-            wrong = "⚠️ Открыть предмет не удалось " +
+            openLootBoxDto.setWrong("⚠️ Открыть предмет не удалось " +
                     "\nЧтобы открыть предмет, введите его название: " +
                     "\n<code>/open common</code>," +
-                    "\n<code>/open rare</code>...";
+                    "\n<code>/open rare</code>...");
         } else if (args[0].equals(ResourceType.LOOT_BOX_COMMON.getMark())) {
-            resourceType = ResourceType.LOOT_BOX_COMMON;
-            items = DataSet.getLootBoxService().openBox(ResourceType.LOOT_BOX_COMMON, getUserDto());
+            openLootBoxDto.setResourceType(ResourceType.LOOT_BOX_COMMON);
+            openLootBoxDto.setItems(DataSet.getLootBoxService().openBox(ResourceType.LOOT_BOX_COMMON, userDto));
         } else if (args[0].equals(ResourceType.LOOT_BOX_RARE.getMark())) {
-            resourceType = ResourceType.LOOT_BOX_RARE;
-            items = DataSet.getLootBoxService().openBox(ResourceType.LOOT_BOX_RARE, getUserDto());
+            openLootBoxDto.setResourceType(ResourceType.LOOT_BOX_RARE);
+            openLootBoxDto.setItems(DataSet.getLootBoxService().openBox(ResourceType.LOOT_BOX_RARE, userDto));
         } else if (args[0].equals("ref")) {
             String[] argsRef = getCommandArgs(args, "ref");
 
             if (argsRef == null || argsRef[0] == null) {
-                wrong = "⚠️ Открыть реферальный предмет не удалось " +
+                openLootBoxDto.setWrong("⚠️ Открыть реферальный предмет не удалось " +
                         "\nЧтобы открыть, введите его название: " +
-                        "\n<code>/open ref 1</code>";
+                        "\n<code>/open ref 1</code>");
             } else if (argsRef[0].equals("1")) {
-                resourceType = ResourceType.REFERRAL_BOX_1;
-                items = DataSet.getLootBoxService().openBox(resourceType, getUserDto());
+                openLootBoxDto.setResourceType(ResourceType.REFERRAL_BOX_1);
+                openLootBoxDto.setItems(DataSet.getLootBoxService().openBox(openLootBoxDto.getResourceType(), userDto));
             } else if (argsRef[0].equals("2")) {
-                resourceType = ResourceType.REFERRAL_BOX_2;
-                items = DataSet.getLootBoxService().openBox(resourceType, getUserDto());
+                openLootBoxDto.setResourceType(ResourceType.REFERRAL_BOX_2);
+                openLootBoxDto.setItems(DataSet.getLootBoxService().openBox(openLootBoxDto.getResourceType(), userDto));
             } else if (argsRef[0].equals("3")) {
-                resourceType = ResourceType.REFERRAL_BOX_3;
-                items = DataSet.getLootBoxService().openBox(resourceType, getUserDto());
+                openLootBoxDto.setResourceType(ResourceType.REFERRAL_BOX_3);
+                openLootBoxDto.setItems(DataSet.getLootBoxService().openBox(openLootBoxDto.getResourceType(), userDto));
             }
         }
     }

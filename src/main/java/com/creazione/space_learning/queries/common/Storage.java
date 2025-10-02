@@ -1,6 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -30,10 +32,10 @@ public class Storage extends Query {
     @Override
     public Answer respond(Update update) {
         Answer answer = new Answer();
-        initialQuery(update, true);
+        UserInitialDto userInitialDto = initialQuery(update, true);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -41,38 +43,39 @@ public class Storage extends Query {
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             if (update.getCallbackQuery().getData().equals("/resourcesnw")) {
-                answer.setSendPhoto(getSendPhoto());
+                answer.setSendPhoto(getSendPhoto(userInitialDto, null));
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
+            newText.setCaption(getText(userInitialDto, null));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto, null));
         }
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(userInitialDto, null);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
+        UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
-        text.append("<b>Склад ").append(getUserDto().getName()).append("</b>\n\n<b>Ресурсы</b>:\n");
-        if (!getUserDto().viewSortedCommon().isEmpty()) {
-            for (ResourceDto resource : getUserDto().viewSortedCommon()) {
+        text.append("<b>Склад ").append(userDto.getName()).append("</b>\n\n<b>Ресурсы</b>:\n");
+        if (!userDto.viewSortedCommon().isEmpty()) {
+            for (ResourceDto resource : userDto.viewSortedCommon()) {
                 text.append(resource.getEmoji()).append(" ").append(resource.getName()).append(": ")
                         .append(resource.makeQuantityString())
                         .append("\n");
@@ -86,7 +89,7 @@ public class Storage extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(2, 3);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));

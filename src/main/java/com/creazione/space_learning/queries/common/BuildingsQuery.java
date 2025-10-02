@@ -49,13 +49,11 @@ public class BuildingsQuery extends Query {
         UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
         text.append("<b>").append("Производство ").append(userDto.getName()).append("</b>\n\n");
-        if (userDto.getBuildings().isEmpty()) {
+        List<BuildingDto> buildingList = userDto.viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
+        if (buildingList.isEmpty()) {
             text.append("<i>строений производства нет...</i>\n");
         }
-        for (BuildingDto building : userDto.viewSortedBuildings()) {
-            if (!building.isVisible()) {
-                continue;
-            }
+        for (BuildingDto building : buildingList) {
             text.append(Emoji.WHITE_SMALL_SQUARE)
                     .append(" ")
                     .append(building.getName().toString().toUpperCase())
@@ -64,13 +62,7 @@ public class BuildingsQuery extends Query {
                     .append(" уровень\n");
         }
 
-        if (!userDto.viewSortedBuildings().isEmpty()) {
-            List<BuildingDto> buildingList = userDto.viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
-            //System.out.println("Размер списка строений: " + buildingList.size());
-            if (buildingList.size() < 2) {
-                text.append("\n<b>Можно построить</b>:\n");
-            }
-        } else {
+        if (buildingList.size() < 2) {
             text.append("\n<b>Можно построить</b>:\n");
         }
 

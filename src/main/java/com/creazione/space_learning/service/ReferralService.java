@@ -21,13 +21,12 @@ import java.util.Date;
 @Getter
 public class ReferralService {
     @Value("${bot.name}")
-    private final String botName;
+    private String botName;
     private final ReferralCodec referralCodec;
     private final ReferralRepository referralRepository;
     private final UserPostgresService userService;
 
-    public ReferralService(String botName, ReferralRepository referralRepository, UserPostgresService userService) throws NoSuchAlgorithmException, InvalidKeyException {
-        this.botName = botName;
+    public ReferralService(ReferralRepository referralRepository, UserPostgresService userService) throws NoSuchAlgorithmException, InvalidKeyException {
         this.referralCodec = new ReferralCodec("1aWEdfHq+LUKebfG53t+1g==");
         this.referralRepository = referralRepository;
         this.userService = userService;

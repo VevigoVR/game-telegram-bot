@@ -327,8 +327,8 @@ public class SchedulerService {
             );
 
             for (SuperAggregateP aggregate : aggregatePages.getContent()) {
-                Response response = new SuperAggregateMessage(aggregate);
-                response.initResponse();
+                SuperAggregateMessage response = new SuperAggregateMessage();
+                response.initResponse(aggregate);
             }
             superAggregateService.deleteAll(aggregatePages.getContent());
 

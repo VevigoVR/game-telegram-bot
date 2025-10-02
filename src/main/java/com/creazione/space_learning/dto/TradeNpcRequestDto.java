@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WrongMessage {
-    private String text = "";
+public class TradeNpcRequestDto {
+    private String quantityOfResource = "";
+    private String wrong = "";
+    private TransferTradeResult tradeResult;
 }

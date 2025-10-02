@@ -96,7 +96,7 @@ public class Start extends Query {
         } else {
             userInitialDto.setUserDto(userDto);
             Profile profile = new Profile();
-            return profile.respondWithoutUser(update, userInitialDto.getUserDto());
+            return profile.respondWithoutUser(update, userInitialDto);
         }
     }
 

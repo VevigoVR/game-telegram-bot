@@ -1,6 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.ReferralStats;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -34,10 +35,10 @@ public class ReferralsStatistic extends Query {
     @Override
     public Answer respond(Update update) {
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -45,36 +46,36 @@ public class ReferralsStatistic extends Query {
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             if (update.getCallbackQuery().getData().equals("/referralsnw")) {
-                answer.setSendPhoto(getSendPhoto());
+                answer.setSendPhoto(getSendPhoto(userInitialDto, null));
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
+            newText.setCaption(getText(userInitialDto, null));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto, null));
         }
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(userInitialDto, null);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
         return message;
     }
 
     @Override
-    public String getText() {
-        Long id = getUserDto().getId();
-        ReferralStats stats = referralService.getStats(getUserDto());
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
+        Long id = userInitialDto.getUserDto().getId();
+        ReferralStats stats = referralService.getStats(userInitialDto.getUserDto());
 
         StringBuilder message = new StringBuilder(String.format(
                 "📊 <b>Ваша реферальная статистика:</b>\n" +
@@ -105,7 +106,7 @@ public class ReferralsStatistic extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(3);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/referrals"));
