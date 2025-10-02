@@ -1,6 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.enums.ResourceType;
@@ -25,7 +26,7 @@ import java.util.Set;
         description = "Активировать бустер"
 )
 public class ActivateBooster extends Query {
-    private String wrong = "";
+    //private String wrong = "";
 
     public ActivateBooster() {
         super(List.of());
@@ -68,7 +69,7 @@ public class ActivateBooster extends Query {
     }
 
     @Override
-    public String getText() {
+    public String getText(UserDto userDto) {
         if (!wrong.isEmpty()) {
             return wrong;
         } else {

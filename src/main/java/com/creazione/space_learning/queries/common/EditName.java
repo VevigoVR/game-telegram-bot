@@ -1,5 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -18,10 +20,10 @@ import java.util.List;
         description = "Изменить имя"
 )
 public class EditName extends Query {
-    private String[] args;
-    private String[] args2;
-    private String name = "";
-    private String wrong = "";
+    //private String[] args;
+    //private String[] args2;
+    //private String name = "";
+    //private String wrong = "";
 
     public EditName() {
         super(List.of());
@@ -29,19 +31,21 @@ public class EditName extends Query {
 
     @Override
     public Answer respond(Update update) {
-        name = ""; // чтобы не сохранялся старый результат
+        String[] args;
+        String[] args2;
+        String name = "";
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
 
         // Извлекаем аргументы команды
-        args = getCommandArgsAbsolute("/edit");
-        args2 = getCommandArgsAbsolute("изменить");
+        args = getCommandArgsAbsolute(userInitialDto, "/edit");
+        args2 = getCommandArgsAbsolute(userInitialDto, "изменить");
 
         if (args != null && args[0].equals("name")) {
             //System.out.println("args != null && args[0].equals(\"name\")");
@@ -52,7 +56,7 @@ public class EditName extends Query {
         }
 
         if (!name.isEmpty()) {
-            int i = userService.updateNameById(getUserDto().getId(), name, getUserDto().getTelegramId());
+            int i = userService.updateNameById(userInitialDto.getUserDto().getId(), name, userInitialDto.getUserDto().getTelegramId());
             if (i < 1) {
                 wrong = "❌ Обновить имя не удалось. \nПопробуйте ещё раз немного позже.";
             } else if (i > 2) {
@@ -78,7 +82,7 @@ public class EditName extends Query {
     }
 
     @Override
-    public String getText() {
+    public String getText(UserDto userDto) {
         if (!wrong.isEmpty()) {
             return wrong;
         } else if (name.isEmpty()) {

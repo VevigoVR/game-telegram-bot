@@ -1,9 +1,12 @@
 package com.creazione.space_learning.dto;
 
+import com.creazione.space_learning.game.Item;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,4 +14,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MessageText {
     private String text = "";
+    private List<Item> items;
 }

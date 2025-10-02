@@ -21,8 +21,8 @@ import java.util.List;
         description = "Снятие ресурсов на склад"
 )
 public class TransferResourceToStorage extends Query {
-    private BuildingInfo buildingInfo;
-    private int iBuilding;
+    //private BuildingInfo buildingInfo;
+    //private int iBuilding;
 
     public TransferResourceToStorage() {
         super(List.of("/getresourcesstone", "/getresourcesmetal"));

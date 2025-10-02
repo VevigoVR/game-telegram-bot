@@ -35,7 +35,6 @@ public class Bot extends TelegramLongPollingBot {
     private final AIPlaceholder aiPlaceholder;
     private final AIDataCollector aiDataCollector;
     private final UserPostgresService userService;
-    private Long userId = 0L;
     @Value("${bot.name}")
     private String botName;
 
@@ -82,7 +81,7 @@ public class Bot extends TelegramLongPollingBot {
         String messageText = update.getMessage().getText();
         if (messageText == null || messageText.isEmpty()) { return; }
         messageText = messageText.trim().toLowerCase();
-        this.userId = update.getMessage().getChatId();
+        Long userId = update.getMessage().getChatId();
         //System.out.println("messageText from " + userId + " : " + messageText);
         boolean isQuery = false;
 

@@ -3,6 +3,7 @@ package com.creazione.space_learning.queries.common;
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.ActiveBoosterP;
 import com.creazione.space_learning.game.buildings.*;
 import com.creazione.space_learning.enums.ResourceType;
@@ -39,10 +40,10 @@ import java.util.List;
         description = "Информация о здании"
 )
 public class BuildingInfo extends Query {
-    private BuildingDto targetBuilding;
-    private BuildingDto userBuilding;
+    //private BuildingDto targetBuilding;
+    //private BuildingDto userBuilding;
     private String takeButton = "Собрать ресурсы";
-    private boolean hasBuilding = false;
+    //private boolean hasBuilding = false;
 
     public BuildingInfo() {
         // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ И ЛЕСОПИЛКУ super(List.of("/buildinggold",
@@ -144,7 +145,7 @@ public class BuildingInfo extends Query {
     }
 
     @Override
-    public String getText() {
+    public String getText(UserDto userDto) {
         StringBuilder text = new StringBuilder();
 
         if (hasBuilding) {

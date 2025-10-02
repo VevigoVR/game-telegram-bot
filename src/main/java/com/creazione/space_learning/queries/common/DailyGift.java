@@ -2,6 +2,8 @@ package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.MessageText;
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -23,21 +25,20 @@ import java.util.List;
         description = "Получить ежедневный подарок"
 )
 public class DailyGift extends Query {
-    private MessageText wrong = new MessageText();
-    private List<Item> items; // если wrong.text пустой, то items может быть null
+    //private List<Item> items; // если wrong.text пустой, то items может быть null
     public DailyGift() {
         super(List.of());
     }
 
     @Override
     public Answer respond(Update update) {
-        wrong.setText("");
+        MessageText messageText = new MessageText();
 
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -46,32 +47,32 @@ public class DailyGift extends Query {
             answer.setAnswerCallbackQuery(closeRespond(update));
         }
 
-        takeDailyGift();
+        messageText.setItems(takeDailyGift(userInitialDto.getUserDto(), messageText));
 
-        SendMessage sendMessage = takeSendMessage();
+        SendMessage sendMessage = takeSendMessage(userInitialDto, messageText);
         answer.setSendMessage(sendMessage);
         return answer;
     }
 
-    private SendMessage takeSendMessage() {
-        return sendCustomMessage(getChatId(), getText());
+    private SendMessage takeSendMessage(UserInitialDto userInitialDto, MessageText messageText) {
+        return sendCustomMessage(userInitialDto.getChatId(), getText(userInitialDto.getUserDto(), messageText));
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto) {
         return null;
     }
 
     @Override
-    public String getText() {
-        if (!wrong.getText().isEmpty()) {
-            return wrong.getText();
+    public String getText(UserDto userDto, MessageText messageText) {
+        if (!messageText.getText().isEmpty()) {
+            return messageText.getText();
         } else {
-            return "✅ <b>Поздравляем! Вы получили подарок:</b>\n" + getGiftToString();
+            return "✅ <b>Поздравляем! Вы получили подарок:</b>\n" + getGiftToString(messageText.getItems());
         }
     }
 
-    private String getGiftToString() {
+    private String getGiftToString(List<Item> items) {
         StringBuilder itemsToString = new StringBuilder();
         for (Item item : items) {
             itemsToString.append(item.getName().getEmoji()).append(" ")
@@ -90,7 +91,7 @@ public class DailyGift extends Query {
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private void takeDailyGift() {
-        items = DataSet.getDailyGiftService().takeDailyGift(getUserDto(), wrong);
+    private List<Item> takeDailyGift(UserDto userDto, MessageText messageText) {
+        return DataSet.getDailyGiftService().takeDailyGift(userDto, messageText);
     }
 }

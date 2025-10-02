@@ -1,7 +1,9 @@
 package com.creazione.space_learning.queries;
 
 import com.creazione.space_learning.config.DataSet;
+import com.creazione.space_learning.dto.MessageText;
 import com.creazione.space_learning.dto.PaginationDto;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.game.aidata.Spoiler;
@@ -27,11 +29,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -45,52 +45,50 @@ public abstract class Query {
     @Autowired
     protected TransferResourceService transferResourceService;
 
-    private  List<String> queries;
-    private String query;
+    private final List<String> queries;
+    //private String query;
     private final String img = "/static/image/profile.jpeg";
     private final String targetImg = "profile.jpeg";
-    private long chatId;
-    private int messageId;
-    //private String userName;
-    private volatile boolean status = false;
-    private UserDto userDto;
+    //private long chatId;
+    //private int messageId;
+    //private volatile boolean status = false;
+    //private UserDto userDto;
 
-    public Query(List<String> query) {
+    public Query(List<String> queries) {
         this.resourceService = DataSet.getResourceService();
         this.buildingService = DataSet.getBuildingService();
         this.userService = DataSet.getUserService();
         this.referralService = DataSet.getReferralService();
-        this.queries = query;
+        this.queries = queries;
     }
 
-    public void initialQuery(Update update, boolean isUpdate) {
-        userDto = null;
+    public UserInitialDto initialQuery(Update update, boolean isUpdate) {
+        UserInitialDto userInitialDto = new UserInitialDto();
         if (update.hasCallbackQuery()) {
-
-            setQuery(update.getCallbackQuery().getData().toLowerCase().trim());
+            userInitialDto.setQuery(update.getCallbackQuery().getData().toLowerCase().trim());
             //System.out.println("Запрос call back: " + getQuery());
-            setChatId(update.getCallbackQuery().getMessage().getChatId());
+            userInitialDto.setChatId(update.getCallbackQuery().getMessage().getChatId());
             //setUserName(update.getCallbackQuery().getFrom().getUserName());
-            setMessageId(update.getCallbackQuery().getMessage().getMessageId());
-            findInitialQuery(isUpdate);
+            userInitialDto.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+            return findInitialQuery(userInitialDto, isUpdate);
         } else {
-            setQuery(update.getMessage().getText().toLowerCase().trim());
+            userInitialDto.setQuery(update.getMessage().getText().toLowerCase().trim());
             //System.out.println("Запрос: " + getQuery());
-            setChatId(update.getMessage().getChatId());
-            findInitialQuery(isUpdate);
+            userInitialDto.setChatId(update.getMessage().getChatId());
+            return findInitialQuery(userInitialDto, isUpdate);
         }
     }
 
-    public void findInitialQuery(boolean isUpdate) {
+    private UserInitialDto findInitialQuery(UserInitialDto userInitialDto, boolean isUpdate) {
         try {
-            UserDto user = getUserEntityFromDB();
+            UserDto user = getUserEntityFromDB(userInitialDto.getChatId());
             if (user != null) {
-                setUserDto(user);
-                setStatus(true);
+                userInitialDto.setUserDto(user);
+                userInitialDto.setStatus(true);
                 if (isUpdate) {
-                    boolean isUpdateDBNow = updateResourcesAndBuildings();
+                    boolean isUpdateDBNow = updateResourcesAndBuildings(user);
                     if (isUpdateDBNow) {
-                        userService.saveFull(getUserDto());
+                        userService.saveFull(userInitialDto.getUserDto());
                     }
                 }
             }
@@ -98,6 +96,7 @@ public abstract class Query {
             //System.out.println("Ошибка доступа пользователя по методу: findInitialQuery(boolean isUpdate): " + Query.class);
             exception.printStackTrace();
         }
+        return userInitialDto;
     }
 
     public abstract Answer respond(Update update);
@@ -153,34 +152,34 @@ public abstract class Query {
                 .build();
     }
 
-    protected EditMessageReplyMarkup editMessageReplyMarkup() {
+    protected EditMessageReplyMarkup editMessageReplyMarkup(UserInitialDto userInitialDto) {
         return EditMessageReplyMarkup.builder()
-                .chatId(String.valueOf(getChatId()))
-                .messageId(getMessageId())
+                .chatId(String.valueOf(userInitialDto.getChatId()))
+                .messageId(userInitialDto.getMessageId())
                 .build();
     }
 
-    protected EditMessageText editMessageText(String text) {
+    protected EditMessageText editMessageText(UserInitialDto userInitialDto, String text) {
         return EditMessageText.builder()
-                .chatId(getChatId())
-                .messageId(getMessageId())
+                .chatId(userInitialDto.getChatId())
+                .messageId(userInitialDto.getMessageId())
                 .text(text)
                 .build();
     }
 
-    public UserDto getUserEntityFromDB() {
-        return userService.findFullUserByTelegramId(getChatId());
+    public UserDto getUserEntityFromDB(long chatId) {
+        return userService.findFullUserByTelegramId(chatId);
     }
 
-    public SendMessage getSendMessageFalse() {
-        return new SendMessage(String.valueOf(getChatId()), "Пользователь не найден. \nДля регистрации: /start");
+    public SendMessage getSendMessageFalse(long chatId) {
+        return new SendMessage(String.valueOf(chatId), "Пользователь не найден. \nДля регистрации: /start");
     }
 
     public Answer getCommonRespond(Update update, boolean isUpdate) {
         Answer answer = new Answer();
-        initialQuery(update, isUpdate);
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        UserInitialDto userInitialDto = initialQuery(update, isUpdate);
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -191,30 +190,29 @@ public abstract class Query {
             answer.setAnswerCallbackQuery(closeRespond(update));
 
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
             newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setCaption(getText(userInitialDto.getUserDto()));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto));
         }
         return answer;
     }
 
-    protected boolean updateResourcesAndBuildings() {
-        UserDto userDto = getUserDto();
+    protected boolean updateResourcesAndBuildings(UserDto userDto) {
         if (userDto.isSuperAggregate()) {
-            toGrant();
-            resourceService.calculateQuantityChanges(getUserDto(), Instant.now());
+            toGrant(userDto);
+            resourceService.calculateQuantityChanges(userDto, Instant.now());
             return true;
                 // Тут считаем и добавляем ресурсы с аггрегаций
                 // отмечаем аггрегации прочитанными
             // ставим пометку пользователю userDto.setSuperAggregate() == false;
         }
-        return resourceService.calculateQuantityChanges(getUserDto(), Instant.now());
+        return resourceService.calculateQuantityChanges(userDto, Instant.now());
     }
 
     public String getSpoiler() {
@@ -224,8 +222,8 @@ public abstract class Query {
         return "\n---------------\n<code>" + Emoji.ROBOT_FACE + ": " + spoilerList.get(random.nextInt(spoilerList.size())) + "</code>";
     }
 
-    public String[] getCommandArgsAbsolute(String command) {
-        String text = getQuery();
+    public String[] getCommandArgsAbsolute(UserInitialDto userInitialDto, String command) {
+        String text = userInitialDto.getQuery();
         if (text == null || text.isEmpty()) {
             return null;
         }
@@ -268,8 +266,13 @@ public abstract class Query {
     }
 
     public abstract InlineKeyboardMarkup getInlineKeyboardMarkup();
-    public abstract String getText();
-    public abstract SendPhoto getSendPhoto();
+    public String getText(UserDto userDto) {
+        return null;
+    }
+    public String getText(UserDto userDto, MessageText text) {
+        return null;
+    }
+    public abstract SendPhoto getSendPhoto(UserInitialDto userInitialDto);
 
     public String processReferrerAndReferrals(String code, UserDto user) {
         boolean isAddReferral = false;
@@ -298,11 +301,10 @@ public abstract class Query {
         return message;
     }
 
-    private void toGrant() {
+    private void toGrant(UserDto userDto) {
         if (!isWithinTimeRange()) {
             return;
         }
-        UserDto userDto = getUserDto();
         SchedulerService.grantForUser(userDto);
         userDto.setSuperAggregate(false);
     }
@@ -339,8 +341,8 @@ public abstract class Query {
         return false;
     }
 
-    public String[] getCommandArgsAbsolute(List<String> commands) {
-        String text = getQuery();
+    public String[] getCommandArgsAbsolute(UserInitialDto userInitialDto, List<String> commands) {
+        String text = userInitialDto.getQuery();
         if (text == null || text.isEmpty()) {
             return null;
         }

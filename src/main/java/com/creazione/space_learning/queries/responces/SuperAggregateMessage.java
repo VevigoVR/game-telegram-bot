@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class SuperAggregateMessage extends Response {
-    private SuperAggregateP superAggregateEntity;
+    //private SuperAggregateP superAggregateEntity;
 
     public SuperAggregateMessage(SuperAggregateP superAggregateEntity) {
         super();

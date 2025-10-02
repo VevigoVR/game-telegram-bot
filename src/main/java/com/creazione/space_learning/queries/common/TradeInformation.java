@@ -25,7 +25,7 @@ import java.util.List;
         description = "Информация о торговле с NPC"
 )
 public class TradeInformation extends Query {
-    List<ResourceDto> resourcesForTrade;
+    //List<ResourceDto> resourcesForTrade;
 
     public TradeInformation() {
         super(List.of());

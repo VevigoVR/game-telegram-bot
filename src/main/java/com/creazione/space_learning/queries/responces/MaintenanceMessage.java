@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 @Getter
 @Setter
 public class MaintenanceMessage extends Response {
-    private long telegramId;
+    //private long telegramId;
 
     public MaintenanceMessage(long telegramId) {
         super();

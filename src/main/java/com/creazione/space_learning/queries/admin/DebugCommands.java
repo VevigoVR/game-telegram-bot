@@ -1,5 +1,6 @@
 package com.creazione.space_learning.queries.admin;
 
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.CommandRegistry;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -61,7 +62,7 @@ public class DebugCommands extends Query {
     }
 
     @Override
-    public String getText() {
+    public String getText(UserDto userDto) {
         return null;
     }
 

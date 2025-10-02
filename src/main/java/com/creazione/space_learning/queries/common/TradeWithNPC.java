@@ -36,9 +36,9 @@ public class TradeWithNPC extends Query {
             "^(/sell|/buy|продать|купить)\\s+(gold|metal|stone|золото|металл|камень)\\s+(\\d+)([кkмm]*)$",
             Pattern.CASE_INSENSITIVE
     );
-    private String quantityOfResource = "";
-    private String wrong = "";
-    private TransferTradeResult tradeResult;
+    //private String quantityOfResource = "";
+    //private String wrong = "";
+    //private TransferTradeResult tradeResult;
 
     public TradeWithNPC() {
         super(List.of());

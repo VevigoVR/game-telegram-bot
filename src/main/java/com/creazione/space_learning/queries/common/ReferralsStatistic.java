@@ -26,6 +26,7 @@ import java.util.List;
 public class ReferralsStatistic extends Query {
     @Value("${bot.name}")
     String botName;
+
     public ReferralsStatistic() {
         super(new ArrayList<>());
     }

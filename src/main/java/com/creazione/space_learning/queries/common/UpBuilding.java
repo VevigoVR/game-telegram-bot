@@ -22,8 +22,8 @@ import java.util.List;
         description = "Улучшение постройки"
 )
 public class UpBuilding extends Query {
-    private BuildingInfo buildingInfo;
-    private int iBuilding;
+    //private BuildingInfo buildingInfo;
+    //private int iBuilding;
 
     // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ public UpBuilding() { super(List.of("/upgold",
     public UpBuilding() {

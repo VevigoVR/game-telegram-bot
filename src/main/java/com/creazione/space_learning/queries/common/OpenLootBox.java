@@ -23,10 +23,10 @@ import java.util.List;
         description = "Открыть лут бокс"
 )
 public class OpenLootBox extends Query {
-    private String[] args;
-    private String wrong = "";
-    private List<Item> items;
-    private ResourceType resourceType;
+    //private String[] args;
+    //private String wrong = "";
+    //private List<Item> items;
+    //private ResourceType resourceType;
 
     public OpenLootBox() {
         super(List.of());

@@ -23,7 +23,7 @@ import java.util.List;
         description = "Активация кода приглашения"
 )
 public class InviteActivation extends Query {
-    private String[] args;
+    //private String[] args;
 
     public InviteActivation() {
         super(new ArrayList<>());

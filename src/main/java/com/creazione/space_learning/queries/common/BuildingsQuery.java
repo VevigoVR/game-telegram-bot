@@ -1,7 +1,10 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.MessageText;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.game.buildings.BuildingList;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.queries.GameCommand;
@@ -24,7 +27,7 @@ import java.util.List;
 )
 public class BuildingsQuery extends Query {
     public BuildingsQuery() {
-        super(List.of("/buildings"));
+        super(List.of());
     }
 
     @Override
@@ -33,23 +36,23 @@ public class BuildingsQuery extends Query {
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto) {
         String img = getImg();
-        String text = getText();
+        String text = getText(userInitialDto.getUserDto());
         String targetImg = getTargetImg();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, targetImg, text);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, targetImg, text);
         message.setReplyMarkup(getInlineKeyboardMarkup());
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserDto userDto) {
         StringBuilder text = new StringBuilder();
-        text.append("<b>").append("Производство ").append(getUserDto().getName()).append("</b>\n\n");
-        if (getUserDto().getBuildings().isEmpty()) {
+        text.append("<b>").append("Производство ").append(userDto.getName()).append("</b>\n\n");
+        if (userDto.getBuildings().isEmpty()) {
             text.append("<i>строений производства нет...</i>\n");
         }
-        for (BuildingDto building : getUserDto().viewSortedBuildings()) {
+        for (BuildingDto building : userDto.viewSortedBuildings()) {
             if (!building.isVisible()) {
                 continue;
             }
@@ -61,8 +64,8 @@ public class BuildingsQuery extends Query {
                     .append(" уровень\n");
         }
 
-        if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            List<BuildingDto> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
+        if (!userDto.viewSortedBuildings().isEmpty()) {
+            List<BuildingDto> buildingList = userDto.viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
             //System.out.println("Размер списка строений: " + buildingList.size());
             if (buildingList.size() < 2) {
                 text.append("\n<b>Можно построить</b>:\n");
@@ -76,7 +79,7 @@ public class BuildingsQuery extends Query {
                 continue;
             }
             boolean isExist = false;
-            for (BuildingDto myBuilding : getUserDto().getBuildings()) {
+            for (BuildingDto myBuilding : userDto.getBuildings()) {
                 if (building.getName().equals(myBuilding.getName())) {
                     isExist = true;
                 }
@@ -95,6 +98,11 @@ public class BuildingsQuery extends Query {
             text.append(buildingService.getDurationToString(duration)).append("\n\n");
         }
         return text.toString();
+    }
+
+    @Override
+    public String getText(UserDto userDto, MessageText wrong) {
+        return null;
     }
 
     @Override

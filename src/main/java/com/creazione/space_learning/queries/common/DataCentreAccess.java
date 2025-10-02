@@ -2,6 +2,7 @@ package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.DataCentreAccessTextDto;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -25,7 +26,7 @@ import java.util.List;
         description = "Здание Дата Центра"
 )
 public class DataCentreAccess extends Query {
-    private DataCentreAccessTextDto data;
+    //private DataCentreAccessTextDto data;
 
     public DataCentreAccess() {
         super(List.of());
@@ -75,7 +76,7 @@ public class DataCentreAccess extends Query {
     }
 
     @Override
-    public String getText() {
+    public String getText(UserDto userDto) {
         StringBuilder text = new StringBuilder();
         text.append("<b>").append("Дата Центр ").append(getUserDto().getName()).append(":</b>\n\n");
         if (data.getBuilding() != null) {

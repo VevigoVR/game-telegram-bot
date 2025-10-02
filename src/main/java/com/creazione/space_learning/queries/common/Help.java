@@ -1,5 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -17,30 +19,32 @@ import java.util.List;
 )
 public class Help extends Query {
     public Help() {
-        super(List.of("/help"));
+        super(List.of());
     }
 
     @Override
     public Answer respond(Update update) {
+        long chatId;
         Answer answer = new Answer();
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
-            setChatId(update.getCallbackQuery().getMessage().getChatId());
+            chatId = update.getCallbackQuery().getMessage().getChatId();
             //setUserName(update.getCallbackQuery().getFrom().getUserName());
             String text = """
                 <b>Помощь по вселенной Creazione</b> \n
                 Начать путешествие: /start
                 """;
-            answer.setSendMessage(sendCustomMessage(getChatId(), text));
+            answer.setSendMessage(sendCustomMessage(chatId, text));
 
         } else {
-            setChatId(update.getMessage().getChatId());
+            chatId = update.getMessage().getChatId();
             //setUserName(update.getMessage().getChat().getUserName());
             String text = """
                 <b>Помощь по вселенной Creazione</b> \n
                 Начать путешествие: /start
                 """;
-            answer.setSendMessage(sendCustomMessage(getChatId(), text));        }
+            answer.setSendMessage(sendCustomMessage(chatId, text));
+        }
 
 
 
@@ -53,12 +57,12 @@ public class Help extends Query {
     }
 
     @Override
-    public String getText() {
+    public String getText(UserDto userDto) {
         return "";
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto) {
         return null;
     }
 }

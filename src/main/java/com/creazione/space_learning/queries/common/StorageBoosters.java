@@ -25,8 +25,8 @@ import java.util.List;
         description = "Просмотр склада/ресурсов игрока"
 )
 public class StorageBoosters extends Query {
-    private PaginationDto paginationDto;
-    String queryWithoutPage;
+    //private PaginationDto paginationDto;
+    //String queryWithoutPage;
 
     public StorageBoosters() {
         super(List.of());
