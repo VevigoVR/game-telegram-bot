@@ -1,5 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.PlayerScoreP;
 import com.creazione.space_learning.game.buildings.DataCentreBuilding;
@@ -36,18 +37,19 @@ public class Start extends Query {
     @Override
     public Answer respond(Update update) {
         Answer answer = new Answer();
-        setChatId(update.getMessage().getChatId());
+        UserInitialDto userInitialDto = new UserInitialDto();
+        userInitialDto.setChatId(update.getMessage().getChatId());
         String userName = craftUserName(update.getMessage().getFrom());
-        UserDto userDto = userService.findFullUserByTelegramId(getChatId());
+        UserDto userDto = userService.findFullUserByTelegramId(userInitialDto.getChatId());
         if (userDto == null) {
             UserDto user = new UserDto();
-            user.setTelegramId(getChatId());
-            setQuery(update.getMessage().getText().trim());
+            user.setTelegramId(userInitialDto.getChatId());
+            userInitialDto.setQuery(update.getMessage().getText().trim());
             user.setName(userName);
             user = userService.saveFullWithoutCache(user);
 
             // ПРОВЕРКА, ЕСТЬ ЛИ РЕФЕРАЛЬНЫЙ КОД ПРИГЛАШЕНИЯ
-            String[] args = getQuery().split(" ");
+            String[] args = userInitialDto.getQuery().split(" ");
             if (args.length > 1 && args[1].startsWith("ref_")) {
                 String code = args[1].substring(4);
                 processReferrerAndReferrals(code, user);
@@ -86,15 +88,15 @@ public class Start extends Query {
             String img = "/static/image/start.jpg";
             String targetImg = "start.jpg";
             String text = getWelcomeText(userName);
-            InlineKeyboardMarkup markupInline = getInlineKeyboardMarkup();
-            SendPhoto message = sendCustomPhoto(getChatId(), img, targetImg, text);
+            InlineKeyboardMarkup markupInline = getInlineKeyboardMarkup(null, null);
+            SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, targetImg, text);
             message.setReplyMarkup(markupInline);
             answer.setSendPhoto(message);
             return answer;
         } else {
-            setUserDto(userDto);
+            userInitialDto.setUserDto(userDto);
             Profile profile = new Profile();
-            return profile.respondWithoutUser(update, getUserDto());
+            return profile.respondWithoutUser(update, userInitialDto);
         }
     }
 
@@ -134,7 +136,7 @@ public class Start extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(1);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton("Обзор планеты", "/profileNewWindow"));
@@ -142,12 +144,12 @@ public class Start extends Query {
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
         return "";
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         return null;
     }
 }

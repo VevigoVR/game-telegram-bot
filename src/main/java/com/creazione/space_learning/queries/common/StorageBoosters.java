@@ -1,6 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.PaginationDto;
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.InventoryBoosterP;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -24,9 +26,9 @@ import java.util.List;
         value = {"/boosters", "бустеры", "/boostersnw"},
         description = "Просмотр склада/ресурсов игрока"
 )
-public class StorageBoosters extends Query {
-    private PaginationDto paginationDto;
-    String queryWithoutPage;
+public class StorageBoosters extends Query<PaginationDto> {
+    //private PaginationDto paginationDto;
+    //String queryWithoutPage;
 
     public StorageBoosters() {
         super(List.of());
@@ -34,68 +36,72 @@ public class StorageBoosters extends Query {
 
     @Override
     public Answer respond(Update update) {
-        paginationDto = new PaginationDto();
-        paginationDto.setPage(1);
-        paginationDto.setLimit(3);
         Answer answer = new Answer();
-        initialQuery(update, true);
+        UserInitialDto userInitialDto = initialQuery(update, true);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
 
+        PaginationDto paginationDto = new PaginationDto();
+        paginationDto.setPage(1);
+        paginationDto.setLimit(3);
+
+        String queryWithoutPage = "";
+
         //System.out.println("page: " + paginationDto.getPage());
-        String[] args = getCommandArgsAbsolute(List.of("/boosters", "бустеры", "/boostersnw"));
+        String[] args = getCommandArgsAbsolute(userInitialDto, List.of("/boosters", "бустеры", "/boostersnw"));
         if (args != null && args.length > 1) {
-            setPage(args[1]);
+            setPage(paginationDto, args[1]);
             //System.out.println("page после инициализации: " + paginationDto.getPage());
         }
         if (args != null) {
             queryWithoutPage = args[0];
             //System.out.println("длина args: " + args.length);
         }
-        if (!getUserDto().viewSortedBoosters().isEmpty()) {
-            paginationDto.setSize(getUserDto().viewSortedBoosters().size());
+        if (!userInitialDto.getUserDto().viewSortedBoosters().isEmpty()) {
+            paginationDto.setSize(userInitialDto.getUserDto().viewSortedBoosters().size());
         }
         insertPagination(paginationDto, queryWithoutPage);
 
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             if (update.getCallbackQuery().getData().startsWith("/boostersnw")) {
-                answer.setSendPhoto(getSendPhoto());
+                answer.setSendPhoto(getSendPhoto(userInitialDto, paginationDto));
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, paginationDto));
+            newText.setCaption(getText(userInitialDto, paginationDto));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto, paginationDto));
         }
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, PaginationDto paginationDto) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(userInitialDto, paginationDto);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, paginationDto));
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, PaginationDto paginationDto) {
+        UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
-        text.append("<b>Склад ").append(getUserDto().getName()).append("</b>\n\n<b>Ускорители</b>:\n");
-        if (!getUserDto().viewSortedBoosters().isEmpty()) {
-            List<InventoryBoosterP> boosters = getUserDto().viewSortedBoosters();
+        text.append("<b>Склад ").append(userDto.getName()).append("</b>\n\n<b>Ускорители</b>:\n");
+        if (!userDto.viewSortedBoosters().isEmpty()) {
+            List<InventoryBoosterP> boosters = userDto.viewSortedBoosters();
             int i = 0;
             if (paginationDto.getSize() > paginationDto.getLimit()) {
                 if (paginationDto.getPage() > 1) {
@@ -131,7 +137,7 @@ public class StorageBoosters extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, PaginationDto paginationDto) {
         int numButtons = 2;
         List<InlineKeyboardButton> paginationButtons = paginationDto.getButtons();
         if (!paginationButtons.isEmpty()) {
@@ -149,7 +155,7 @@ public class StorageBoosters extends Query {
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private void setPage(String arg) {
+    private void setPage(PaginationDto paginationDto, String arg) {
         try {
             paginationDto.setPage(Integer.parseInt(arg));
         } catch (Exception e) {

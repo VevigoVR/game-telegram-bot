@@ -22,35 +22,31 @@ public class LootBoxService {
     private final ResourcePostgresService resourcePostgresService;
     private final InventoryBoosterRepository inventoryBoosterRepository;
     private final Random random = new Random();
-    private UserDto userDto = new UserDto();
-    private ResourceType boxType;
-    private List<ResourceDto> resources;
-    private long milliSecondsGift;
+    //private UserDto userDto = new UserDto();
+    //private ResourceType boxType;
+    //private List<ResourceDto> resources;
+    //private long milliSecondsGift;
 
     public List<Item> openBox(ResourceType boxType, UserDto userDto) {
-        this.boxType = boxType;
-        this.userDto = userDto;
-        this.resources = resourcePostgresService.findAllByUserId(userDto.getId());
-        if (!decrementResources(resources)) {
+        List<ResourceDto> resources = resourcePostgresService.findAllByUserId(userDto.getId());
+        if (!decrementResources(userDto, resources, boxType)) {
             //System.out.println("получился быстрый false на проверке сундучка");
             return null;
         }
         List<Item> possibleRewards = getPossibleRewards(boxType);
-        return save(selectRandomReward(possibleRewards, 1));
+        return save(userDto, resources, selectRandomReward(userDto, possibleRewards, 1, boxType));
     }
 
     public List<Item> takeDailyGift(UserDto userDto) {
-        this.userDto = userDto;
-        this.resources = resourcePostgresService.findAllByUserId(userDto.getId());
+        List<ResourceDto> resources = resourcePostgresService.findAllByUserId(userDto.getId());
         List<Item> possibleRewards = getPossibleRewards(ResourceType.LOOT_BOX_COMMON);
-        return save(selectRandomReward(possibleRewards, 1));
+        return save(userDto, resources, selectRandomReward(userDto, possibleRewards, 1, ResourceType.LOOT_BOX_COMMON));
     }
 
     private List<Item> getPossibleRewards(ResourceType boxType) {
 
         switch (boxType.getMark()) {
             case "common":
-                milliSecondsGift = 7_200;
                 return Arrays.asList(
                         new Gold(15),
                         new Stone(15),
@@ -76,7 +72,6 @@ public class LootBoxService {
                                 0.2, Duration.ofHours(24).toMillis(), 1)
                 );
             case "rare":
-                milliSecondsGift = 18_000;
                 return Arrays.asList(
                         new Gold(50),
                         new Stone(50),
@@ -88,7 +83,6 @@ public class LootBoxService {
                 );
 
             case "ref 1":
-                milliSecondsGift = 18_000;
                 return Arrays.asList(
                         new Gold(50),
                         new InventoryBoosterP(
@@ -99,7 +93,6 @@ public class LootBoxService {
                         //new Knowledge(10)
                 );
             case "ref 2":
-                milliSecondsGift = 36_000;
                 return Arrays.asList(
                         new Gold(150),
                         new InventoryBoosterP(
@@ -110,7 +103,6 @@ public class LootBoxService {
                         //new Knowledge(25)
                 );
             case "ref 3":
-                milliSecondsGift = 72_000;
                 return Arrays.asList(
                         new Gold(2000),
                         new InventoryBoosterP(
@@ -126,7 +118,17 @@ public class LootBoxService {
         }
     }
 
-    private long incrementQuantityGiftByLevel(ResourceType type, long quantity) {
+    private long incrementQuantityGiftByLevel(UserDto userDto, ResourceType type, long quantity, ResourceType resourceType) {
+        long milliSecondsGift;
+        switch (resourceType.getMark()) {
+            case "common": milliSecondsGift = 7_200;
+            case "rare": milliSecondsGift = 18_000;
+            case "ref 1": milliSecondsGift = 18_000;
+            case "ref 2": milliSecondsGift = 36_000;
+            case "ref 3": milliSecondsGift = 72_000;
+            // ... другие типы лутбоксов
+            default: milliSecondsGift = 7_200;
+        }
         for (BuildingDto building : userDto.getBuildings()) {
             if (building.getProduction().equals(type)) {
                 return Math.round (((building.getQuantityMining() * Math.pow(building.getIncrementMining(), building.getLevel()))) * milliSecondsGift);
@@ -135,7 +137,7 @@ public class LootBoxService {
         return quantity;
     }
 
-    private List<Item> selectRandomReward(List<Item> rewards, int count) {
+    private List<Item> selectRandomReward(UserDto userDto, List<Item> rewards, int count, ResourceType resourceType) {
         if (rewards.isEmpty()) {
             return new ArrayList<>();
         }
@@ -148,12 +150,12 @@ public class LootBoxService {
             if (!(item instanceof ResourceDto)) {
                 continue;
             }
-            item.setQuantity(incrementQuantityGiftByLevel(item.getName(), item.getQuantity()));
+            item.setQuantity(incrementQuantityGiftByLevel(userDto, item.getName(), item.getQuantity(), resourceType));
         }
         return items;
     }
 
-    private List<Item> save(List<Item> items) {
+    private List<Item> save(UserDto userDto, List<ResourceDto> resources, List<Item> items) {
         List<ResourceDto> giftResources = new ArrayList<>();
         List<InventoryBoosterP> giftBoosters = new ArrayList<>();
         for (Item item : items) {
@@ -196,7 +198,7 @@ public class LootBoxService {
         }
     }
 
-    public boolean decrementResources(List<ResourceDto> resources) {
+    public boolean decrementResources(UserDto userDto, List<ResourceDto> resources, ResourceType boxType) {
         for (ResourceDto resource : resources) {
             //System.out.println("resources for decrement :" + resource.getName());
             if (resource.getName().equals(boxType)) {

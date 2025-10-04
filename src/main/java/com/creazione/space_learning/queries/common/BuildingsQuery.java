@@ -1,7 +1,9 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.game.buildings.BuildingList;
 import com.creazione.space_learning.enums.BuildingType;
 import com.creazione.space_learning.queries.GameCommand;
@@ -24,7 +26,7 @@ import java.util.List;
 )
 public class BuildingsQuery extends Query {
     public BuildingsQuery() {
-        super(List.of("/buildings"));
+        super(List.of());
     }
 
     @Override
@@ -33,26 +35,25 @@ public class BuildingsQuery extends Query {
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         String img = getImg();
-        String text = getText();
+        String text = getText(userInitialDto, null);
         String targetImg = getTargetImg();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, targetImg, text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, targetImg, text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(null, null));
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
+        UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
-        text.append("<b>").append("Производство ").append(getUserDto().getName()).append("</b>\n\n");
-        if (getUserDto().getBuildings().isEmpty()) {
+        text.append("<b>").append("Производство ").append(userDto.getName()).append("</b>\n\n");
+        List<BuildingDto> buildingList = userDto.viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
+        if (buildingList.isEmpty()) {
             text.append("<i>строений производства нет...</i>\n");
         }
-        for (BuildingDto building : getUserDto().viewSortedBuildings()) {
-            if (!building.isVisible()) {
-                continue;
-            }
+        for (BuildingDto building : buildingList) {
             text.append(Emoji.WHITE_SMALL_SQUARE)
                     .append(" ")
                     .append(building.getName().toString().toUpperCase())
@@ -61,13 +62,7 @@ public class BuildingsQuery extends Query {
                     .append(" уровень\n");
         }
 
-        if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            List<BuildingDto> buildingList = getUserDto().viewSortedBuildings().stream().filter(BuildingDto::isVisible).toList();
-            //System.out.println("Размер списка строений: " + buildingList.size());
-            if (buildingList.size() < 2) {
-                text.append("\n<b>Можно построить</b>:\n");
-            }
-        } else {
+        if (buildingList.size() < 2) {
             text.append("\n<b>Можно построить</b>:\n");
         }
 
@@ -76,7 +71,7 @@ public class BuildingsQuery extends Query {
                 continue;
             }
             boolean isExist = false;
-            for (BuildingDto myBuilding : getUserDto().getBuildings()) {
+            for (BuildingDto myBuilding : userDto.getBuildings()) {
                 if (building.getName().equals(myBuilding.getName())) {
                     isExist = true;
                 }
@@ -98,7 +93,7 @@ public class BuildingsQuery extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(1, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));

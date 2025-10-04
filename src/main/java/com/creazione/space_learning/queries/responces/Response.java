@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class Response {
+public abstract class Response<T> {
 
     protected SendMessage createCustomMessage(Long chatId, String text) {
         SendMessage sendMessage = new SendMessage();
@@ -52,5 +52,5 @@ public abstract class Response {
         DataSet.getThrottledSender4().enqueueMessage(answer);
     }
 
-    public abstract void initResponse();
+    public abstract void initResponse(T object);
 }

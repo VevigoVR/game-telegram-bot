@@ -1,5 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -15,32 +17,24 @@ import java.util.List;
         value = {"/help", "помощь", "справка", ".help", ".помощь"},
         description = "Помощь по командам"
 )
-public class Help extends Query {
+public class Help extends Query<Object> {
     public Help() {
-        super(List.of("/help"));
+        super(List.of());
     }
 
     @Override
     public Answer respond(Update update) {
+        long chatId;
         Answer answer = new Answer();
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
-            setChatId(update.getCallbackQuery().getMessage().getChatId());
-            //setUserName(update.getCallbackQuery().getFrom().getUserName());
-            String text = """
-                <b>Помощь по вселенной Creazione</b> \n
-                Начать путешествие: /start
-                """;
-            answer.setSendMessage(sendCustomMessage(getChatId(), text));
+            chatId = update.getCallbackQuery().getMessage().getChatId();
+            answer.setSendMessage(sendCustomMessage(chatId, getText(null, null)));
 
         } else {
-            setChatId(update.getMessage().getChatId());
-            //setUserName(update.getMessage().getChat().getUserName());
-            String text = """
-                <b>Помощь по вселенной Creazione</b> \n
-                Начать путешествие: /start
-                """;
-            answer.setSendMessage(sendCustomMessage(getChatId(), text));        }
+            chatId = update.getMessage().getChatId();
+            answer.setSendMessage(sendCustomMessage(chatId, getText(null, null)));
+        }
 
 
 
@@ -48,17 +42,21 @@ public class Help extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object object) {
         return null;
     }
 
     @Override
-    public String getText() {
-        return "";
+    public String getText(UserInitialDto userInitialDto, Object object) {
+        return  """
+                <b>Помощь по вселенной Creazione</b>
+                
+                Начать путешествие: /start
+                """;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object object) {
         return null;
     }
 }

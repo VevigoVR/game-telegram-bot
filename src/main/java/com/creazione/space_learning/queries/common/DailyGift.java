@@ -1,7 +1,10 @@
 package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.MessageText;
+import com.creazione.space_learning.dto.RandomItemDto;
+import com.creazione.space_learning.dto.WrongMessage;
+import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.game.Item;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
@@ -22,22 +25,21 @@ import java.util.List;
         value = {"/gift", "бонус", "подарок"},
         description = "Получить ежедневный подарок"
 )
-public class DailyGift extends Query {
-    private MessageText wrong = new MessageText();
-    private List<Item> items; // если wrong.text пустой, то items может быть null
+public class DailyGift extends Query<RandomItemDto> {
+    //private List<Item> items; // если wrong.text пустой, то items может быть null
     public DailyGift() {
         super(List.of());
     }
 
     @Override
     public Answer respond(Update update) {
-        wrong.setText("");
+        RandomItemDto randomItemDto = new RandomItemDto();
 
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -46,32 +48,32 @@ public class DailyGift extends Query {
             answer.setAnswerCallbackQuery(closeRespond(update));
         }
 
-        takeDailyGift();
+        randomItemDto.setItems(takeDailyGift(userInitialDto.getUserDto(), randomItemDto));
 
-        SendMessage sendMessage = takeSendMessage();
+        SendMessage sendMessage = takeSendMessage(userInitialDto, randomItemDto);
         answer.setSendMessage(sendMessage);
         return answer;
     }
 
-    private SendMessage takeSendMessage() {
-        return sendCustomMessage(getChatId(), getText());
+    private SendMessage takeSendMessage(UserInitialDto userInitialDto, RandomItemDto randomItemDto) {
+        return sendCustomMessage(userInitialDto.getChatId(), getText(userInitialDto, randomItemDto));
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, RandomItemDto randomItemDto) {
         return null;
     }
 
     @Override
-    public String getText() {
-        if (!wrong.getText().isEmpty()) {
-            return wrong.getText();
+    public String getText(UserInitialDto userInitialDto, RandomItemDto randomItemDto) {
+        if (!randomItemDto.getWrongText().isEmpty()) {
+            return randomItemDto.getWrongText();
         } else {
-            return "✅ <b>Поздравляем! Вы получили подарок:</b>\n" + getGiftToString();
+            return "✅ <b>Поздравляем! Вы получили подарок:</b>\n" + getGiftToString(randomItemDto.getItems());
         }
     }
 
-    private String getGiftToString() {
+    private String getGiftToString(List<Item> items) {
         StringBuilder itemsToString = new StringBuilder();
         for (Item item : items) {
             itemsToString.append(item.getName().getEmoji()).append(" ")
@@ -84,13 +86,13 @@ public class DailyGift extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, RandomItemDto randomItemDto) {
         List<Integer> buttonsInLine = List.of(1);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         return getKeyboard(buttonsInLine, buttons);
     }
 
-    private void takeDailyGift() {
-        items = DataSet.getDailyGiftService().takeDailyGift(getUserDto(), wrong);
+    private List<Item> takeDailyGift(UserDto userDto, RandomItemDto randomItemDto) {
+        return DataSet.getDailyGiftService().takeDailyGift(userDto, randomItemDto);
     }
 }

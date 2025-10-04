@@ -1,7 +1,8 @@
 package com.creazione.space_learning.service;
 
 import com.creazione.space_learning.config.DataSet;
-import com.creazione.space_learning.dto.MessageText;
+import com.creazione.space_learning.dto.RandomItemDto;
+import com.creazione.space_learning.dto.WrongMessage;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.DailyGiftP;
 import com.creazione.space_learning.game.Item;
@@ -22,7 +23,7 @@ public class DailyGiftService {
     //private UserDto userDto = new UserDto();
     private final static int duration = 20;
 
-    public List<Item> takeDailyGift(UserDto userDto, MessageText wrong) {
+    public List<Item> takeDailyGift(UserDto userDto, RandomItemDto randomItemDto) {
         Long userId = userDto.getId();
         DailyGiftP dailyGiftEntity = dailyGiftRepository.findByUserId(userId);
         if (dailyGiftEntity == null) {
@@ -40,7 +41,7 @@ public class DailyGiftService {
                 dailyGiftRepository.save(dailyGiftEntity);
                 return DataSet.getLootBoxService().takeDailyGift(userDto);
             } else {
-                wrong.setText("С момента последнего подарка прошло менее "
+                randomItemDto.setWrongText("С момента последнего подарка прошло менее "
                         + duration + " "
                         + WordUtils.rightWord(duration, "часа", "часов", "часов") + "\n " +
                         "Попробуйте через: " + result.getTimeRemaining());

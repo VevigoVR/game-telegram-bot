@@ -2,7 +2,9 @@ package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.UnreadNoticeInfo;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.AggregateNoticeP;
 import com.creazione.space_learning.enums.NoticeType;
 import com.creazione.space_learning.queries.GameCommand;
@@ -39,10 +41,10 @@ public class PostCenter extends Query {
     @Override
     public Answer respond(Update update) {
         Answer answer = new Answer();
-        initialQuery(update, true);
+        UserInitialDto userInitialDto = initialQuery(update, true);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -50,38 +52,39 @@ public class PostCenter extends Query {
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             if (update.getCallbackQuery().getData().equals("/postnw")) {
-                answer.setSendPhoto(getSendPhoto());
+                answer.setSendPhoto(getSendPhoto(userInitialDto, null));
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
+            newText.setCaption(getText(userInitialDto, null));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto, null));
         }
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(userInitialDto, null);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
+        UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
         UnreadNoticeInfo unreadNoticeInfo = DataSet
                 .getAggregateNoticeService()
-                .findLatestUnreadNoticeWithHasMoreFlag(getUserDto().getId());
+                .findLatestUnreadNoticeWithHasMoreFlag(userDto.getId());
         AggregateNoticeP aggregateNoticeEntity = unreadNoticeInfo.getLatestNotice();
         text.append("<b>Центр сообщений</b>\n\n");
         if (aggregateNoticeEntity == null) {
@@ -89,7 +92,7 @@ public class PostCenter extends Query {
                     .append(Emoji.POST_BOX)
                     .append(" <code>Отсутствие новостей — уже хорошая новость!</code>");
         } else {
-            createTitleAndText(aggregateNoticeEntity);
+            createTitleAndText(userInitialDto, aggregateNoticeEntity);
             LocalDateTime ldt = LocalDateTime.ofInstant(aggregateNoticeEntity.getCreatedAt().toInstant(), ZoneId.systemDefault());
             text.append(Emoji.ARROW_RIGHT).append(" ")
                     .append(aggregateNoticeEntity.getTitle())
@@ -99,8 +102,8 @@ public class PostCenter extends Query {
                     .append("\n Сообщение отправлено: ")
                     .append(formatDate(ldt));
             aggregateNoticeEntity.setRead(true);
-            getUserDto().setPost(unreadNoticeInfo.isHasMoreUnread());
-            DataSet.getUserService().saveFull(getUserDto());
+            userDto.setPost(unreadNoticeInfo.isHasMoreUnread());
+            DataSet.getUserService().saveFull(userDto);
             DataSet.getAggregateNoticeService().save(aggregateNoticeEntity);
         }
         text.append("\n").append(getSpoiler());
@@ -111,7 +114,8 @@ public class PostCenter extends Query {
         return dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
-    private void createTitleAndText(AggregateNoticeP aggregateNoticeEntity) {
+    private void createTitleAndText(UserInitialDto userInitialDto, AggregateNoticeP aggregateNoticeEntity) {
+        UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
         if (aggregateNoticeEntity.getNoticeType().equals(NoticeType.GIFT_TO_REFERRER)) {
             aggregateNoticeEntity.setTitle("Награда за активных рефералов".toUpperCase());
@@ -121,7 +125,7 @@ public class PostCenter extends Query {
             text.append("За участие и активность в команде Вы получаете:\n\n");
         }
         List<ResourceDto> resources = SchedulerService.convertToResources(aggregateNoticeEntity.getResources());
-        SchedulerService.addOrIncrementResource(getUserDto().getResources(), resources, getUserDto().getId());
+        SchedulerService.addOrIncrementResource(userDto.getResources(), resources, userDto.getId());
         for (ResourceDto resource : resources) {
             text.append(resource.getEmoji())
                     .append(" ")
@@ -134,7 +138,7 @@ public class PostCenter extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(3);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(getButton(Emoji.OUTBOX_TRAY.toString(), "/post"));

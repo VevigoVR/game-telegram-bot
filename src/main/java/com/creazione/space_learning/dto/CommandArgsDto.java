@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageText {
-    private String text = "";
+public class CommandArgsDto {
+    private String[] args;
 }

@@ -1,5 +1,6 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
@@ -33,10 +34,10 @@ public class Profile extends Query {
     @Override
     public Answer respond(Update update) {
         Answer answer = new Answer();
-        initialQuery(update, true);
+        UserInitialDto userInitialDto = initialQuery(update, true);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
@@ -44,58 +45,60 @@ public class Profile extends Query {
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
             if (update.getCallbackQuery().getData().equals("/profilenewwindow")) {
-                answer.setSendPhoto(getSendPhoto());
+                answer.setSendPhoto(getSendPhoto(userInitialDto, null));
                 return answer;
             }
             EditMessageCaption newText = EditMessageCaption.builder()
-                    .chatId(getChatId())
-                    .messageId(getMessageId())
+                    .chatId(userInitialDto.getChatId())
+                    .messageId(userInitialDto.getMessageId())
                     .build();
-            newText.setReplyMarkup(getInlineKeyboardMarkup());
-            newText.setCaption(getText());
+            newText.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
+            newText.setCaption(getText(userInitialDto, null));
             newText.setParseMode(ParseMode.HTML);
             answer.setEditMessageCaption(newText);
         } else {
-            answer.setSendPhoto(getSendPhoto());
+            answer.setSendPhoto(getSendPhoto(userInitialDto, null));
         }
         return answer;
     }
 
-    public Answer respondWithoutUser(Update update, UserDto userDto) {
+    public Answer respondWithoutUser(Update update, UserInitialDto userInitialDto) {
+        UserDto userDto = userInitialDto.getUserDto();
         boolean isUpdateDB = resourceService.calculateQuantityChanges(userDto, Instant.now());
         if (isUpdateDB) {
             userService.saveFull(userDto);
         }
-        setChatId(update.getMessage().getChatId());
-        setUserDto(userDto);
+        userInitialDto.setChatId(update.getMessage().getChatId());
+        userInitialDto.setUserDto(userDto);
         Answer answer = new Answer();
-        answer.setSendPhoto(getSendPhoto());
+        answer.setSendPhoto(getSendPhoto(userInitialDto, null));
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, Object noObject) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(userInitialDto, null);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, null));
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, Object noObject) {
+        UserDto userDto = userInitialDto.getUserDto();
         StringBuilder text = new StringBuilder();
-        long pointsLong = getUserDto().getPlayerScore().getScore();
+        long pointsLong = userDto.getPlayerScore().getScore();
         String points = Formatting.formatWithDots(pointsLong);
         System.out.println("points: " + points);
-        text.append("<b>").append("Планета ").append(getUserDto().getName()).append(":</b>\n\n");
+        text.append("<b>").append("Планета ").append(userDto.getName()).append(":</b>\n\n");
         if (pointsLong > 0) {
             text.append("<b>Набрано очков</b>:\n").append(points).append("\n\n");
         }
         text.append("<b>Строения</b>:\n");
 
-        if (!getUserDto().viewSortedBuildings().isEmpty()) {
-            for (BuildingDto building : getUserDto().viewSortedBuildings()) {
+        if (!userDto.viewSortedBuildings().isEmpty()) {
+            for (BuildingDto building : userDto.viewSortedBuildings()) {
                 text.append(Emoji.WHITE_SMALL_SQUARE).append(" ").append(building.getName()).append(": ")
                         .append(building.getLevel())
                         .append(" уровень\n");
@@ -110,7 +113,7 @@ public class Profile extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(2, 3, 2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
 
@@ -123,7 +126,7 @@ public class Profile extends Query {
 
         buttons.add(getButton(Emoji.BUSTS_IN_SILHOUETTE.toString(), "/referrals"));
         //buttons.add(getButton(Emoji.GEAR.toString(), "/help"));
-        if (getUserDto().isPost()) {
+        if (userInitialDto.getUserDto().isPost()) {
             buttons.add(getButton(Emoji.POST_WITH_MAILS.toString(), "/post"));
         } else {
             buttons.add(getButton(Emoji.POST_WITHOUT_MAILS.toString(), "/post"));

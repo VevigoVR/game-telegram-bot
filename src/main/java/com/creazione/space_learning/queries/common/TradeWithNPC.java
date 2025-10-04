@@ -1,6 +1,8 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.TradeNpcRequestDto;
 import com.creazione.space_learning.dto.TransferTradeResult;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.enums.Emoji;
@@ -31,14 +33,14 @@ import java.util.List;
         value = {"/buy", "/sell", "купить", "продать"},
         description = "Продажа/покупка ресурсов у NPC"
 )
-public class TradeWithNPC extends Query {
+public class TradeWithNPC extends Query<TradeNpcRequestDto> {
     private static final Pattern COMMAND_PATTERN = Pattern.compile(
             "^(/sell|/buy|продать|купить)\\s+(gold|metal|stone|золото|металл|камень)\\s+(\\d+)([кkмm]*)$",
             Pattern.CASE_INSENSITIVE
     );
-    private String quantityOfResource = "";
-    private String wrong = "";
-    private TransferTradeResult tradeResult;
+    //private String quantityOfResource = "";
+    //private String wrong = "";
+    //private TransferTradeResult tradeResult;
 
     public TradeWithNPC() {
         super(List.of());
@@ -46,36 +48,38 @@ public class TradeWithNPC extends Query {
 
     @Override
     public Answer respond(Update update) {
-        tradeResult = new TransferTradeResult();
-        tradeResult.setTransferred(true);
-        quantityOfResource = ""; // чтобы не сохранялся старый результат
-        wrong = "";
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
+        TradeNpcRequestDto tradeNpcRequestDto = new TradeNpcRequestDto();
+        TransferTradeResult transferTradeResult = new TransferTradeResult();
+        transferTradeResult.setTransferred(true);
+        tradeNpcRequestDto.setTradeResult(transferTradeResult);
 
-        parseAndExecute(getQuery(), getUserDto());
-        if (!tradeResult.isTransferred()) {
-            wrong = tradeResult.getMessage();
+        parseAndExecute(userInitialDto, tradeNpcRequestDto);
+        if (!tradeNpcRequestDto.getTradeResult().isTransferred()) {
+            tradeNpcRequestDto.setWrong(tradeNpcRequestDto.getTradeResult().getMessage());
         }
 
-        SendMessage sendMessage = takeSendMessage();
+        SendMessage sendMessage = takeSendMessage(userInitialDto, tradeNpcRequestDto);
         answer.setSendMessage(sendMessage);
         return answer;
     }
 
-    public void parseAndExecute(String command, UserDto userDto) {
+    public void parseAndExecute(UserInitialDto userInitialDto, TradeNpcRequestDto tradeNpcRequestDto) {
+        String command = userInitialDto.getQuery();
+        UserDto userDto = userInitialDto.getUserDto();
         try {
             Matcher matcher = COMMAND_PATTERN.matcher(command.trim());
 
             if (!matcher.matches()) {
-                getText();
-                tradeResult = new TransferTradeResult("");
+                getText(userInitialDto, tradeNpcRequestDto);
+                tradeNpcRequestDto.setTradeResult(new TransferTradeResult(""));
             }
 
             String action = matcher.group(1);//.substring(1); // Убираем "/"
@@ -129,33 +133,35 @@ public class TradeWithNPC extends Query {
 
             // Вызываем соответствующий метод сервиса
             if ("/sell".equals(action)) {
-                tradeResult = resourceService.sellResource(resource, userDto);
+                tradeNpcRequestDto.setTradeResult(resourceService.sellResource(resource, userDto));
             } else if ("/buy".equals(action)) {
-                tradeResult = resourceService.buyResource(resource, userDto);
+                tradeNpcRequestDto.setTradeResult(resourceService.buyResource(resource, userDto));
             } else if ("продать".equals(action)) {
-                tradeResult = resourceService.sellResource(resource, userDto);
+                tradeNpcRequestDto.setTradeResult(resourceService.sellResource(resource, userDto));
             } else if ("купить".equals(action)) {
-                tradeResult = resourceService.buyResource(resource, userDto);
+                tradeNpcRequestDto.setTradeResult(resourceService.buyResource(resource, userDto));
             } else {
-                getText();
+                getText(userInitialDto, tradeNpcRequestDto);
             }
 
         } catch (NumberFormatException e) {
             if (e.getMessage().startsWith("For")) {
-                wrong = "Какие-то странные у вас числа!";
+                tradeNpcRequestDto.setWrong("Какие-то странные у вас числа!");
             }
             // wrong = e.getMessage(); //"Невозможно разобрать количество ресурсов!";
             //System.out.println("wrong NumberFormatException: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            wrong = e.getMessage();
+            tradeNpcRequestDto.setWrong(e.getMessage());
             //System.out.println("wrong IllegalArgumentException: " + e.getMessage());
         } catch (Exception e) {
-            wrong = "Не понимаю запрос, возможно неверный тип ресурса";
+            tradeNpcRequestDto.setWrong("Не понимаю запрос, возможно неверный тип ресурса");
         }
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, TradeNpcRequestDto tradeNpcRequestDto) {
+        TransferTradeResult tradeResult = tradeNpcRequestDto.getTradeResult();
+        String wrong = tradeNpcRequestDto.getWrong();
         String message;
         if (!tradeResult.isTransferred() && !tradeResult.getMessage().isEmpty()) {
             message = Emoji.EXCLAMATION + " " + tradeResult.getMessage();
@@ -206,16 +212,16 @@ public class TradeWithNPC extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, TradeNpcRequestDto tradeNpcRequestDto) {
         return null;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, TradeNpcRequestDto tradeNpcRequestDto) {
         return null;
     }
 
-    private SendMessage takeSendMessage() {
-        return sendCustomMessage(getChatId(), getText());
+    private SendMessage takeSendMessage(UserInitialDto userInitialDto, TradeNpcRequestDto tradeNpcRequestDto) {
+        return sendCustomMessage(userInitialDto.getChatId(), getText(userInitialDto, tradeNpcRequestDto));
     }
 }

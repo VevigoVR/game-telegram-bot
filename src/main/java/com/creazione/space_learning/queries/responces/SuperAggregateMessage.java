@@ -13,26 +13,25 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SuperAggregateMessage extends Response {
-    private SuperAggregateP superAggregateEntity;
+public class SuperAggregateMessage extends Response<SuperAggregateP> {
+    //private SuperAggregateP superAggregateEntity;
 
-    public SuperAggregateMessage(SuperAggregateP superAggregateEntity) {
+    public SuperAggregateMessage() {
         super();
-        this.superAggregateEntity = superAggregateEntity;
     }
 
     @Override
-    public void initResponse() {
-        createResponse(answer -> answer.setSendMessage(constructSendMessage()));
+    public void initResponse(SuperAggregateP superAggregateEntity) {
+        createResponse(answer -> answer.setSendMessage(constructSendMessage(superAggregateEntity)));
     }
 
-    private SendMessage constructSendMessage() {
-        SendMessage message = createCustomMessage(superAggregateEntity.getTelegramId(), createMessageText());
+    private SendMessage constructSendMessage(SuperAggregateP superAggregateEntity) {
+        SendMessage message = createCustomMessage(superAggregateEntity.getTelegramId(), createMessageText(superAggregateEntity));
         message.setReplyMarkup(getInlineKeyboardMarkup());
         return message;
     }
 
-    private String createMessageText() {
+    private String createMessageText(SuperAggregateP superAggregateEntity) {
         return Emoji.MAN_ASTRONAUT + "Привет, " + superAggregateEntity.getUserName() + "! Ты давно не заходил в свой Центр Сообщений!\n\n" +
                 "Потому...\n\n" +
                 "✅ Письма сохранить не удалось, но посылки успешно доставлены на склад!\n\n";

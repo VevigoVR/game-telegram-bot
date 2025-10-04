@@ -1,5 +1,7 @@
 package com.creazione.space_learning.queries.common;
 
+import com.creazione.space_learning.dto.CommandArgsDto;
+import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -22,8 +24,8 @@ import java.util.List;
         value = {"/invited_from"},
         description = "Активация кода приглашения"
 )
-public class InviteActivation extends Query {
-    private String[] args;
+public class InviteActivation extends Query<CommandArgsDto> {
+    //private String[] args;
 
     public InviteActivation() {
         super(new ArrayList<>());
@@ -32,38 +34,39 @@ public class InviteActivation extends Query {
     @Override
     public Answer respond(Update update) {
         Answer answer = new Answer();
-        initialQuery(update, false);
+        UserInitialDto userInitialDto = initialQuery(update, false);
 
-        if (!isStatus()) {
-            SendMessage sendMessage = getSendMessageFalse();
+        if (!userInitialDto.isStatus()) {
+            SendMessage sendMessage = getSendMessageFalse(userInitialDto.getChatId());
             answer.setSendMessage(sendMessage);
             return answer;
         }
 
         // Извлекаем аргументы команды
-        args = getCommandArgsAbsolute("/invited_from");
+        CommandArgsDto commandArgsDto = new CommandArgsDto(getCommandArgsAbsolute(userInitialDto, "/invited_from"));
 
-        answer.setSendMessage(sendCustomMessage(getChatId(), getText()));
+        answer.setSendMessage(sendCustomMessage(userInitialDto.getChatId(), getText(userInitialDto, commandArgsDto)));
         return answer;
     }
 
     @Override
-    public SendPhoto getSendPhoto() {
+    public SendPhoto getSendPhoto(UserInitialDto userInitialDto, CommandArgsDto commandArgsDto) {
         String img = getImg();
-        String text = getText();
-        SendPhoto message = sendCustomPhoto(getChatId(), img, getTargetImg(), text);
-        message.setReplyMarkup(getInlineKeyboardMarkup());
+        String text = getText(userInitialDto, commandArgsDto);
+        SendPhoto message = sendCustomPhoto(userInitialDto.getChatId(), img, getTargetImg(), text);
+        message.setReplyMarkup(getInlineKeyboardMarkup(userInitialDto, commandArgsDto));
         return message;
     }
 
     @Override
-    public String getText() {
+    public String getText(UserInitialDto userInitialDto, CommandArgsDto commandArgsDto) {
+        String[] args = commandArgsDto.getArgs();
         if (args == null || args.length == 0) {
             return "❌ Пожалуйста, укажите реферальный код.\nПример: /invited_from ABCD1234";
         }
 
         String code = args[0];
-        return processReferrerAndReferrals(code, getUserEntityFromDB());
+        return processReferrerAndReferrals(code, getUserEntityFromDB(userInitialDto.getChatId()));
         /*
         try {
             referralService.activateReferralCode(userId, code);
@@ -85,7 +88,7 @@ public class InviteActivation extends Query {
     }
 
     @Override
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, CommandArgsDto commandArgsDto) {
         List<Integer> buttonsInLine = List.of(0);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         //buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/profile"));
