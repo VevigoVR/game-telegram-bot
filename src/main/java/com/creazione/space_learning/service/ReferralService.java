@@ -1,13 +1,12 @@
 package com.creazione.space_learning.service;
 
-import com.creazione.space_learning.config.ReferralCodec;
+import com.creazione.space_learning.config.IdCodec;
 import com.creazione.space_learning.dto.ReferralStats;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.ReferralP;
 import com.creazione.space_learning.repository.ReferralRepository;
 import com.creazione.space_learning.service.postgres.UserPostgresService;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,12 +21,12 @@ import java.util.Date;
 public class ReferralService {
     @Value("${bot.name}")
     private String botName;
-    private final ReferralCodec referralCodec;
+    private final IdCodec referralCodec;
     private final ReferralRepository referralRepository;
     private final UserPostgresService userService;
 
     public ReferralService(ReferralRepository referralRepository, UserPostgresService userService) throws NoSuchAlgorithmException, InvalidKeyException {
-        this.referralCodec = new ReferralCodec("1aWEdfHq+LUKebfG53t+1g==");
+        this.referralCodec = new IdCodec("1aWEdfHq+LUKebfG53t+1g==");
         this.referralRepository = referralRepository;
         this.userService = userService;
     }
@@ -66,7 +65,7 @@ public class ReferralService {
 
     public boolean processReferral(UserDto user, Long referrerId) {
         Long userId = user.getId();
-        UserDto referrer = userService.findById(referrerId);
+        UserDto referrer = userService.findBasicUserById(referrerId);
         if (referrer != null) {
             referrer.incrementTotalReferrals();
             userService.saveFullWithoutCache(referrer);
@@ -80,7 +79,7 @@ public class ReferralService {
         referralEntity.setTimeCreate(new Date());
         referralRepository.save(referralEntity);
         user.setReferrer(referrerId);
-        userService.saveFull(user);
+
         return true;
     }
 }

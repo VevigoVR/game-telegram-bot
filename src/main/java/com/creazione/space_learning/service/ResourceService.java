@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +30,10 @@ public class ResourceService {
         long dateLong = date.getEpochSecond();
         boolean isUpdateDB = false;
         //System.out.println("Текущее время: " + new Date(dateLong));
+        if (buildings == null || buildings.isEmpty()) { return false; }
+        if (resources == null) {
+            resources = new ArrayList<>();
+        }
         for (BuildingDto building : buildings) {
             boolean flag = false;
             for (ResourceDto resource : resources) {

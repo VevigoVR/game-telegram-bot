@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Log4j2
 public class Bot extends TelegramLongPollingBot {
+
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedissonClient redissonClient;
     private final QueryList queryList;
@@ -37,7 +38,6 @@ public class Bot extends TelegramLongPollingBot {
     private final UserPostgresService userService;
     @Value("${bot.name}")
     private String botName;
-
     private ThrottledMessageSender4 throttledSender4;
 
     @Autowired
@@ -159,7 +159,6 @@ public class Bot extends TelegramLongPollingBot {
                 // Обработка ошибок
                 e.getMessage();
             }
-
              */
         }
     }
@@ -170,6 +169,7 @@ public class Bot extends TelegramLongPollingBot {
         //System.out.println("messageID: " + update.getCallbackQuery().getMessage().getMessageId());
         String messageText = update.getCallbackQuery().getData().toLowerCase().trim();
         Long telegramId = update.getCallbackQuery().getMessage().getChatId();
+
         //System.out.println("messageText from " + userId + " : " + messageText);
         for (Query query : queryList.getQueryList()) {
             //System.out.println("- " + query.getQueries());

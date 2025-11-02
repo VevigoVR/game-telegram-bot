@@ -23,12 +23,12 @@ import java.util.List;
 
 @Component
 @GameCommand(
-        value = {"/profile", "профиль", "аккаунт", ".profile", "/profilenewwindow"},
+        value = {"/profile", "профиль", "аккаунт", ".profile", "/profile_new_window"},
         description = "Просмотр профиля игрока"
 )
 public class Profile extends Query {
     public Profile() {
-        super(List.of("/profile", "/profilenewwindow"));
+        super(List.of("/profile", "/profile_new_window"));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Profile extends Query {
 
         if (update.hasCallbackQuery()) {
             answer.setAnswerCallbackQuery(closeRespond(update));
-            if (update.getCallbackQuery().getData().equals("/profilenewwindow")) {
+            if (update.getCallbackQuery().getData().equals("/profile_new_window")) {
                 answer.setSendPhoto(getSendPhoto(userInitialDto, null));
                 return answer;
             }
@@ -90,7 +90,7 @@ public class Profile extends Query {
         StringBuilder text = new StringBuilder();
         long pointsLong = userDto.getPlayerScore().getScore();
         String points = Formatting.formatWithDots(pointsLong);
-        System.out.println("points: " + points);
+        //System.out.println("points: " + points);
         text.append("<b>").append("Планета ").append(userDto.getName()).append(":</b>\n\n");
         if (pointsLong > 0) {
             text.append("<b>Набрано очков</b>:\n").append(points).append("\n\n");
@@ -118,10 +118,10 @@ public class Profile extends Query {
         List<InlineKeyboardButton> buttons = new ArrayList<>();
 
         buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/profile"));
-        buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/profilenewwindow")));
+        buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/profile_new_window")));
 
         buttons.add(getButton("Шахты", "/buildings"));
-        buttons.add(getButton(Emoji.SATELLITE.toString(), "/datacentre"));
+        buttons.add(getButton(Emoji.SATELLITE.toString(), "/trade"));
         buttons.add(getButton("Склад", "/resources"));
 
         buttons.add(getButton(Emoji.BUSTS_IN_SILHOUETTE.toString(), "/referrals"));

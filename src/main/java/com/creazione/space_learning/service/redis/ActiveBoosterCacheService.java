@@ -145,7 +145,7 @@ public class ActiveBoosterCacheService {
     }
 
     public void markActiveBoostersAsEmpty(Long telegramId) {
-        redisTemplate.opsForValue().set(EMPTY_ACTIVE_BOOSTERS_KEY.getName() + telegramId, "true", 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(EMPTY_ACTIVE_BOOSTERS_KEY.getName() + telegramId, telegramId, 5, TimeUnit.MINUTES);
     }
 
     public boolean isActiveBoostersEmpty(Long telegramId) {

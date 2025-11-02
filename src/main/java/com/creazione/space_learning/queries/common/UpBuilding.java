@@ -28,7 +28,6 @@ public class UpBuilding extends Query<UpdateBuildingDto> {
     //private BuildingInfo buildingInfo;
     //private int iBuilding;
 
-    // УДАЛЯЕМ ЗОЛОТУЮ ШАХТУ public UpBuilding() { super(List.of("/upgold",
     public UpBuilding() {
         super(List.of("/upwood", "/upstone", "/upmetal"));
     }

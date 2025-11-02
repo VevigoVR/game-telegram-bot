@@ -18,6 +18,9 @@ public class BuildingPostgresService {
     private final BuildingCacheService buildingCacheService;
 
     public List<BuildingP> toPostgresObjectList(List<BuildingDto> buildingDtoList) {
+        if (buildingDtoList == null) {
+            return new ArrayList<>();
+        }
         List<BuildingP> buildingPList = new ArrayList<>();
         for (BuildingDto building : buildingDtoList) {
             buildingPList.add(toPostgresObject(building));
@@ -26,6 +29,9 @@ public class BuildingPostgresService {
     }
 
     public List<BuildingDto> toGameObjectList(List<BuildingP> buildingPSet) {
+        if (buildingPSet == null) {
+            return new ArrayList<>();
+        }
         List<BuildingDto> buildingDtoList = new ArrayList<>();
         for (BuildingP building : buildingPSet) {
             buildingDtoList.add(toGameObject(building));

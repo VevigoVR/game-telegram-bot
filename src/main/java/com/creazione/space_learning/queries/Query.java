@@ -4,8 +4,11 @@ import com.creazione.space_learning.config.DataSet;
 import com.creazione.space_learning.dto.PaginationDto;
 import com.creazione.space_learning.dto.UserInitialDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
+import com.creazione.space_learning.entities.postgres.PlayerScoreP;
 import com.creazione.space_learning.enums.Emoji;
 import com.creazione.space_learning.game.aidata.Spoiler;
+import com.creazione.space_learning.game.buildings.DataCentreBuilding;
+import com.creazione.space_learning.game.resources.Gold;
 import com.creazione.space_learning.service.TransferResourceService;
 import com.creazione.space_learning.service.scheduler.SchedulerService;
 import com.creazione.space_learning.service.BuildingService;
@@ -28,8 +31,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -66,14 +71,20 @@ public abstract class Query<T> {
         if (update.hasCallbackQuery()) {
             userInitialDto.setQuery(update.getCallbackQuery().getData().toLowerCase().trim());
             //System.out.println("Запрос call back: " + getQuery());
-            userInitialDto.setChatId(update.getCallbackQuery().getMessage().getChatId());
+            Long telegramId = update.getCallbackQuery().getMessage().getChatId();
+
+            userInitialDto.setChatId(telegramId);
+            //System.out.println("Текущий telegram id пользователя после установки: " + userInitialDto.getChatId());
             //setUserName(update.getCallbackQuery().getFrom().getUserName());
             userInitialDto.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
             return findInitialQuery(userInitialDto, isUpdate);
         } else {
             userInitialDto.setQuery(update.getMessage().getText().toLowerCase().trim());
             //System.out.println("Запрос: " + getQuery());
-            userInitialDto.setChatId(update.getMessage().getChatId());
+            Long telegramId = update.getMessage().getChatId();
+
+            userInitialDto.setChatId(telegramId);
+            //System.out.println("Текущий telegram id пользователя после установки: " + userInitialDto.getChatId());
             return findInitialQuery(userInitialDto, isUpdate);
         }
     }
@@ -96,6 +107,38 @@ public abstract class Query<T> {
             exception.printStackTrace();
         }
         return userInitialDto;
+    }
+
+    public UserDto initialUserDto(UserDto user) {
+        user.setPlayerScore(new PlayerScoreP(user.getId()));
+        Gold gold = new Gold(250000);
+        gold.setUserId(user.getId());
+            /*
+            Metal metal = new Metal(25000);
+            metal.setUserId(user.getId());
+            Stone stone = new Stone(25000);
+            stone.setUserId(user.getId());
+
+             */
+
+        DataCentreBuilding dataCentre = new DataCentreBuilding();
+        dataCentre.setUserId(user.getId());
+        dataCentre.setLevel(1);
+        Instant now = Instant.now();
+        dataCentre.setLastTimeUpgrade(now.minus(Duration.ofDays(3650)));
+        dataCentre.setLastUpdate(now.minus(1, ChronoUnit.MINUTES));
+
+/*
+            InventoryBooster inventoryBooster = new InventoryBooster(
+                    ResourceType.ACCELERATION_ALL,
+                    1.5, Duration.ofHours(24).toMillis(), 1000);
+            inventoryBooster.setUserId(user.getId());
+ */
+
+        user.setResources(List.of(gold));
+//            user.setBoosters(Set.of(inventoryBooster));
+        user.setBuildings(List.of(dataCentre));
+        return user;
     }
 
     public abstract Answer respond(Update update);
@@ -213,7 +256,7 @@ public abstract class Query<T> {
     }
 
     public String getSpoiler() {
-        System.out.println(Spoiler.AI_SPOILER_PHRASES.size());
+        //System.out.println(Spoiler.AI_SPOILER_PHRASES.size());
         List<String> spoilerList = Spoiler.AI_SPOILER_PHRASES;
         Random random = new Random();
         return "\n---------------\n<code>" + Emoji.ROBOT_FACE + ": " + spoilerList.get(random.nextInt(spoilerList.size())) + "</code>";

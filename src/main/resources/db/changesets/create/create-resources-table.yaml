@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-notices-table
-      author: your_name
+      id: create-resources-table
+      author: vevigo@yandex.ru
       changes:
         - createTable:
-            tableName: notices
+            tableName: resources
             columns:
               - column:
                   name: id
@@ -17,19 +17,21 @@ databaseChangeLog:
                   name: user_id
                   type: BIGINT
               - column:
-                  name: notice_type
-                  type: VARCHAR(255)
-              - column:
                   name: resource_type
-                  type: VARCHAR(255)
-              - column:
-                  name: is_read
-                  type: BOOLEAN
-                  defaultValue: false
-              - column:
-                  name: created_at
-                  type: TIMESTAMP
+                  type: VARCHAR(31)
                   constraints:
                     nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: emoji
+                  type: VARCHAR(255)
+              - column:
+                  name: quantity
+                  type: BIGINT
+                  defaultValue: 0
             constraints:
-              primaryKeyName: pk_notices
+              primaryKeyName: pk_resources

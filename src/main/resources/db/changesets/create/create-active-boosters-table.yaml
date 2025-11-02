@@ -1,10 +1,11 @@
 databaseChangeLog:
   - changeSet:
-      id: create-super-aggregate-table
-      author: your_name
+      id: create-active-boosters-table
+      author: vevigo@yandex.ru
       changes:
         - createTable:
-            tableName: super_aggregate
+            tableName: active_boosters
+            schemaName: game
             columns:
               - column:
                   name: id
@@ -17,22 +18,18 @@ databaseChangeLog:
                   name: user_id
                   type: BIGINT
               - column:
-                  name: telegram_id
-                  type: BIGINT
-              - column:
-                  name: user_name
+                  name: name
                   type: VARCHAR(255)
-              - column:
-                  name: notice_type
-                  type: VARCHAR(255)
-              - column:
-                  name: is_send
-                  type: BOOLEAN
-                  defaultValue: false
-              - column:
-                  name: created_at
-                  type: TIMESTAMP
                   constraints:
                     nullable: false
+              - column:
+                  name: value
+                  type: DOUBLE PRECISION
+              - column:
+                  name: ends_at
+                  type: TIMESTAMP
+              - column:
+                  name: starts_at
+                  type: TIMESTAMP
             constraints:
-              primaryKeyName: pk_super_aggregate
+              primaryKeyName: pk_active_boosters

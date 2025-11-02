@@ -6,6 +6,7 @@ import com.creazione.space_learning.entities.postgres.UserP;
 import com.creazione.space_learning.repository.UserRepository;
 import com.creazione.space_learning.service.redis.UserCacheService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,16 +44,26 @@ public class UserPostgresService {
     }
 
     private UserDto toGameObject(UserP userP) {
+        // Проверяем, инициализирована ли коллекция
+        boolean buildingsInitialized = !Hibernate.isInitialized(userP.getBuildings()) ||
+                userP.getBuildings().isEmpty();
+        boolean resourcesInitialized = !Hibernate.isInitialized(userP.getResources()) ||
+                userP.getResources().isEmpty();
+        boolean boostersInitialized = !Hibernate.isInitialized(userP.getBoosters()) ||
+                userP.getBoosters().isEmpty();
+        boolean noticesInitialized = !Hibernate.isInitialized(userP.getNotices()) ||
+                userP.getNotices().isEmpty();
+
         return new UserDto(userP.getId(),
                 userP.getTelegramId(),
                 userP.getName(),
-                userP.getBuildings() == null ? new ArrayList<>() : new ArrayList<>(buildingPostgresService.toGameObjectList(new ArrayList<>(userP.getBuildings()))),
-                userP.getResources() == null ? new ArrayList<>() : new ArrayList<>(resourcePostgresService.toGameObjectList(new ArrayList<>(userP.getResources()))),
-                userP.getBoosters() == null ? new ArrayList<>() : new ArrayList<>(userP.getBoosters()),
+                buildingsInitialized ? new ArrayList<>() : new ArrayList<>(buildingPostgresService.toGameObjectList(new ArrayList<>(userP.getBuildings()))),
+                resourcesInitialized ? new ArrayList<>() : new ArrayList<>(resourcePostgresService.toGameObjectList(new ArrayList<>(userP.getResources()))),
+                boostersInitialized ? new ArrayList<>() : new ArrayList<>(userP.getBoosters()),
                 userP.getPlayerScore(),
                 userP.getReferrer(),
                 userP.getTotalReferrals(),
-                userP.getNotices() == null ? new ArrayList<>() : new ArrayList<>(userP.getNotices()),
+                noticesInitialized ? new ArrayList<>() : new ArrayList<>(userP.getNotices()),
                 userP.isSuperAggregate(),
                 userP.isPost(),
                 userP.getUpdatedAt(),
@@ -113,6 +124,29 @@ public class UserPostgresService {
     public UserDto findById(Long userId) {
         Optional<UserP> userEntity = userRepository.findById(userId);
         return userEntity.map(this::toGameObject).orElse(null);
+    }
+
+    public UserDto findBasicUserById(Long userId) {
+        Optional<UserP> userEntity = userRepository.findById(userId);
+        return userEntity.map(this::toBasicGameObject).orElse(null);
+    }
+
+    private UserDto toBasicGameObject(UserP userP) {
+        return new UserDto(userP.getId(),
+                userP.getTelegramId(),
+                userP.getName(),
+                new ArrayList<>(), // buildings - пустой список
+                new ArrayList<>(), // resources - пустой список
+                new ArrayList<>(), // boosters - пустой список
+                userP.getPlayerScore(),
+                userP.getReferrer(),
+                userP.getTotalReferrals(),
+                new ArrayList<>(), // notices - пустой список
+                userP.isSuperAggregate(),
+                userP.isPost(),
+                userP.getUpdatedAt(),
+                userP.getCreatedAt()
+        );
     }
 
     public Page<UserDto> findAllUsers(Pageable pageable) {

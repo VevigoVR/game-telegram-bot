@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-user-channel-table
-      author: your_name
+      author: vevigo@yandex.ru
       changes:
         - createTable:
             tableName: user_channel

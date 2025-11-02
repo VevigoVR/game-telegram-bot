@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-aggregate-notes-table
-      author: your_name
+      author: vevigo@yandex.ru
       changes:
         - createTable:
             tableName: aggregate_notes

@@ -20,6 +20,7 @@ public class ResourcePostgresService {
     private final ResourceCacheService resourceCacheService;
 
     public List<ResourceP> toPostgresObjectList(List<ResourceDto> resourceDtoList) {
+        if (resourceDtoList == null) { return new ArrayList<>(); }
         List<ResourceP> resourcePList = new ArrayList<>();
         for (ResourceDto resource : resourceDtoList) {
             resourcePList.add(toPostgresObject(resource));
@@ -28,6 +29,7 @@ public class ResourcePostgresService {
     }
 
     public List<ResourceDto> toGameObjectList(List<ResourceP> resourcePSet) {
+        if (resourcePSet == null) { return new ArrayList<>(); }
         List<ResourceDto> resourceDtoList = new ArrayList<>();
         for (ResourceP resource : resourcePSet) {
             resourceDtoList.add(toGameObject(resource));

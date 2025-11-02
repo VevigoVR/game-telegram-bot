@@ -1,5 +1,6 @@
 package com.creazione.space_learning.service.redis;
 
+import com.creazione.space_learning.entities.game_entity.BuildingDto;
 import com.creazione.space_learning.entities.game_entity.ResourceDto;
 import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.entities.postgres.BuildingP;
@@ -56,9 +57,9 @@ class UserCacheServiceIntegrationTest {
         testUser.setResources(Arrays.asList(metal, wood));
 
         // Создаем тестовые здания
-        BuildingP metalBuilding = new BuildingP(BuildingType.METAL_BUILDING, ResourceType.METAL);
+        BuildingDto metalBuilding = new BuildingDto(BuildingType.METAL_BUILDING, ResourceType.METAL, Emoji.BLACK_CIRCLE);
         metalBuilding.setLevel(2);
-        BuildingP woodBuilding = new BuildingP(BuildingType.WOOD_BUILDING, ResourceType.WOOD);
+        BuildingDto woodBuilding = new BuildingDto(BuildingType.WOOD_BUILDING, ResourceType.WOOD, Emoji.WOOD);
         woodBuilding.setLevel(1);
         testUser.setBuildings(Arrays.asList(metalBuilding, woodBuilding));
 
@@ -112,7 +113,7 @@ class UserCacheServiceIntegrationTest {
         assertEquals(2, cachedResources.size());
 
         // Проверяем, что здания сохранены и доступны отдельно
-        List<BuildingP> cachedBuildings = buildingCacheService.getBuildings(testUser.getTelegramId());
+        List<BuildingDto> cachedBuildings = buildingCacheService.getBuildings(testUser.getTelegramId());
         assertEquals(2, cachedBuildings.size());
 
         // Проверяем, что бустеры сохранены и доступны отдельно

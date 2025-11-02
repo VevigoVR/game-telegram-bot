@@ -2,6 +2,7 @@ package com.creazione.space_learning.queries.common;
 
 import com.creazione.space_learning.dto.CommandArgsDto;
 import com.creazione.space_learning.dto.UserInitialDto;
+import com.creazione.space_learning.entities.game_entity.UserDto;
 import com.creazione.space_learning.queries.GameCommand;
 import com.creazione.space_learning.queries.Query;
 import com.creazione.space_learning.utils.Answer;
@@ -66,7 +67,13 @@ public class InviteActivation extends Query<CommandArgsDto> {
         }
 
         String code = args[0];
-        return processReferrerAndReferrals(code, getUserEntityFromDB(userInitialDto.getChatId()));
+
+        UserDto user = getUserEntityFromDB(userInitialDto.getChatId());
+
+        String message = processReferrerAndReferrals(code, user);
+        userService.saveFull(user);
+        return message;
+
         /*
         try {
             referralService.activateReferralCode(userId, code);

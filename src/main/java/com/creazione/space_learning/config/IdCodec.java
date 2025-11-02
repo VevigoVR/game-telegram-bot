@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,7 +11,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 @Slf4j
-public class ReferralCodec {
+public class IdCodec {
     private static final String HMAC_ALGO = "HmacSHA256";
     private static final int USER_ID_BYTES = 6; // 48 бит для ID (до 281 триллиона)
     private static final int HMAC_BYTES = 4;    // 32 бита для проверки
@@ -21,7 +20,7 @@ public class ReferralCodec {
     private final byte[] secretKey;
     private final Mac hmac;
 
-    public ReferralCodec(String base64Key) throws NoSuchAlgorithmException, InvalidKeyException {
+    public IdCodec(String base64Key) throws NoSuchAlgorithmException, InvalidKeyException {
         this.secretKey = Base64.getDecoder().decode(base64Key);
         this.hmac = Mac.getInstance(HMAC_ALGO);
         this.hmac.init(new SecretKeySpec(secretKey, HMAC_ALGO));

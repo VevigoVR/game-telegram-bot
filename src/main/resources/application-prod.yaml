@@ -59,16 +59,19 @@ bot:
 # Настройка уровней логирования
 logging:
   level:
-    root: INFO
-    com.creazione: DEBUG
+    root: ERROR
+    com.creazione: ERROR      # Ваше приложение - INFO
+    org.springframework: WARN # Spring - только предупреждения
+    liquibase: INFO          # Liquibase - видим миграции
+    org.hibernate: WARN
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"  # Стандартный паттерн с цветами:cite[4]
 
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
-    default-schema: ${SCHEMA}
-    liquibase-schema: ${SCHEMA}
+    default-schema: ${SCHEMA:game}
+    liquibase-schema: ${SCHEMA:game}
 
 management:
   endpoints:

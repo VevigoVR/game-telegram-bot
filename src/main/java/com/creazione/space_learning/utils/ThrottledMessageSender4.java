@@ -123,8 +123,6 @@ public class ThrottledMessageSender4 {
             if (answer.getEditMessageCaption() != null) {
                 botInstance.execute(answer.getEditMessageCaption());
             }
-
-            // Отправка изображений (работает только при наличии в памяти)
             if (answer.getSendPhoto() != null) {
                 botInstance.execute(answer.getSendPhoto());
             }

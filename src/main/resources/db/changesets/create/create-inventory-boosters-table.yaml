@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-inventory-boosters-table
-      author: your_name
+      author: vevigo@yandex.ru
       changes:
         - createTable:
             tableName: inventory_boosters

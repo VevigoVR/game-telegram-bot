@@ -1,35 +1,34 @@
 server:
   port: 8080
-
+# ЭТО PROD
 lock:
   watchdog-timeout: 30000
   single-server-config:
-    address: "redis://localhost:6379"
-    password: ${DEV_REDIS_PASSWORD}
+    address: "redis://redis:6379"
+    password: ${SPRING_REDIS_PASSWORD}
     connection-pool-size: 64
-
+# ЭТО PROD
 spring:
-  liquibase:
-    enabled: false
   # Включение цветового вывода (даже если терминал не определяется автоматически)
   output:
     ansi:
       enabled: ALWAYS
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
-      password: ${DEV_REDIS_PASSWORD}
+      password: ${SPRING_REDIS_PASSWORD}
       database: 0
   main:
     allow-circular-references: true
   application:
     name: creazione
   datasource:
-    url: jdbc:postgresql://localhost:5432/${APP_DB_NAME}?currentSchema=${DEV_SCHEMA}
-    username: ${DEV_SPRING_USER}
-    password: ${DEV_SPRING_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  # ЭТО PROD
   jpa:
     show-sql: true
     generate-ddl: false
@@ -39,25 +38,17 @@ spring:
       generate_statistics: true
     properties:
       hibernate:
-        default_schema: ${DEV_SCHEMA}
+        default_schema: ${SCHEMA}
         jdbc:
           lob:
             non_contextual_creation: true
-management:
-  endpoints:
-    web:
-      exposure:
-        include: shutdown
-    enabled-by-default: true
-  endpoint:
-    shutdown:
-      enabled: true
+
 bot:
   name: ${BOT_NAME}
   token: ${BOT_TOKEN}
   channel:
     id:
-
+# ЭТО PROD
 # Настройка уровней логирования
 logging:
   level:
@@ -65,3 +56,22 @@ logging:
     com.creazione: DEBUG
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"  # Стандартный паттерн с цветами:cite[4]
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: always
+    shutdown:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true

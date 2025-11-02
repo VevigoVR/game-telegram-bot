@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-daily-gift-table
-      author: your_name
+      id: create-player-scores-table
+      author: vevigo@yandex.ru
       changes:
         - createTable:
-            tableName: daily_gift
+            tableName: player_scores
             columns:
               - column:
                   name: id
@@ -17,27 +17,24 @@ databaseChangeLog:
                   name: user_id
                   type: BIGINT
               - column:
-                  name: number_of_times
-                  type: INTEGER
+                  name: score
+                  type: BIGINT
               - column:
                   name: calculated_at
                   type: TIMESTAMP
-              - column:
-                  name: reg_at
-                  type: TIMESTAMP
             constraints:
-              primaryKeyName: pk_daily_gift
+              primaryKeyName: pk_player_scores
 
         - createIndex:
-            indexName: idx_gift_user_id
-            tableName: daily_gift
+            indexName: idx_score_user_id
+            tableName: player_scores
             columns:
               - column:
                   name: user_id
 
         - createIndex:
-            indexName: idx_gift_calculated_at
-            tableName: daily_gift
+            indexName: idx_score_calculated_at
+            tableName: player_scores
             columns:
               - column:
                   name: calculated_at

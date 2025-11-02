@@ -1,38 +1,37 @@
 # db.changelog-master.yaml
 databaseChangeLog:
   - include:
-      file: db/changesets/create-buildings-table.yaml
+      file: db/changesets/create/create-buildings-table.yaml
       # relativeToChangelogFile: true
   - include:
-      file: db/changesets/create-resources-table.yaml
+      file: db/changesets/create/create-resources-table.yaml
       # relativeToChangelogFile: true
   - include:
-      file: db/changesets/create-inventory-boosters-table.yaml
+      file: db/changesets/create/create-inventory-boosters-table.yaml
   - include:
-      file: db/changesets/create-active-boosters-table.yaml
+      file: db/changesets/create/create-active-boosters-table.yaml
   - include:
-      file: db/changesets/create-users-table.yaml
+      file: db/changesets/create/create-users-table.yaml
   - include:
-      file: db/changesets/create-super-aggregate-table.yaml
+      file: db/changesets/create/create-super-aggregate-table.yaml
   - include:
-      file: db/changesets/create-referrals-table.yaml
+      file: db/changesets/create/create-referrals-table.yaml
   - include:
-      file: db/changesets/create-player-scores-table.yaml
+      file: db/changesets/create/create-player-scores-table.yaml
   - include:
-      file: db/changesets/create-notices-table.yaml
+      file: db/changesets/create/create-notices-table.yaml
   - include:
-      file: db/changesets/create-daily-gift-table.yaml
+      file: db/changesets/create/create-daily-gift-table.yaml
   - include:
-      file: db/changesets/create-ai-training-data-table.yaml
+      file: db/changesets/create/create-ai-training-data-table.yaml
   - include:
-      file: db/changesets/create-aggregate-notes-table.yaml
+      file: db/changesets/create/create-aggregate-notes-table.yaml
   - include:
-      file: db/changesets/create-scheduler-table.yaml
+      file: db/changesets/create/create-scheduler-table.yaml
   - include:
-      file: db/changesets/create-user-channel-table.yaml
+      file: db/changesets/create/create-user-channel-table.yaml
   - include:
-      file: db/changesets/create-points-award-table.yaml
-
+      file: db/changesets/create/create-points-award-table.yaml
 
       # Изменения/дополнения к таблицам
   #- include:

@@ -72,6 +72,7 @@ public class SchedulerService {
 
             List<UserDto> userEntities = new ArrayList<>();
             for (UserDto userEntity : usersPage.getContent()) {
+                if (userEntity == null || userEntity.getBuildings() == null) {continue;}
                 List<BuildingDto> buildings = userEntity.getBuildings().stream().toList();
                 resourceService.calculateQuantityChanges(userEntity, Instant.now());
 
@@ -85,7 +86,13 @@ public class SchedulerService {
                 }
 
                 PlayerScoreP playerScore = userEntity.getPlayerScore();
-                long oldScore = playerScore.getScore();
+
+                long oldScore = 0;
+                if (playerScore != null) {
+                    oldScore = playerScore.getScore();
+                } else {
+                    playerScore = new PlayerScoreP(userEntity.getId());
+                }
                 long newScore = calculateScore(buildings);
                 grantReferralGifts(userEntity, oldScore, newScore);
 
@@ -153,7 +160,7 @@ public class SchedulerService {
             return;
         }
 
-        UserDto userReferrer = userService.findById(referrerId);
+        UserDto userReferrer = userService.findBasicUserById(referrerId);
         if (oldScore < 5 && newScore >= 5) {
             // если есть реферрер, то и ему начисляем очки
             if (userReferrer != null) {

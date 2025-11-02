@@ -173,11 +173,10 @@ public class BuildingService {
 
     public long getPointsForAllBuildings(List<BuildingDto> buildings)  {
         long sum = 0;
+        if (buildings == null) { return 0; }
         for (BuildingDto building : buildings) {
             sum += building.getPointsForBuilding(building.getLevel());
         }
         return sum/1000;
     }
-
-
 }

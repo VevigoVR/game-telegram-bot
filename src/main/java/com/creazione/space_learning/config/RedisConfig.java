@@ -54,6 +54,8 @@ public class RedisConfig {
         // Явное указание сериализаторов для конкретных типов операций
         template.setStringSerializer(new StringRedisSerializer());
 
+        template.setEnableTransactionSupport(true);
+
         return template;
     }
 

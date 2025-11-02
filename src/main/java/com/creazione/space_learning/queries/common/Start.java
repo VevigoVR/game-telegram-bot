@@ -42,9 +42,11 @@ public class Start extends Query {
         String userName = craftUserName(update.getMessage().getFrom());
         UserDto userDto = userService.findFullUserByTelegramId(userInitialDto.getChatId());
         if (userDto == null) {
+            userInitialDto.setQuery(update.getMessage().getText().trim());
+
             UserDto user = new UserDto();
             user.setTelegramId(userInitialDto.getChatId());
-            userInitialDto.setQuery(update.getMessage().getText().trim());
+
             user.setName(userName);
             user = userService.saveFullWithoutCache(user);
 
@@ -55,35 +57,7 @@ public class Start extends Query {
                 processReferrerAndReferrals(code, user);
             }
 
-            user.setPlayerScore(new PlayerScoreP(user.getId()));
-            Gold gold = new Gold(250000);
-            gold.setUserId(user.getId());
-            /*
-            Metal metal = new Metal(25000);
-            metal.setUserId(user.getId());
-            Stone stone = new Stone(25000);
-            stone.setUserId(user.getId());
-
-             */
-
-            DataCentreBuilding dataCentre = new DataCentreBuilding();
-            dataCentre.setUserId(user.getId());
-            dataCentre.setLevel(1);
-            Instant now = Instant.now();
-            dataCentre.setLastTimeUpgrade(now.minus(Duration.ofDays(3650)));
-            dataCentre.setLastUpdate(now.minus(1, ChronoUnit.MINUTES));
-
-/*
-            InventoryBooster inventoryBooster = new InventoryBooster(
-                    ResourceType.ACCELERATION_ALL,
-                    1.5, Duration.ofHours(24).toMillis(), 1000);
-            inventoryBooster.setUserId(user.getId());
- */
-
-            user.setResources(List.of(gold));
-//            user.setBoosters(Set.of(inventoryBooster));
-            user.setBuildings(List.of(dataCentre));
-            userService.saveFull(user);
+            userService.saveFull(initialUserDto(user));
 
             String img = "/static/image/start.jpg";
             String targetImg = "start.jpg";
@@ -139,7 +113,7 @@ public class Start extends Query {
     public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
         List<Integer> buttonsInLine = List.of(1);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
-        buttons.add(getButton("Обзор планеты", "/profileNewWindow"));
+        buttons.add(getButton("Обзор планеты", "/profile_new_window"));
         return getKeyboard(buttonsInLine, buttons);
     }
 

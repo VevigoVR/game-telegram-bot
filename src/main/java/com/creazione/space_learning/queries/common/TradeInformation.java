@@ -75,7 +75,7 @@ public class TradeInformation extends Query {
     @Override
     public String getText(UserInitialDto userInitialDto, Object noObject) {
         StringBuilder text = new StringBuilder();
-        text.append("<b>").append("Торговля ресурсами:</b>\n\n")
+        text.append("<b>").append("Дата Центр. Торговля ресурсами:</b>\n\n")
         .append(getActualInfo()).append("\n")
         .append("""
             Пример сделки:
@@ -91,15 +91,12 @@ public class TradeInformation extends Query {
 
     @Override
     public InlineKeyboardMarkup getInlineKeyboardMarkup(UserInitialDto userInitialDto, Object noObject) {
-        List<Integer> buttonsInLine = List.of(3, 2);
+        List<Integer> buttonsInLine = List.of(2);
         List<InlineKeyboardButton> buttons = new ArrayList<>();
 
-        buttons.add(getButton(Emoji.ARROW_LEFT.toString(), "/datacentre"));
         buttons.add(getButton(Emoji.HOUSE.toString(), "/profile"));
-        buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/datacentrenewwindow")));
+        buttons.add((getButton(Emoji.EJECT_SYMBOL.toString(), "/tradenewwindow")));
 
-        buttons.add((getButton("AI Action", "/english")));
-        buttons.add(getButton(Emoji.ARROWS_COUNTERCLOCKWISE.toString(), "/trade"));
         return getKeyboard(buttonsInLine, buttons);
     }
 

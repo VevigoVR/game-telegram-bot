@@ -87,7 +87,7 @@ public class Init {
     }
 
     public void createReferral() {
-        UserDto userEntity = userService.findById(1L);
+        UserDto userEntity = userService.findBasicUserById(1L);
         if (userEntity != null) {
             userEntity.setTotalReferrals(888);
             userService.saveFullWithoutCache(userEntity);

@@ -24,18 +24,18 @@ public class UserP {
     private Long telegramId;
     private String name;
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<BuildingP> buildings;
+    private Set<BuildingP> buildings = new HashSet<>();
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<ResourceP> resources;
+    private Set<ResourceP> resources = new HashSet<>();
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<InventoryBoosterP> boosters;
+    private Set<InventoryBoosterP> boosters = new HashSet<>();
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "player_score_id") // Новый столбец в таблице users
     private PlayerScoreP playerScore;
     private Long referrer;
     private Integer totalReferrals = 0;
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<NoticeP> notices;
+    private Set<NoticeP> notices = new HashSet<>();
     private boolean isSuperAggregate;
     private boolean isPost;
     private Instant updatedAt;
